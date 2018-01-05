@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/menu_map"
+        android:icon="@drawable/ic_action_map"
+        android:title="Map"
+        app:showAsAction="ifRoom"/>
+    <item
+        android:id="@+id/menu_event"
+        android:icon="@drawable/ic_action_event"
+        android:title="Events"
+        app:showAsAction="ifRoom"/>
+    <item
+        android:id="@+id/menu_timer"
+        android:icon="@drawable/ic_action_timer"
+        android:title="Timer" />
+    <item
+        android:id="@+id/menu_announcements"
+        android:icon="@drawable/ic_action_announcement"
+        android:title="Announcements"
+        app:showAsAction="ifRoom"/>
+</menu>
