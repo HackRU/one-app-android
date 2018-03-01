@@ -48,21 +48,21 @@ public class LoginActivity extends AppCompatActivity {
 
                 String reqUrl = "www.google.com";
                 StringRequest authenticationRequest = new StringRequest(Request.Method.POST,
-                    reqUrl,
-                    new Response.Listener<String>() {
-                        @Override
-                        public void onResponse(String response) {
-                            //If the user is authenticated, send them to the main application
-                            Intent mainActivityIntent = new Intent(getBaseContext(), MainActivity.class);
-                            startActivity(mainActivityIntent);
-                        }
-                    },
-                    new Response.ErrorListener() {
-                        @Override
-                        public void onErrorResponse(VolleyError error) {
+                        reqUrl,
+                        new Response.Listener<String>() {
+                            @Override
+                            public void onResponse(String response) {
+                                //If the user is authenticated, send them to the main application
+                                Intent mainActivityIntent = new Intent(getBaseContext(), MainActivity.class);
+                                startActivity(mainActivityIntent);
+                            }
+                        },
+                        new Response.ErrorListener() {
+                            @Override
+                            public void onErrorResponse(VolleyError error) {
 
+                            }
                         }
-                    }
                 ) {
                     @Override
                     protected Map<String, String> getParams() throws AuthFailureError {

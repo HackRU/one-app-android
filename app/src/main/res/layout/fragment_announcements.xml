@@ -4,8 +4,6 @@
     android:layout_height="match_parent"
     tools:context="com.example.rishabravikumar.oneapp.AnnouncementsFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-
     <LinearLayout
         android:id="@+id/linearLayout"
         android:layout_width="match_parent"
