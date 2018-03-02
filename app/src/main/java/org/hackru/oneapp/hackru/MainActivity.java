@@ -1,6 +1,7 @@
 package org.hackru.oneapp.hackru;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -22,6 +23,11 @@ public class MainActivity extends AppCompatActivity {
             super.onCreate(savedInstanceState);
             setContentView(R.layout.activity_main);
             // END BOILERPLATE CODE
+
+            if(true) { // Change to check if the user is logged in or not
+                Intent intent = new Intent(this, LoginActivity.class);
+                startActivity(intent);
+            }
 
             android.support.v7.app.ActionBar actionBar = getSupportActionBar();
             actionBar.setBackgroundDrawable(new ColorDrawable(Color.argb(255,255,76,76)));
