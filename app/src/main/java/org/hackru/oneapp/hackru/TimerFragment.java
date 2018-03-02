@@ -18,8 +18,8 @@ public class TimerFragment extends Fragment {
     private ProgressBar progressBar;
     private TextView timerCount;
     private TextView timerTitle;
-    //    private int timeInMillis = 3672000; // 1 hour 12 minutes
-    private int timeInMillis = 30000; // 30 seconds
+    private TextView endMessage;
+    private int timeInMillis = 57600000; // this is the progress of the timer. The initial value is for testing. 57600000 milliseconds is 16 hours
     private int hours;
     private int minutes;
     private int seconds;
@@ -43,12 +43,13 @@ public class TimerFragment extends Fragment {
         progressBar = (ProgressBar) ((MainActivity)getActivity()).findViewById(R.id.progressBar);
         timerCount = (TextView) ((MainActivity)getActivity()).findViewById(R.id.timerCount);
         timerTitle = (TextView) ((MainActivity)getActivity()).findViewById(R.id.timerTitle);
+        endMessage = (TextView) ((MainActivity)getActivity()).findViewById(R.id.endMessage);
         start();
     }
 
     public void start() {
         //Sets the int that represents 100% progress
-        progressBar.setMax(timeInMillis/1000);
+        progressBar.setMax(86400); // 86400 seconds is 24 hours
 
         countDownTimer = new CountDownTimer(timeInMillis, 100) {
             @Override
@@ -65,8 +66,10 @@ public class TimerFragment extends Fragment {
 
             @Override
             public void onFinish() {
-                timerTitle.setText("Done!");
-                timerCount.setVisibility(View.INVISIBLE);
+                timerTitle.setVisibility(View.GONE);
+                timerCount.setVisibility(View.GONE);
+                progressBar.setVisibility(View.GONE);
+                endMessage.setVisibility(View.VISIBLE);
             }
         }.start();
 

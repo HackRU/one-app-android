@@ -17,6 +17,7 @@ import android.view.MenuItem;
 import android.view.View;
 
 public class MainActivity extends AppCompatActivity {
+    String TAG = "";
 
         @Override
         protected void onCreate(Bundle savedInstanceState) {
@@ -24,14 +25,10 @@ public class MainActivity extends AppCompatActivity {
             setContentView(R.layout.activity_main);
             // END BOILERPLATE CODE
 
-            if(true) { // Change to check if the user is logged in or not
-                Intent intent = new Intent(this, LoginActivity.class);
-                startActivity(intent);
+            if(true) { // If the user isn't logged in, make them log in
+                Intent mainActivityIntent = new Intent(this, LoginActivity.class);
+                startActivity(mainActivityIntent);
             }
-
-            android.support.v7.app.ActionBar actionBar = getSupportActionBar();
-            actionBar.setBackgroundDrawable(new ColorDrawable(Color.argb(255,255,76,76)));
-//            getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
             // TODO: FIX BUG WHERE APP CRASHES FROM INFINITE LOOP IF LOCATION PERMISSION IS DENIED
             if(ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -45,10 +42,10 @@ public class MainActivity extends AppCompatActivity {
             }
 
             final FragmentManager fragmentManager = getSupportFragmentManager();
-            fragmentManager.beginTransaction().add(R.id.content_frame, new MapFragment(), "map").commit(); // Adds the map fragment when the app launches so it's displaying
+            fragmentManager.beginTransaction().add(R.id.content_frame, new TimerFragment(), "timer").commit(); // Adds the timer fragment when the app launches so it's displaying
 
             final BottomNavigationView bottomNavigationView = (BottomNavigationView)findViewById(R.id.bottom_navigation);
-            bottomNavigationView.getMenu().findItem(R.id.menu_map).setChecked(true); // Makes the map menu item checked on app load since it's the first item that appears (not sure if this is necessary)
+            bottomNavigationView.getMenu().findItem(R.id.menu_timer).setChecked(true); // Makes the timer menu item checked on app load since it's the first item that appears (not sure if this is necessary)
             //TODO: RECREATE FRAGMENT IF USER CLICKS MENU ITEM THAT IS ALREADY SELECTED
             bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
                 @Override
@@ -59,31 +56,6 @@ public class MainActivity extends AppCompatActivity {
                     bottomNavigationView.getMenu().findItem(R.id.menu_timer).setChecked(false);
                     item.setChecked(true);
 
-                    if(item.getItemId() == R.id.menu_map) {
-                        // Since the app starts out on the map fragment, it will always exist, so there is no need to test for whether or not it exists yet
-                        fragmentManager.beginTransaction().show(fragmentManager.findFragmentByTag("map")).commit();
-
-                        if(fragmentManager.findFragmentByTag("events") !=null) {fragmentManager.beginTransaction().hide(fragmentManager.findFragmentByTag("events")).commit();}
-                        if(fragmentManager.findFragmentByTag("timer") !=null) {fragmentManager.beginTransaction().hide(fragmentManager.findFragmentByTag("timer")).commit();}
-                        if(fragmentManager.findFragmentByTag("announcements") !=null) {fragmentManager.beginTransaction().hide(fragmentManager.findFragmentByTag("announcements")).commit();}
-
-                        return true;
-                    }
-                    if(item.getItemId() == R.id.menu_event) {
-                        if(fragmentManager.findFragmentByTag("events")!=null) {
-                            // if the fragment exists, show it
-                            fragmentManager.beginTransaction().show(fragmentManager.findFragmentByTag("events")).commit();
-                        } else {
-                            // if the fragment does not exist yet, add it to the fragment manager
-                            fragmentManager.beginTransaction().add(R.id.content_frame, new EventsFragment(), "events").commit();
-                        }
-
-                        if(fragmentManager.findFragmentByTag("map") !=null) {fragmentManager.beginTransaction().hide(fragmentManager.findFragmentByTag("map")).commit();}
-                        if(fragmentManager.findFragmentByTag("timer") !=null) {fragmentManager.beginTransaction().hide(fragmentManager.findFragmentByTag("timer")).commit();}
-                        if(fragmentManager.findFragmentByTag("announcements") !=null) {fragmentManager.beginTransaction().hide(fragmentManager.findFragmentByTag("announcements")).commit();}
-
-                        return true;
-                    }
                     if(item.getItemId() == R.id.menu_timer) {
 
                         if(fragmentManager.findFragmentByTag("timer")!=null) {
@@ -99,9 +71,7 @@ public class MainActivity extends AppCompatActivity {
                         if(fragmentManager.findFragmentByTag("announcements") !=null) {fragmentManager.beginTransaction().hide(fragmentManager.findFragmentByTag("announcements")).commit();}
 
                         return true;
-                    }
-
-                    if(item.getItemId() == R.id.menu_announcements) {
+                    } else if(item.getItemId() == R.id.menu_announcements) {
 
                         if(fragmentManager.findFragmentByTag("announcements")!=null) {
                             // if the fragment exists, show it
@@ -114,6 +84,35 @@ public class MainActivity extends AppCompatActivity {
                         if(fragmentManager.findFragmentByTag("map") !=null) {fragmentManager.beginTransaction().hide(fragmentManager.findFragmentByTag("map")).commit();}
                         if(fragmentManager.findFragmentByTag("events") !=null) {fragmentManager.beginTransaction().hide(fragmentManager.findFragmentByTag("events")).commit();}
                         if(fragmentManager.findFragmentByTag("timer") !=null) {fragmentManager.beginTransaction().hide(fragmentManager.findFragmentByTag("timer")).commit();}
+
+                        return true;
+                    } else if(item.getItemId() == R.id.menu_event) {
+                        if(fragmentManager.findFragmentByTag("events")!=null) {
+                            // if the fragment exists, show it
+                            fragmentManager.beginTransaction().show(fragmentManager.findFragmentByTag("events")).commit();
+                        } else {
+                            // if the fragment does not exist yet, add it to the fragment manager
+                            fragmentManager.beginTransaction().add(R.id.content_frame, new EventsFragment(), "events").commit();
+                        }
+
+                        if(fragmentManager.findFragmentByTag("map") !=null) {fragmentManager.beginTransaction().hide(fragmentManager.findFragmentByTag("map")).commit();}
+                        if(fragmentManager.findFragmentByTag("timer") !=null) {fragmentManager.beginTransaction().hide(fragmentManager.findFragmentByTag("timer")).commit();}
+                        if(fragmentManager.findFragmentByTag("announcements") !=null) {fragmentManager.beginTransaction().hide(fragmentManager.findFragmentByTag("announcements")).commit();}
+
+                        return true;
+                    } else if(item.getItemId() == R.id.menu_map) {
+                        //TODO: GET MAP FRAGMENT WORKING (SEAN CAN'T FIGURE OUT WHY IT ISN'T ANYMORE)
+                        if(fragmentManager.findFragmentByTag("map")!=null) {
+                            // if the fragment exists, show it
+                            fragmentManager.beginTransaction().show(fragmentManager.findFragmentByTag("map")).commit();
+                        } else {
+                            // if the fragment does not exist yet, add it to the fragment manager
+                            fragmentManager.beginTransaction().add(R.id.content_frame, new TimerFragment(), "map").commit();
+                        }
+
+                        if(fragmentManager.findFragmentByTag("events") !=null) {fragmentManager.beginTransaction().hide(fragmentManager.findFragmentByTag("events")).commit();}
+                        if(fragmentManager.findFragmentByTag("timer") !=null) {fragmentManager.beginTransaction().hide(fragmentManager.findFragmentByTag("timer")).commit();}
+                        if(fragmentManager.findFragmentByTag("announcements") !=null) {fragmentManager.beginTransaction().hide(fragmentManager.findFragmentByTag("announcements")).commit();}
 
                         return true;
                     }
