@@ -1,4 +1,4 @@
-package com.example.rishabravikumar.oneapp;
+package org.hackru.oneapp.hackru;
 
 /**
  * Created by Sean on 12/11/2017.

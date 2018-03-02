@@ -1,4 +1,4 @@
-package com.example.rishabravikumar.oneapp;
+package org.hackru.oneapp.hackru;
 
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;

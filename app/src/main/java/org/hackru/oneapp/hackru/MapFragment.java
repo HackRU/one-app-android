@@ -1,4 +1,4 @@
-package com.example.rishabravikumar.oneapp;
+package org.hackru.oneapp.hackru;
 
 import android.Manifest;
 import android.content.Context;
