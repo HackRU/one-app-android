@@ -52,7 +52,7 @@ public class LoginActivity extends AppCompatActivity {
 
         // Check for improper input
         if (!validate()) {
-            onLoginFailed();
+            _loginButton.setEnabled(true);
             return;
         }
 
@@ -77,15 +77,20 @@ public class LoginActivity extends AppCompatActivity {
         service.authorize(new AuthorizeRequest(email, password)).enqueue(new Callback<Login>() {
             @Override
             public void onResponse(Call<Login> call, Response<Login> response) {
-                //someshit
                 Log.e(TAG, "Post submitted to API!");
-                Log.e(TAG, response.body().toString());
+                if(response.body().getStatusCode() == 200) {
+                    onLoginSuccess();
+                } else {
+                    onLoginFailed(true);
+                }
+                progressDialog.dismiss();
             }
 
             @Override
             public void onFailure(Call<Login> call, Throwable t) {
-                //someshit
                 Log.e(TAG, "Unable to submit post to API.");
+                onLoginFailed(false);
+                progressDialog.dismiss();
             }
         });
 
@@ -112,8 +117,12 @@ public class LoginActivity extends AppCompatActivity {
         finish();
     }
 
-    public void onLoginFailed() {
-        Toast.makeText(getBaseContext(), "Login failed", Toast.LENGTH_LONG).show();
+    public void onLoginFailed(Boolean apiSuccess) {
+        if(apiSuccess) {
+            Toast.makeText(getBaseContext(), "Incorrect username or password", Toast.LENGTH_LONG).show();
+        } else {
+            Toast.makeText(getBaseContext(), "Cannot reach server", Toast.LENGTH_LONG).show();
+        }
 
         _loginButton.setEnabled(true);
     }
