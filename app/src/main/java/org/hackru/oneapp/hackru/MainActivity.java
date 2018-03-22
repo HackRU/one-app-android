@@ -17,6 +17,8 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 
+import org.hackru.oneapp.hackru.api.Login.SaveSharedPreference;
+
 public class MainActivity extends AppCompatActivity {
     String TAG = "";
 
@@ -26,7 +28,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         // END BOILERPLATE CODE
 
-        if(true) { // If the user isn't logged in, make them log in
+        if(SaveSharedPreference.getAuthToken(MainActivity.this).length() == 0) { // If the user isn't logged in, make them log in
             Intent loginActivityIntent = new Intent(this, LoginActivity.class);
             startActivity(loginActivityIntent);
         }

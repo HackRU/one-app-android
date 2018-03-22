@@ -15,6 +15,7 @@ import android.widget.Toast;
 
 import org.hackru.oneapp.hackru.api.Login.AuthorizeRequest;
 import org.hackru.oneapp.hackru.api.Login.Login;
+import org.hackru.oneapp.hackru.api.Login.SaveSharedPreference;
 import org.hackru.oneapp.hackru.api.LoginService;
 
 import butterknife.BindView;
@@ -67,18 +68,21 @@ public class LoginActivity extends AppCompatActivity {
         String email = _emailText.getText().toString();
         String password = _passwordText.getText().toString();
 
-        // TODO: Implement authentication logic here.
+        // Authentication logic
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("https://m7cwj1fy7c.execute-api.us-west-2.amazonaws.com/mlhtest/")
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 
-        LoginService service = retrofit.create(LoginService.class);
-        service.authorize(new AuthorizeRequest(email, password)).enqueue(new Callback<Login>() {
+        LoginService loginService = retrofit.create(LoginService.class);
+        loginService.authorize(new AuthorizeRequest(email, password)).enqueue(new Callback<Login>() {
             @Override
             public void onResponse(Call<Login> call, Response<Login> response) {
-                Log.e(TAG, "Post submitted to API!");
+                Log.i(TAG, "Post submitted to API!");
                 if(response.body().getStatusCode() == 200) {
+                    // TODO: USE GSON TO PARSE THIS STRING FOR THE AUTH TOKEN SO IT'S FUTURE-PROOF
+                    String body = response.body().getBody();
+                    String token = body.substring(body.indexOf("token")+9, body.indexOf(',')-1);
                     onLoginSuccess();
                 } else {
                     onLoginFailed(true);
@@ -117,8 +121,8 @@ public class LoginActivity extends AppCompatActivity {
         finish();
     }
 
-    public void onLoginFailed(Boolean apiSuccess) {
-        if(apiSuccess) {
+    public void onLoginFailed(Boolean connectionSuccess) {
+        if(connectionSuccess) {
             Toast.makeText(getBaseContext(), "Incorrect username or password", Toast.LENGTH_LONG).show();
         } else {
             Toast.makeText(getBaseContext(), "Cannot reach server", Toast.LENGTH_LONG).show();
