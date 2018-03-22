@@ -1,10 +1,8 @@
-package com.example.rishabravikumar.hackru;
+package org.hackru.oneapp.hackru;
 
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.FloatingActionButton;
@@ -17,6 +15,8 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 
+import org.hackru.oneapp.hackru.api.Login.AuthToken;
+
 public class MainActivity extends AppCompatActivity {
     String TAG = "";
 
@@ -26,9 +26,11 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         // END BOILERPLATE CODE
 
-        if(true) { // If the user isn't logged in, make them log in
-            Intent mainActivityIntent = new Intent(this, LoginActivity.class);
-            startActivity(mainActivityIntent);
+        if(AuthToken.getAuthToken(MainActivity.this).length() == 0) { // If the user has never logged in, make them log in
+            Intent loginActivityIntent = new Intent(this, LoginActivity.class);
+            startActivity(loginActivityIntent);
+        } else { // If the user has logged in before, validate their auth token
+            
         }
 
         // TODO: FIX BUG WHERE APP CRASHES FROM INFINITE LOOP IF LOCATION PERMISSION IS DENIED
@@ -47,7 +49,6 @@ public class MainActivity extends AppCompatActivity {
 
         final BottomNavigationView bottomNavigationView = (BottomNavigationView)findViewById(R.id.bottom_navigation);
         bottomNavigationView.getMenu().findItem(R.id.menu_timer).setChecked(true); // Makes the timer menu item checked on app load since it's the first item that appears (not sure if this is necessary)
-        //TODO: RECREATE FRAGMENT IF USER CLICKS MENU ITEM THAT IS ALREADY SELECTED
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -102,7 +103,6 @@ public class MainActivity extends AppCompatActivity {
                     fragmentTransaction.commit();
                     return true;
                 } else if(item.getItemId() == R.id.menu_map) {
-                    //TODO: GET MAP FRAGMENT WORKING ---- IT WORKS NOW !!
                     if(fragmentManager.findFragmentByTag("map")!=null) {
                         // if the fragment exists, show it
                         fragmentTransaction.show(fragmentManager.findFragmentByTag("map"));

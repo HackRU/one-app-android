@@ -5,17 +5,23 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
-import android.content.Intent;
 import android.view.View;
-import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
+
+import org.hackru.oneapp.hackru.api.Login.AuthorizeRequest;
+import org.hackru.oneapp.hackru.api.Login.Login;
+import org.hackru.oneapp.hackru.api.Login.AuthToken;
+import org.hackru.oneapp.hackru.api.LoginService;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class LoginActivity extends AppCompatActivity {
     private static final String TAG = "LoginActivity";
@@ -40,11 +46,11 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void login() {
-        Log.d(TAG, "Login");
+//        Log.d(TAG, "Login");
 
         // Check for improper input
         if (!validate()) {
-            onLoginFailed();
+            _loginButton.setEnabled(true);
             return;
         }
 
@@ -59,18 +65,47 @@ public class LoginActivity extends AppCompatActivity {
         String email = _emailText.getText().toString();
         String password = _passwordText.getText().toString();
 
-        // TODO: Implement authentication logic here.
+        // Authentication logic
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("https://m7cwj1fy7c.execute-api.us-west-2.amazonaws.com/mlhtest/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        LoginService loginService = retrofit.create(LoginService.class);
+        loginService.authorize(new AuthorizeRequest(email, password)).enqueue(new Callback<Login>() {
+            @Override
+            public void onResponse(Call<Login> call, Response<Login> response) {
+                Log.i(TAG, "Post submitted to API!");
+                if(response.body().getStatusCode() == 200) {
+                    // TODO: USE GSON TO PARSE THIS STRING FOR THE AUTH TOKEN SO IT'S FUTURE-PROOF
+                    String body = response.body().getBody();
+                    String token = body.substring(body.indexOf("token")+9, body.indexOf(',')-1);
+                    AuthToken.setAuthToken(LoginActivity.this, token);
+                    onLoginSuccess();
+                } else {
+                    onLoginFailed(true);
+                }
+                progressDialog.dismiss();
+            }
+
+            @Override
+            public void onFailure(Call<Login> call, Throwable t) {
+                Log.e(TAG, "Unable to submit post to API.");
+                onLoginFailed(false);
+                progressDialog.dismiss();
+            }
+        });
 
 
-        new android.os.Handler().postDelayed(
-                new Runnable() {
-                    public void run() {
-                        // On complete call either onLoginSuccess or onLoginFailed
-                        onLoginSuccess();
-                        // onLoginFailed();
-                        progressDialog.dismiss();
-                    }
-                }, 1000);
+//        new android.os.Handler().postDelayed(
+//                new Runnable() {
+//                    public void run() {
+//                        // On complete call either onLoginSuccess or onLoginFailed
+//                        onLoginSuccess();
+//                        // onLoginFailed();
+//                        progressDialog.dismiss();
+//                    }
+//                }, 1000);
     }
 
     @Override
@@ -84,8 +119,12 @@ public class LoginActivity extends AppCompatActivity {
         finish();
     }
 
-    public void onLoginFailed() {
-        Toast.makeText(getBaseContext(), "Login failed", Toast.LENGTH_LONG).show();
+    public void onLoginFailed(Boolean connectionSuccess) {
+        if(connectionSuccess) {
+            Toast.makeText(getBaseContext(), "Incorrect username or password", Toast.LENGTH_LONG).show();
+        } else {
+            Toast.makeText(getBaseContext(), "Cannot reach server", Toast.LENGTH_LONG).show();
+        }
 
         _loginButton.setEnabled(true);
     }
