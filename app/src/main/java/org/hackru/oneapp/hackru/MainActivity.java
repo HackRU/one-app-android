@@ -3,8 +3,6 @@ package org.hackru.oneapp.hackru;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.FloatingActionButton;
@@ -17,7 +15,7 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 
-import org.hackru.oneapp.hackru.api.Login.SaveSharedPreference;
+import org.hackru.oneapp.hackru.api.Login.AuthToken;
 
 public class MainActivity extends AppCompatActivity {
     String TAG = "";
@@ -28,9 +26,11 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         // END BOILERPLATE CODE
 
-        if(SaveSharedPreference.getAuthToken(MainActivity.this).length() == 0) { // If the user isn't logged in, make them log in
+        if(AuthToken.getAuthToken(MainActivity.this).length() == 0) { // If the user has never logged in, make them log in
             Intent loginActivityIntent = new Intent(this, LoginActivity.class);
             startActivity(loginActivityIntent);
+        } else { // If the user has logged in before, validate their auth token
+            
         }
 
         // TODO: FIX BUG WHERE APP CRASHES FROM INFINITE LOOP IF LOCATION PERMISSION IS DENIED

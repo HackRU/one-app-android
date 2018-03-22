@@ -8,7 +8,7 @@ import android.preference.PreferenceManager;
  * Created by Sean on 3/21/2018.
  */
 
-public class SaveSharedPreference {
+public class AuthToken {
     static final String PREF_AUTH_TOKEN= "authtoken";
 
     static SharedPreferences getSharedPreferences(Context ctx) {

@@ -5,17 +5,14 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
-import android.content.Intent;
 import android.view.View;
-import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import org.hackru.oneapp.hackru.api.Login.AuthorizeRequest;
 import org.hackru.oneapp.hackru.api.Login.Login;
-import org.hackru.oneapp.hackru.api.Login.SaveSharedPreference;
+import org.hackru.oneapp.hackru.api.Login.AuthToken;
 import org.hackru.oneapp.hackru.api.LoginService;
 
 import butterknife.BindView;
@@ -83,6 +80,7 @@ public class LoginActivity extends AppCompatActivity {
                     // TODO: USE GSON TO PARSE THIS STRING FOR THE AUTH TOKEN SO IT'S FUTURE-PROOF
                     String body = response.body().getBody();
                     String token = body.substring(body.indexOf("token")+9, body.indexOf(',')-1);
+                    AuthToken.setAuthToken(LoginActivity.this, token);
                     onLoginSuccess();
                 } else {
                     onLoginFailed(true);
