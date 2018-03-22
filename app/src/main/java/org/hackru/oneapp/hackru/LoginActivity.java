@@ -13,9 +13,17 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.hackru.oneapp.hackru.api.Login.AuthorizeRequest;
+import org.hackru.oneapp.hackru.api.Login.Login;
+import org.hackru.oneapp.hackru.api.LoginService;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class LoginActivity extends AppCompatActivity {
     private static final String TAG = "LoginActivity";
@@ -40,7 +48,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void login() {
-        Log.d(TAG, "Login");
+//        Log.d(TAG, "Login");
 
         // Check for improper input
         if (!validate()) {
@@ -60,17 +68,37 @@ public class LoginActivity extends AppCompatActivity {
         String password = _passwordText.getText().toString();
 
         // TODO: Implement authentication logic here.
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("https://m7cwj1fy7c.execute-api.us-west-2.amazonaws.com/mlhtest/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        LoginService service = retrofit.create(LoginService.class);
+        service.authorize(new AuthorizeRequest(email, password)).enqueue(new Callback<Login>() {
+            @Override
+            public void onResponse(Call<Login> call, Response<Login> response) {
+                //someshit
+                Log.e(TAG, "Post submitted to API!");
+                Log.e(TAG, response.body().toString());
+            }
+
+            @Override
+            public void onFailure(Call<Login> call, Throwable t) {
+                //someshit
+                Log.e(TAG, "Unable to submit post to API.");
+            }
+        });
 
 
-        new android.os.Handler().postDelayed(
-                new Runnable() {
-                    public void run() {
-                        // On complete call either onLoginSuccess or onLoginFailed
-                        onLoginSuccess();
-                        // onLoginFailed();
-                        progressDialog.dismiss();
-                    }
-                }, 1000);
+//        new android.os.Handler().postDelayed(
+//                new Runnable() {
+//                    public void run() {
+//                        // On complete call either onLoginSuccess or onLoginFailed
+//                        onLoginSuccess();
+//                        // onLoginFailed();
+//                        progressDialog.dismiss();
+//                    }
+//                }, 1000);
     }
 
     @Override

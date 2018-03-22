@@ -1,4 +1,4 @@
-package com.example.rishabravikumar.hackru;
+package org.hackru.oneapp.hackru;
 
 import android.Manifest;
 import android.content.Intent;
@@ -27,8 +27,8 @@ public class MainActivity extends AppCompatActivity {
         // END BOILERPLATE CODE
 
         if(true) { // If the user isn't logged in, make them log in
-            Intent mainActivityIntent = new Intent(this, LoginActivity.class);
-            startActivity(mainActivityIntent);
+            Intent loginActivityIntent = new Intent(this, LoginActivity.class);
+            startActivity(loginActivityIntent);
         }
 
         // TODO: FIX BUG WHERE APP CRASHES FROM INFINITE LOOP IF LOCATION PERMISSION IS DENIED
@@ -47,7 +47,6 @@ public class MainActivity extends AppCompatActivity {
 
         final BottomNavigationView bottomNavigationView = (BottomNavigationView)findViewById(R.id.bottom_navigation);
         bottomNavigationView.getMenu().findItem(R.id.menu_timer).setChecked(true); // Makes the timer menu item checked on app load since it's the first item that appears (not sure if this is necessary)
-        //TODO: RECREATE FRAGMENT IF USER CLICKS MENU ITEM THAT IS ALREADY SELECTED
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -102,7 +101,6 @@ public class MainActivity extends AppCompatActivity {
                     fragmentTransaction.commit();
                     return true;
                 } else if(item.getItemId() == R.id.menu_map) {
-                    //TODO: GET MAP FRAGMENT WORKING ---- IT WORKS NOW !!
                     if(fragmentManager.findFragmentByTag("map")!=null) {
                         // if the fragment exists, show it
                         fragmentTransaction.show(fragmentManager.findFragmentByTag("map"));
