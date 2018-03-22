@@ -1,6 +1,7 @@
 package org.hackru.oneapp.hackru;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -12,7 +13,6 @@ import android.widget.Toast;
 
 import org.hackru.oneapp.hackru.api.Login.AuthorizeRequest;
 import org.hackru.oneapp.hackru.api.Login.Login;
-import org.hackru.oneapp.hackru.api.Login.AuthToken;
 import org.hackru.oneapp.hackru.api.LoginService;
 
 import butterknife.BindView;
@@ -46,8 +46,6 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void login() {
-//        Log.d(TAG, "Login");
-
         // Check for improper input
         if (!validate()) {
             _loginButton.setEnabled(true);
@@ -62,7 +60,7 @@ public class LoginActivity extends AppCompatActivity {
         progressDialog.setMessage("Authenticating...");
         progressDialog.show();
 
-        String email = _emailText.getText().toString();
+        final String email = _emailText.getText().toString(); // Needs to be declared final so that we can use it in the overrided onResponse method below
         String password = _passwordText.getText().toString();
 
         // Authentication logic
@@ -80,7 +78,8 @@ public class LoginActivity extends AppCompatActivity {
                     // TODO: USE GSON TO PARSE THIS STRING FOR THE AUTH TOKEN SO IT'S FUTURE-PROOF
                     String body = response.body().getBody();
                     String token = body.substring(body.indexOf("token")+9, body.indexOf(',')-1);
-                    AuthToken.setAuthToken(LoginActivity.this, token);
+                    SharedPreferencesUtility.setAuthToken(LoginActivity.this, token);
+                    SharedPreferencesUtility.setEmail(LoginActivity.this, email);
                     onLoginSuccess();
                 } else {
                     onLoginFailed(true);
@@ -116,6 +115,8 @@ public class LoginActivity extends AppCompatActivity {
 
     public void onLoginSuccess() {
         _loginButton.setEnabled(true);
+        Intent loginActivityIntent = new Intent(this, MainActivity.class);
+        startActivity(loginActivityIntent);
         finish();
     }
 

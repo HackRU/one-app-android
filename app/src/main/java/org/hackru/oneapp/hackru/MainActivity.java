@@ -14,10 +14,9 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 
-import org.hackru.oneapp.hackru.api.Login.AuthToken;
-
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements QRDialogueFragment.OnLogoutClickListener {
     String TAG = "";
 
     @Override
@@ -26,9 +25,10 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         // END BOILERPLATE CODE
 
-        if(AuthToken.getAuthToken(MainActivity.this).length() == 0) { // If the user has never logged in, make them log in
+        if(SharedPreferencesUtility.getAuthToken(MainActivity.this).length() == 0) { // If the user has never logged in, make them log in
             Intent loginActivityIntent = new Intent(this, LoginActivity.class);
             startActivity(loginActivityIntent);
+            finish();
         } else { // If the user has logged in before, validate their auth token
             
         }
@@ -124,10 +124,16 @@ public class MainActivity extends AppCompatActivity {
         FloatingActionButton myFab = (FloatingActionButton) findViewById(R.id.qr_fab);
         myFab.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                Log.e("FAB: ", "Clicked");
-                QRDialogueFragment QRFragment = new QRDialogueFragment();
+                final QRDialogueFragment QRFragment = new QRDialogueFragment();
                 QRFragment.show(fragmentManager, "fragment_qrdialogue");
             }
         });
+    }
+
+    public void onLogoutClick() {
+        SharedPreferencesUtility.setAuthToken(MainActivity.this, "");
+        Intent loginActivityIntent = new Intent(this, LoginActivity.class);
+        startActivity(loginActivityIntent);
+        finish();
     }
 }
