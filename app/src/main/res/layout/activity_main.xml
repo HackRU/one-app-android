@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/activity_main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <FrameLayout
+        android:id="@+id/content_frame"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/bottom_navigation" >
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/qr_fab"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:layout_gravity="bottom|end"
+            android:layout_marginBottom="24dp"
+            android:layout_marginEnd="24dp"
+            android:clickable="true"
+            android:focusable="true"
+            app:backgroundTint="?android:attr/colorPrimary"
+            app:fabSize="normal"
+            app:srcCompat="@drawable/ic_action_qrcode" />
+    </FrameLayout>
+
+    <android.support.design.widget.BottomNavigationView
+        android:id="@+id/bottom_navigation"
+        android:layout_alignParentBottom="true"
+        app:elevation="16dp"
+        android:background="@color/colorPrimary"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:layout_gravity="bottom"
+        app:itemBackground="?attr/colorPrimary"
+        app:itemIconTint="@drawable/selector_bottomnavigation_item"
+        app:itemTextColor="@drawable/selector_bottomnavigation_item"
+        app:menu="@menu/bottomnavigationmenu"
+        />
+</RelativeLayout>
