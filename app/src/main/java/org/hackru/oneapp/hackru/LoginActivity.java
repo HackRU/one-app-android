@@ -14,6 +14,7 @@ import android.widget.Toast;
 import org.hackru.oneapp.hackru.api.model.AuthorizeRequest;
 import org.hackru.oneapp.hackru.api.model.Login;
 import org.hackru.oneapp.hackru.api.service.HackRUService;
+import org.hackru.oneapp.hackru.utils.SharedPreferencesUtility;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;

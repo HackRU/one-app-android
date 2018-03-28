@@ -1,12 +1,11 @@
 package org.hackru.oneapp.hackru;
 
-import android.Manifest;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.Toast;
+
+import org.hackru.oneapp.hackru.utils.SharedPreferencesUtility;
 
 public class LauncherActivity extends AppCompatActivity {
     private Intent intent = null;
@@ -21,17 +20,6 @@ public class LauncherActivity extends AppCompatActivity {
             intent = new Intent(this, LoginActivity.class);
         } else { // If the user has logged in before (still waiting on validate from Heman)
             intent = new Intent(this, HackerActivity.class);
-        }
-
-        // TODO: FIX BUG WHERE APP CRASHES FROM INFINITE LOOP IF LOCATION PERMISSION IS DENIED
-        if(ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(LauncherActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 0);
-            while(true) {
-                if(ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                    break;
-                }
-                ActivityCompat.requestPermissions(LauncherActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 0);
-            }
         }
 
         new android.os.Handler().postDelayed(

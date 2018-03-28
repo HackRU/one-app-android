@@ -1,18 +1,17 @@
 package org.hackru.oneapp.hackru;
 
-import android.Manifest;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
+
+import org.hackru.oneapp.hackru.utils.SharedPreferencesUtility;
 
 public class HackerActivity extends AppCompatActivity implements QRDialogueFragment.OnLogoutClickListener {
     String TAG = "";
@@ -25,6 +24,7 @@ public class HackerActivity extends AppCompatActivity implements QRDialogueFragm
 
 
         /* ===== BOTTOM NAVIGATION ===== */
+        //TODO: Fix jitter on navigation change
         final FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction().add(R.id.content_frame, new TimerFragment(), "timer").commit(); // Adds the timer fragment when the app launches so it's displaying
 
@@ -35,7 +35,6 @@ public class HackerActivity extends AppCompatActivity implements QRDialogueFragm
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 bottomNavigationView.getMenu().findItem(R.id.menu_announcements).setChecked(false);
                 bottomNavigationView.getMenu().findItem(R.id.menu_event).setChecked(false);
-                bottomNavigationView.getMenu().findItem(R.id.menu_map).setChecked(false);
                 bottomNavigationView.getMenu().findItem(R.id.menu_timer).setChecked(false);
                 item.setChecked(true);
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
@@ -49,7 +48,6 @@ public class HackerActivity extends AppCompatActivity implements QRDialogueFragm
                         fragmentTransaction.add(R.id.content_frame, new TimerFragment(), "timer");
                     }
 
-                    if(fragmentManager.findFragmentByTag("map") !=null) {fragmentTransaction.hide(fragmentManager.findFragmentByTag("map"));}
                     if(fragmentManager.findFragmentByTag("events") !=null) {fragmentTransaction.hide(fragmentManager.findFragmentByTag("events"));}
                     if(fragmentManager.findFragmentByTag("announcements") !=null) {fragmentTransaction.hide(fragmentManager.findFragmentByTag("announcements"));}
                     fragmentTransaction.commit();
@@ -64,7 +62,6 @@ public class HackerActivity extends AppCompatActivity implements QRDialogueFragm
                         fragmentTransaction.add(R.id.content_frame, new AnnouncementsFragment(), "announcements");
                     }
 
-                    if(fragmentManager.findFragmentByTag("map") !=null) {fragmentTransaction.hide(fragmentManager.findFragmentByTag("map"));}
                     if(fragmentManager.findFragmentByTag("events") !=null) {fragmentTransaction.hide(fragmentManager.findFragmentByTag("events"));}
                     if(fragmentManager.findFragmentByTag("timer") !=null) {fragmentTransaction.hide(fragmentManager.findFragmentByTag("timer"));}
                     fragmentTransaction.commit();
@@ -78,26 +75,26 @@ public class HackerActivity extends AppCompatActivity implements QRDialogueFragm
                         fragmentTransaction.add(R.id.content_frame, new EventsFragment(), "events");
                     }
 
-                    if(fragmentManager.findFragmentByTag("map") !=null) {fragmentTransaction.hide(fragmentManager.findFragmentByTag("map"));}
-                    if(fragmentManager.findFragmentByTag("timer") !=null) {fragmentTransaction.hide(fragmentManager.findFragmentByTag("timer"));}
-                    if(fragmentManager.findFragmentByTag("announcements") !=null) {fragmentTransaction.hide(fragmentManager.findFragmentByTag("announcements"));}
-                    fragmentTransaction.commit();
-                    return true;
-                } else if(item.getItemId() == R.id.menu_map) {
-                    if(fragmentManager.findFragmentByTag("map")!=null) {
-                        // if the fragment exists, show it
-                        fragmentTransaction.show(fragmentManager.findFragmentByTag("map"));
-                    } else {
-                        // if the fragment does not exist yet, add it to the fragment manager
-                        fragmentTransaction.add(R.id.content_frame, new MapFragment(), "map");
-                    }
-
-                    if(fragmentManager.findFragmentByTag("events") !=null) {fragmentTransaction.hide(fragmentManager.findFragmentByTag("events"));}
                     if(fragmentManager.findFragmentByTag("timer") !=null) {fragmentTransaction.hide(fragmentManager.findFragmentByTag("timer"));}
                     if(fragmentManager.findFragmentByTag("announcements") !=null) {fragmentTransaction.hide(fragmentManager.findFragmentByTag("announcements"));}
                     fragmentTransaction.commit();
                     return true;
                 }
+//                else if(item.getItemId() == R.id.menu_map) {
+//                    if(fragmentManager.findFragmentByTag("map")!=null) {
+//                        // if the fragment exists, show it
+//                        fragmentTransaction.show(fragmentManager.findFragmentByTag("map"));
+//                    } else {
+//                        // if the fragment does not exist yet, add it to the fragment manager
+//                        fragmentTransaction.add(R.id.content_frame, new MapFragment(), "map");
+//                    }
+//
+//                    if(fragmentManager.findFragmentByTag("events") !=null) {fragmentTransaction.hide(fragmentManager.findFragmentByTag("events"));}
+//                    if(fragmentManager.findFragmentByTag("timer") !=null) {fragmentTransaction.hide(fragmentManager.findFragmentByTag("timer"));}
+//                    if(fragmentManager.findFragmentByTag("announcements") !=null) {fragmentTransaction.hide(fragmentManager.findFragmentByTag("announcements"));}
+//                    fragmentTransaction.commit();
+//                    return true;
+//                }
 
                 return false;
             }

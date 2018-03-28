@@ -1,4 +1,4 @@
-package org.hackru.oneapp.hackru;
+package org.hackru.oneapp.hackru.utils;
 
 import android.content.Context;
 import android.content.SharedPreferences;
