@@ -19,17 +19,23 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyA3oxkAOXvKa2pX38EFE2kS1wmYWpG8-tM" />
 
-        <activity android:name=".MainActivity">
-            <intent-filter>
-            <action android:name="android.intent.action.MAIN" />
-
-            <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+        <activity android:name=".HackerActivity">
         </activity>
+
         <activity
             android:name=".LoginActivity"
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
+
+        <activity android:name=".LauncherActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
     </application>
 
 </manifest>

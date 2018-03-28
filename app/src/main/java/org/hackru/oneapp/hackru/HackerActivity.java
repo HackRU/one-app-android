@@ -11,39 +11,20 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 
-public class MainActivity extends AppCompatActivity implements QRDialogueFragment.OnLogoutClickListener {
+public class HackerActivity extends AppCompatActivity implements QRDialogueFragment.OnLogoutClickListener {
     String TAG = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_hacker);
         // END BOILERPLATE CODE
 
-        if(SharedPreferencesUtility.getAuthToken(MainActivity.this).length() == 0) { // If the user has never logged in, make them log in
-            Intent loginActivityIntent = new Intent(this, LoginActivity.class);
-            startActivity(loginActivityIntent);
-            finish();
-        } else { // If the user has logged in before, validate their auth token
-            
-        }
 
-        // TODO: FIX BUG WHERE APP CRASHES FROM INFINITE LOOP IF LOCATION PERMISSION IS DENIED
-        if(ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 0);
-            while(true) {
-                if(ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                    break;
-                }
-                ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 0);
-            }
-        }
-
+        /* ===== BOTTOM NAVIGATION ===== */
         final FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction().add(R.id.content_frame, new TimerFragment(), "timer").commit(); // Adds the timer fragment when the app launches so it's displaying
 
@@ -121,6 +102,11 @@ public class MainActivity extends AppCompatActivity implements QRDialogueFragmen
                 return false;
             }
         });
+        /* ===== /BOTTOM NAVIGATION ===== */
+
+
+
+        /* ===== FLOATING ACTION BUTTON ===== */
         FloatingActionButton myFab = (FloatingActionButton) findViewById(R.id.qr_fab);
         myFab.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -128,10 +114,12 @@ public class MainActivity extends AppCompatActivity implements QRDialogueFragmen
                 QRFragment.show(fragmentManager, "fragment_qrdialogue");
             }
         });
+        /* ===== /FLOATING ACTION BUTTON ===== */
+
     }
 
     public void onLogoutClick() {
-        SharedPreferencesUtility.setAuthToken(MainActivity.this, "");
+        SharedPreferencesUtility.setAuthToken(HackerActivity.this, "");
         Intent loginActivityIntent = new Intent(this, LoginActivity.class);
         startActivity(loginActivityIntent);
         finish();

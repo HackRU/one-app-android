@@ -1,12 +1,9 @@
 package org.hackru.oneapp.hackru;
 
-import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,10 +37,10 @@ public class TimerFragment extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        progressBar = (ProgressBar) ((MainActivity)getActivity()).findViewById(R.id.progressBar);
-        timerCount = (TextView) ((MainActivity)getActivity()).findViewById(R.id.timerCount);
-        timerTitle = (TextView) ((MainActivity)getActivity()).findViewById(R.id.timerTitle);
-        endMessage = (TextView) ((MainActivity)getActivity()).findViewById(R.id.endMessage);
+        progressBar = (ProgressBar) ((HackerActivity)getActivity()).findViewById(R.id.progressBar);
+        timerCount = (TextView) ((HackerActivity)getActivity()).findViewById(R.id.timerCount);
+        timerTitle = (TextView) ((HackerActivity)getActivity()).findViewById(R.id.timerTitle);
+        endMessage = (TextView) ((HackerActivity)getActivity()).findViewById(R.id.endMessage);
         start();
     }
 

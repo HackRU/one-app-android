@@ -1,4 +1,4 @@
-package org.hackru.oneapp.hackru.api.Login;
+package org.hackru.oneapp.hackru.api.model;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;

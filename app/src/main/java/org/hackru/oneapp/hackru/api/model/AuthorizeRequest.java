@@ -1,4 +1,4 @@
-package org.hackru.oneapp.hackru.api.Login;
+package org.hackru.oneapp.hackru.api.model;
 
 /**
  * Created by Sean on 3/21/2018.

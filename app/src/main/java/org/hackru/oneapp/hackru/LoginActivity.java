@@ -11,9 +11,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import org.hackru.oneapp.hackru.api.Login.AuthorizeRequest;
-import org.hackru.oneapp.hackru.api.Login.Login;
-import org.hackru.oneapp.hackru.api.LoginService;
+import org.hackru.oneapp.hackru.api.model.AuthorizeRequest;
+import org.hackru.oneapp.hackru.api.model.Login;
+import org.hackru.oneapp.hackru.api.service.HackRUService;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -69,8 +69,8 @@ public class LoginActivity extends AppCompatActivity {
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 
-        LoginService loginService = retrofit.create(LoginService.class);
-        loginService.authorize(new AuthorizeRequest(email, password)).enqueue(new Callback<Login>() {
+        HackRUService hackRUService = retrofit.create(HackRUService.class);
+        hackRUService.authorize(new AuthorizeRequest(email, password)).enqueue(new Callback<Login>() {
             @Override
             public void onResponse(Call<Login> call, Response<Login> response) {
                 Log.i(TAG, "Post submitted to API!");
@@ -109,13 +109,13 @@ public class LoginActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        // Disable going back to the MainActivity
+        // Disable going back to the HackerActivity
         moveTaskToBack(true);
     }
 
     public void onLoginSuccess() {
         _loginButton.setEnabled(true);
-        Intent loginActivityIntent = new Intent(this, MainActivity.class);
+        Intent loginActivityIntent = new Intent(this, HackerActivity.class);
         startActivity(loginActivityIntent);
         finish();
     }
@@ -137,14 +137,14 @@ public class LoginActivity extends AppCompatActivity {
         String password = _passwordText.getText().toString();
 
         if (email.isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            _emailText.setError("enter a valid email address");
+            _emailText.setError("Enter a valid email address");
             valid = false;
         } else {
             _emailText.setError(null);
         }
 
         if (password.isEmpty() || password.length() < 4 || password.length() > 10) {
-            _passwordText.setError("between 4 and 10 alphanumeric characters");
+            _passwordText.setError("Between 4 and 10 alphanumeric characters");
             valid = false;
         } else {
             _passwordText.setError(null);

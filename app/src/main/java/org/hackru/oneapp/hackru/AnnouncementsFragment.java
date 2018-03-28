@@ -1,19 +1,13 @@
 package org.hackru.oneapp.hackru;
 
-import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.CountDownTimer;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ProgressBar;
-import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,7 +36,7 @@ public class AnnouncementsFragment extends Fragment {
 
         //Treat this as onCreate()
         announcementList = new ArrayList<>();
-        recyclerView = (RecyclerView) ((MainActivity)getActivity()).findViewById(R.id.recyclerView);
+        recyclerView = (RecyclerView) ((HackerActivity)getActivity()).findViewById(R.id.recyclerView);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity())); //getActivity() should get the activity's context? Instead of arguing "this"
 
