@@ -19,7 +19,7 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyA3oxkAOXvKa2pX38EFE2kS1wmYWpG8-tM" />
 
-        <activity android:name=".HackerActivity">
+        <activity android:name=".MainActivity">
         </activity>
 
         <activity

@@ -76,7 +76,6 @@ public class LoginActivity extends AppCompatActivity {
             public void onResponse(Call<Login> call, Response<Login> response) {
                 Log.i(TAG, "Post submitted to API!");
                 if(response.body().getStatusCode() == 200) {
-                    // TODO: USE GSON TO PARSE THIS STRING FOR THE AUTH TOKEN SO IT'S FUTURE-PROOF
                     String body = response.body().getBody();
                     String token = body.substring(body.indexOf("token")+9, body.indexOf(',')-1);
                     SharedPreferencesUtility.setAuthToken(LoginActivity.this, token);
@@ -110,13 +109,13 @@ public class LoginActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        // Disable going back to the HackerActivity
+        // Disable going back to the MainActivity
         moveTaskToBack(true);
     }
 
     public void onLoginSuccess() {
         _loginButton.setEnabled(true);
-        Intent loginActivityIntent = new Intent(this, HackerActivity.class);
+        Intent loginActivityIntent = new Intent(this, MainActivity.class);
         startActivity(loginActivityIntent);
         finish();
     }

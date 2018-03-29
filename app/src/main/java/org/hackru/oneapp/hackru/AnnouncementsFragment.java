@@ -36,7 +36,7 @@ public class AnnouncementsFragment extends Fragment {
 
         //Treat this as onCreate()
         announcementList = new ArrayList<>();
-        recyclerView = (RecyclerView) ((HackerActivity)getActivity()).findViewById(R.id.recyclerView);
+        recyclerView = (RecyclerView) ((MainActivity)getActivity()).findViewById(R.id.recyclerView);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity())); //getActivity() should get the activity's context? Instead of arguing "this"
 

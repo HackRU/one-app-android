@@ -3,7 +3,9 @@ package org.hackru.oneapp.hackru;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
-import android.support.design.widget.FloatingActionButton;
+//import android.support.design.widget.FloatingActionButton;
+import com.github.clans.fab.FloatingActionMenu;
+import com.github.clans.fab.FloatingActionButton;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
@@ -13,13 +15,16 @@ import android.view.View;
 
 import org.hackru.oneapp.hackru.utils.SharedPreferencesUtility;
 
-public class HackerActivity extends AppCompatActivity implements QRDialogueFragment.OnLogoutClickListener {
+public class MainActivity extends AppCompatActivity implements QRDialogueFragment.OnLogoutClickListener {
     String TAG = "";
+
+    FloatingActionMenu fabMenu;
+    FloatingActionButton fabMap, fabQR, fabScanner;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_hacker);
+        setContentView(R.layout.activity_main);
         // END BOILERPLATE CODE
 
 
@@ -80,21 +85,6 @@ public class HackerActivity extends AppCompatActivity implements QRDialogueFragm
                     fragmentTransaction.commit();
                     return true;
                 }
-//                else if(item.getItemId() == R.id.menu_map) {
-//                    if(fragmentManager.findFragmentByTag("map")!=null) {
-//                        // if the fragment exists, show it
-//                        fragmentTransaction.show(fragmentManager.findFragmentByTag("map"));
-//                    } else {
-//                        // if the fragment does not exist yet, add it to the fragment manager
-//                        fragmentTransaction.add(R.id.content_frame, new MapFragment(), "map");
-//                    }
-//
-//                    if(fragmentManager.findFragmentByTag("events") !=null) {fragmentTransaction.hide(fragmentManager.findFragmentByTag("events"));}
-//                    if(fragmentManager.findFragmentByTag("timer") !=null) {fragmentTransaction.hide(fragmentManager.findFragmentByTag("timer"));}
-//                    if(fragmentManager.findFragmentByTag("announcements") !=null) {fragmentTransaction.hide(fragmentManager.findFragmentByTag("announcements"));}
-//                    fragmentTransaction.commit();
-//                    return true;
-//                }
 
                 return false;
             }
@@ -104,11 +94,31 @@ public class HackerActivity extends AppCompatActivity implements QRDialogueFragm
 
 
         /* ===== FLOATING ACTION BUTTON ===== */
-        FloatingActionButton myFab = (FloatingActionButton) findViewById(R.id.qr_fab);
-        myFab.setOnClickListener(new View.OnClickListener() {
+        //TODO: Make FAB appear above the fragments
+        fabMenu = (FloatingActionMenu) findViewById(R.id.fabMenu);
+        fabMap = (FloatingActionButton) findViewById(R.id.fabMap);
+        fabQR = (FloatingActionButton) findViewById(R.id.fabQR);
+        fabScanner = (FloatingActionButton) findViewById(R.id.fabScanner);
+
+        fabMap.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
+                fabMenu.close(true);
+                //someshit
+
+            }
+        });
+        fabQR.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                fabMenu.close(true);
                 final QRDialogueFragment QRFragment = new QRDialogueFragment();
                 QRFragment.show(fragmentManager, "fragment_qrdialogue");
+            }
+        });
+        fabScanner.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                fabMenu.close(true);
+                //someshit
+
             }
         });
         /* ===== /FLOATING ACTION BUTTON ===== */
@@ -116,7 +126,7 @@ public class HackerActivity extends AppCompatActivity implements QRDialogueFragm
     }
 
     public void onLogoutClick() {
-        SharedPreferencesUtility.setAuthToken(HackerActivity.this, "");
+        SharedPreferencesUtility.setAuthToken(MainActivity.this, "");
         Intent loginActivityIntent = new Intent(this, LoginActivity.class);
         startActivity(loginActivityIntent);
         finish();

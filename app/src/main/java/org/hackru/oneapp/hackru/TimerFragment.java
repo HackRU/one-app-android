@@ -37,10 +37,10 @@ public class TimerFragment extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        progressBar = (ProgressBar) ((HackerActivity)getActivity()).findViewById(R.id.progressBar);
-        timerCount = (TextView) ((HackerActivity)getActivity()).findViewById(R.id.timerCount);
-        timerTitle = (TextView) ((HackerActivity)getActivity()).findViewById(R.id.timerTitle);
-        endMessage = (TextView) ((HackerActivity)getActivity()).findViewById(R.id.endMessage);
+        progressBar = (ProgressBar) ((MainActivity)getActivity()).findViewById(R.id.progressBar);
+        timerCount = (TextView) ((MainActivity)getActivity()).findViewById(R.id.timerCount);
+        timerTitle = (TextView) ((MainActivity)getActivity()).findViewById(R.id.timerTitle);
+        endMessage = (TextView) ((MainActivity)getActivity()).findViewById(R.id.endMessage);
         start();
     }
 

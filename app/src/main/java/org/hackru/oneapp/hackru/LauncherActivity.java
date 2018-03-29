@@ -19,7 +19,7 @@ public class LauncherActivity extends AppCompatActivity {
         if(SharedPreferencesUtility.getAuthToken(LauncherActivity.this).length() == 0) { // If the user has never logged in, make them log in
             intent = new Intent(this, LoginActivity.class);
         } else { // If the user has logged in before (still waiting on validate from Heman)
-            intent = new Intent(this, HackerActivity.class);
+            intent = new Intent(this, MainActivity.class);
         }
 
         new android.os.Handler().postDelayed(
