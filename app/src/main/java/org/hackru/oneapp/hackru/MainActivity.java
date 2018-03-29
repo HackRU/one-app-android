@@ -1,6 +1,7 @@
 package org.hackru.oneapp.hackru;
 
 import android.content.Intent;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 //import android.support.design.widget.FloatingActionButton;
@@ -94,11 +95,13 @@ public class MainActivity extends AppCompatActivity implements QRDialogueFragmen
 
 
         /* ===== FLOATING ACTION BUTTON ===== */
-        //TODO: Make FAB appear above the fragments
+        //TODO: Fix buggy closing animation when timer fragment is selected
         fabMenu = (FloatingActionMenu) findViewById(R.id.fabMenu);
         fabMap = (FloatingActionButton) findViewById(R.id.fabMap);
         fabQR = (FloatingActionButton) findViewById(R.id.fabQR);
         fabScanner = (FloatingActionButton) findViewById(R.id.fabScanner);
+
+        fabMenu.setClosedOnTouchOutside(true);
 
         fabMap.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {

@@ -6,16 +6,25 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/bottom_navigation">
+
+
+
     <FrameLayout
         android:id="@+id/content_frame"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_above="@+id/bottom_navigation" >
+        android:layout_height="match_parent">
+    </FrameLayout>
 
         <com.github.clans.fab.FloatingActionMenu
             android:id="@+id/fabMenu"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignBottom="@+id/content_frame"
+            android:layout_alignRight="@+id/content_frame"
             android:layout_gravity="bottom|right"
             android:layout_marginBottom="24dp"
             android:layout_marginRight="24dp"
@@ -54,7 +63,7 @@
                 fab:fab_label="Scanner"
                 fab:fab_size="mini" />
         </com.github.clans.fab.FloatingActionMenu>
-    </FrameLayout>
+    </RelativeLayout>
 
     <android.support.design.widget.BottomNavigationView
         android:id="@+id/bottom_navigation"

@@ -12,16 +12,6 @@
     android:orientation="vertical"
     android:background="@color/colorPrimary">
 
-    <TextView
-        android:id="@+id/lable_ticket"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginBottom="20dp"
-        android:text="Your ticket"
-        android:textAppearance="@style/TextAppearance.AppCompat.Headline"
-        android:textColor="@color/colorAccent"/>
-
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="250dp"
