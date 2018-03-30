@@ -15,7 +15,6 @@ import org.hackru.oneapp.hackru.utils.SharedPreferencesUtility;
 
 public class QRDialogueFragment extends DialogFragment {
 
-    private EditText mEditText;
     OnLogoutClickListener mListener;
 
     public QRDialogueFragment() {

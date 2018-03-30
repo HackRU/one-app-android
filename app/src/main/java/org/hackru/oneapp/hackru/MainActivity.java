@@ -1,7 +1,6 @@
 package org.hackru.oneapp.hackru;
 
 import android.content.Intent;
-import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 //import android.support.design.widget.FloatingActionButton;
@@ -27,7 +26,6 @@ public class MainActivity extends AppCompatActivity implements QRDialogueFragmen
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         // END BOILERPLATE CODE
-
 
         /* ===== BOTTOM NAVIGATION ===== */
         //TODO: Fix jitter on navigation change
@@ -103,25 +101,26 @@ public class MainActivity extends AppCompatActivity implements QRDialogueFragmen
 
         fabMenu.setClosedOnTouchOutside(true);
 
+        final QRDialogueFragment QRFragment = new QRDialogueFragment();
+        final MapDialogueFragment mapFragment = new MapDialogueFragment();
+        final ScannerDialogueFragment scannerFragment = new ScannerDialogueFragment();
+
         fabMap.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 fabMenu.close(true);
-                //someshit
-
+                mapFragment.show(fragmentManager, "fragment_mapdialogue");
             }
         });
         fabQR.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 fabMenu.close(true);
-                final QRDialogueFragment QRFragment = new QRDialogueFragment();
                 QRFragment.show(fragmentManager, "fragment_qrdialogue");
             }
         });
         fabScanner.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 fabMenu.close(true);
-                //someshit
-
+                scannerFragment.show(fragmentManager, "fragment_scannerdialogue");
             }
         });
         /* ===== /FLOATING ACTION BUTTON ===== */
