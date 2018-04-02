@@ -1,5 +1,6 @@
 package org.hackru.oneapp.hackru;
 
+import org.hackru.oneapp.hackru.api.model.Announcement;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.text.Layout;
@@ -37,8 +38,9 @@ public class AnnouncementAdapter extends RecyclerView.Adapter<AnnouncementAdapte
     @Override
     public void onBindViewHolder(AnnouncementViewHolder holder, int position) {
         Announcement announcement = announcementList.get(position);
-        holder.date.setText(announcement.getDate());
-        holder.message.setText(announcement.getMessage());
+        holder.date.setText(announcement.getUser().getFirstName() +
+                " " + announcement.getUser().getLastName());
+        holder.message.setText(announcement.getText());
     }
 
     @Override

@@ -12,7 +12,6 @@ public class Announcement {
     @Expose
     private String text;
 
-
     public User getUser() {
         return user;
     }
