@@ -20,13 +20,26 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import org.hackru.oneapp.hackru.api.model.Announcement;
+import org.hackru.oneapp.hackru.api.model.Event;
+import org.hackru.oneapp.hackru.api.service.HackRUService;
+
+import java.io.IOException;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+
 public class EventsFragment extends Fragment{
+
+    final String BASE_URL = "https://m7cwj1fy7c.execute-api.us-west-2.amazonaws.com/mlhtest/";
 
     public EventsFragment() {
         // Required empty public constructor
@@ -46,18 +59,23 @@ public class EventsFragment extends Fragment{
         // Get a reference for the week view in the layout.
         WeekView mWeekView = (WeekView)view.findViewById(R.id.weekView);
 
-// Set an action when any event is clicked.
+        // Set an action when any event is clicked.
         //mWeekView.setOnEventClickListener(mEventClickListener);
 
-// The week view has infinite scrolling horizontally. We have to provide the events of a
-// month every time the month changes on the week view.
+        // The week view has infinite scrolling horizontally. We have to provide the events of a
+        // month every time the month changes on the week view.
 
-// Set long press listener for events.
+        // Set long press listener for events.
         //mWeekView.setEventLongPressListener(mEventLongPressListener);
 
         MonthLoader.MonthChangeListener mMonthChangeListener = new MonthLoader.MonthChangeListener() {
             @Override
             public List<WeekViewEvent> onMonthChange(int newYear, int newMonth) {
+                //Fetch the events from LCS
+                //Just need to figure out what to do with this now...
+                List<Event> fetchedEvents = getEvents();
+
+
                 // Populate the week view with some events.
                 List<WeekViewEvent> events = new ArrayList<WeekViewEvent>();
 
@@ -152,7 +170,6 @@ public class EventsFragment extends Fragment{
                 events.add(event);
 
 
-
                 return events;
             }
         };
@@ -174,5 +191,31 @@ public class EventsFragment extends Fragment{
 
     protected String getEventTitle(Calendar time) {
         return String.format("Event of %02d:%02d %s/%d", time.get(Calendar.HOUR_OF_DAY), time.get(Calendar.MINUTE), time.get(Calendar.MONTH)+1, time.get(Calendar.DAY_OF_MONTH));
+    }
+
+    public List<Event> getEvents() {
+        //Fetch Events
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        HackRUService hackRUService = retrofit.create(HackRUService.class);
+        Call<List<Event>> getEvents = hackRUService.getEvents();
+        List<Event> eventsList = null;
+        try {
+            Response<List<Event>> response = getEvents.execute();
+            eventsList = response.body();
+            Log.i("Announcements", "Get request successful");
+            for(Event e : eventsList) {
+                Log.i("Annc.", e.toString());
+            }
+
+        } catch (IOException e) {
+            Log.i("Announcements", "Bad response");
+            e.printStackTrace();
+        }
+
+        return eventsList;
     }
 }

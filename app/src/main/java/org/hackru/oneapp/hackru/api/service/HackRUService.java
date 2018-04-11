@@ -2,6 +2,7 @@ package org.hackru.oneapp.hackru.api.service;
 
 import org.hackru.oneapp.hackru.api.model.Announcement;
 import org.hackru.oneapp.hackru.api.model.AuthorizeRequest;
+import org.hackru.oneapp.hackru.api.model.Event;
 import org.hackru.oneapp.hackru.api.model.Login;
 
 import java.util.List;
@@ -21,4 +22,7 @@ public interface HackRUService {
 
     @GET("announcements")
     Call<List<Announcement>> getAnnouncements();
+
+    @GET("events")
+    Call<List<Event>> getEvents();
 }
