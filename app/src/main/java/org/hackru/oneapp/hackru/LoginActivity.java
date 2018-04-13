@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.hackru.oneapp.hackru.api.model.AuthorizeRequest;
@@ -30,6 +31,7 @@ public class LoginActivity extends AppCompatActivity {
     @BindView(R.id.input_email) EditText _emailText;
     @BindView(R.id.input_password) EditText _passwordText;
     @BindView(R.id.btn_login) Button _loginButton;
+    @BindView(R.id.link_mlh) TextView _mlhLink;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -37,11 +39,20 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
         ButterKnife.bind(this);
 
+        // So that focus doesn't default to the first edittext
+        findViewById(R.id.main_layout).requestFocus();
+
         _loginButton.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
                 login();
+            }
+        });
+        _mlhLink.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                loginMLH();
             }
         });
     }
@@ -107,6 +118,11 @@ public class LoginActivity extends AppCompatActivity {
 //                }, 1000);
     }
 
+    public void loginMLH() {
+        startActivity(new Intent(this, MLHLoginActivity.class));
+        finish();
+    }
+
     @Override
     public void onBackPressed() {
         // Disable going back to the MainActivity
@@ -115,8 +131,7 @@ public class LoginActivity extends AppCompatActivity {
 
     public void onLoginSuccess() {
         _loginButton.setEnabled(true);
-        Intent loginActivityIntent = new Intent(this, MainActivity.class);
-        startActivity(loginActivityIntent);
+        startActivity(new Intent(this, MainActivity.class));
         finish();
     }
 
