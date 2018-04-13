@@ -21,8 +21,10 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import org.hackru.oneapp.hackru.api.model.Announcement;
+import org.hackru.oneapp.hackru.api.model.AuthTokenRequest;
 import org.hackru.oneapp.hackru.api.model.Event;
 import org.hackru.oneapp.hackru.api.service.HackRUService;
+import org.hackru.oneapp.hackru.utils.SharedPreferencesUtility;
 
 import java.io.IOException;
 import java.text.DateFormat;
@@ -201,7 +203,8 @@ public class EventsFragment extends Fragment{
                 .build();
 
         HackRUService hackRUService = retrofit.create(HackRUService.class);
-        Call<List<Event>> getEvents = hackRUService.getEvents();
+        final String authToken = SharedPreferencesUtility.getAuthToken(getActivity());
+        Call<List<Event>> getEvents = hackRUService.getEvents(new AuthTokenRequest(authToken));
         List<Event> eventsList = null;
         try {
             Response<List<Event>> response = getEvents.execute();
