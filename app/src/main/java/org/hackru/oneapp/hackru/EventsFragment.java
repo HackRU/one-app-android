@@ -21,10 +21,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import org.hackru.oneapp.hackru.api.model.Announcement;
-import org.hackru.oneapp.hackru.api.model.AuthTokenRequest;
 import org.hackru.oneapp.hackru.api.model.Event;
 import org.hackru.oneapp.hackru.api.service.HackRUService;
-import org.hackru.oneapp.hackru.utils.SharedPreferencesUtility;
 
 import java.io.IOException;
 import java.text.DateFormat;
@@ -61,6 +59,10 @@ public class EventsFragment extends Fragment{
         // Get a reference for the week view in the layout.
         WeekView mWeekView = (WeekView)view.findViewById(R.id.weekView);
 
+        //Fetch the events from LCS
+        //Just need to figure out what to do with this now...
+        getEvents();
+
         // Set an action when any event is clicked.
         //mWeekView.setOnEventClickListener(mEventClickListener);
 
@@ -73,9 +75,7 @@ public class EventsFragment extends Fragment{
         MonthLoader.MonthChangeListener mMonthChangeListener = new MonthLoader.MonthChangeListener() {
             @Override
             public List<WeekViewEvent> onMonthChange(int newYear, int newMonth) {
-                //Fetch the events from LCS
-                //Just need to figure out what to do with this now...
-                List<Event> fetchedEvents = getEvents();
+
 
 
                 // Populate the week view with some events.
@@ -195,7 +195,7 @@ public class EventsFragment extends Fragment{
         return String.format("Event of %02d:%02d %s/%d", time.get(Calendar.HOUR_OF_DAY), time.get(Calendar.MINUTE), time.get(Calendar.MONTH)+1, time.get(Calendar.DAY_OF_MONTH));
     }
 
-    public List<Event> getEvents() {
+    public void getEvents() {
         //Fetch Events
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(BASE_URL)
@@ -203,22 +203,33 @@ public class EventsFragment extends Fragment{
                 .build();
 
         HackRUService hackRUService = retrofit.create(HackRUService.class);
-        final String authToken = SharedPreferencesUtility.getAuthToken(getActivity());
-        Call<List<Event>> getEvents = hackRUService.getEvents(new AuthTokenRequest(authToken));
-        List<Event> eventsList = null;
-        try {
-            Response<List<Event>> response = getEvents.execute();
-            eventsList = response.body();
-            Log.i("Announcements", "Get request successful");
-            for(Event e : eventsList) {
-                Log.i("Annc.", e.toString());
+        Call<List<Event>> getEvents = hackRUService.getEvents();
+        getEvents.enqueue(new Callback<List<Event>>() {
+            @Override
+            public void onResponse(Call<List<Event>> call, Response<List<Event>> response) {
+                if (response.isSuccessful()) {
+                    Log.i("Events", "Get request successful");
+                    List<Event> fetchedEventsList = response.body();
+                    for (Event e : fetchedEventsList) {
+                        Log.i("Event.", e.toString());
+                    }
+
+                    //Since this is an inner class and the result is returned asynchronously,
+                    //it's easier to call a method that updates the UI from here
+                    updateEvents(fetchedEventsList);
+                } else {
+                    Log.i("Events", "Bad response");
+                }
             }
 
-        } catch (IOException e) {
-            Log.i("Announcements", "Bad response");
-            e.printStackTrace();
-        }
+            @Override
+            public void onFailure(Call<List<Event>> call, Throwable t) {
+                Log.i("Events", "Get request failed");
+            }
+        });
+    }
 
-        return eventsList;
+    public void updateEvents(List<Event> events) {
+        //Do something to update calendar once events are fetched
     }
 }

@@ -1,10 +1,7 @@
 package org.hackru.oneapp.hackru;
 
 import org.hackru.oneapp.hackru.api.model.Announcement;
-import org.hackru.oneapp.hackru.api.model.AuthTokenRequest;
-import org.hackru.oneapp.hackru.api.model.AuthorizeRequest;
 import org.hackru.oneapp.hackru.api.service.HackRUService;
-import org.hackru.oneapp.hackru.utils.SharedPreferencesUtility;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -56,6 +53,7 @@ public class AnnouncementsFragment extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity())); //getActivity() should get the activity's context? Instead of arguing "this"
         updateCards();
 
+
         //Fetch Announcements
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(BASE_URL)
@@ -63,10 +61,7 @@ public class AnnouncementsFragment extends Fragment {
                 .build();
 
         HackRUService hackRUService = retrofit.create(HackRUService.class);
-        final String authToken = SharedPreferencesUtility.getAuthToken(getActivity());
-        Log.i("Auth_token", authToken);
-        Call<List<Announcement>> getAnnouncements = hackRUService
-                .getAnnouncements(new AuthTokenRequest(authToken));
+        Call<List<Announcement>> getAnnouncements = hackRUService.getAnnouncements();
         getAnnouncements.enqueue(new Callback<List<Announcement>>() {
 
             @Override
