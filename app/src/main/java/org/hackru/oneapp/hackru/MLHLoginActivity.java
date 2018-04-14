@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.webkit.CookieManager;
 import android.webkit.WebView;
@@ -20,6 +21,8 @@ public class MLHLoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_mlhlogin);
+
+        setTitle("MLH Login");
 
         final WebView myWebView = (WebView) findViewById(R.id.webview);
 

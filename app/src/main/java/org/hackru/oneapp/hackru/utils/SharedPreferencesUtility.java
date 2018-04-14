@@ -11,6 +11,7 @@ import android.preference.PreferenceManager;
 public class SharedPreferencesUtility {
     static final String PREF_AUTH_TOKEN= "authtoken";
     static final String PREF_EMAIL= "email";
+    static final String PREF_PERMISSION= "permission";
 
     static SharedPreferences getSharedPreferences(Context ctx) {
         return PreferenceManager.getDefaultSharedPreferences(ctx);
@@ -34,5 +35,16 @@ public class SharedPreferencesUtility {
 
     public static String getEmail(Context ctx) {
         return getSharedPreferences(ctx).getString(PREF_EMAIL, "");
+    }
+
+    // Permission: True means they can use the scanner, false means they cannot
+    public static void setPermission(Context ctx, Boolean permission) {
+        SharedPreferences.Editor editor = getSharedPreferences(ctx).edit();
+        editor.putBoolean(PREF_PERMISSION, permission);
+        editor.commit();
+    }
+
+    public static boolean getPermission(Context ctx) {
+        return getSharedPreferences(ctx).getBoolean(PREF_PERMISSION, false);
     }
 }
