@@ -15,8 +15,6 @@ import org.hackru.oneapp.hackru.utils.SharedPreferencesUtility;
 
 public class QRDialogueFragment extends DialogFragment {
 
-    OnLogoutClickListener mListener;
-
     public QRDialogueFragment() {
         // Empty constructor is required for DialogFragment
         // Make sure not to add arguments to the constructor
@@ -35,28 +33,5 @@ public class QRDialogueFragment extends DialogFragment {
 
         TextView userEmail = (TextView) getView().findViewById(R.id.userEmail);
         userEmail.setText(SharedPreferencesUtility.getEmail(getActivity()));
-
-        Button logoutButton = (Button) getView().findViewById(R.id.logoutButton);
-        logoutButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mListener.onLogoutClick();
-            }
-        });
     }
-
-    public interface OnLogoutClickListener {
-        public void onLogoutClick();
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        try {
-            mListener = (OnLogoutClickListener) context;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(context.toString() + " must implement OnArticleSelectedListener");
-        }
-    }
-
 }

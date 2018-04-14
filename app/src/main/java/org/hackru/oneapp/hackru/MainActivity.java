@@ -1,5 +1,6 @@
 package org.hackru.oneapp.hackru;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
@@ -12,6 +13,7 @@ import com.google.gson.JsonObject;
 
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -30,7 +32,7 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class MainActivity extends AppCompatActivity implements QRDialogueFragment.OnLogoutClickListener {
+public class MainActivity extends AppCompatActivity {
     String TAG = "MainActivity";
 
     FloatingActionMenu fabMenu;
@@ -158,10 +160,24 @@ public class MainActivity extends AppCompatActivity implements QRDialogueFragmen
         final MapDialogueFragment mapFragment = new MapDialogueFragment();
         final ScannerDialogueFragment scannerFragment = new ScannerDialogueFragment();
 
+
+
         fabLogout.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 fabMenu.close(true);
-                onLogoutClick();
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this, R.style.AppTheme_Dialogue_Alert);
+                builder.setMessage("Are you sure you want to logout?")
+                        .setPositiveButton("Logout", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                onLogoutClick();
+                            }
+                        })
+                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                // User cancelled the dialog
+                            }
+                        }).create().show();
             }
         });
         fabMap.setOnClickListener(new View.OnClickListener() {
