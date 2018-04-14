@@ -38,8 +38,7 @@ public class AnnouncementAdapter extends RecyclerView.Adapter<AnnouncementAdapte
     @Override
     public void onBindViewHolder(AnnouncementViewHolder holder, int position) {
         Announcement announcement = announcementList.get(position);
-        holder.date.setText(announcement.getUser().getFirstName() +
-                " " + announcement.getUser().getLastName());
+        holder.date.setText(announcement.getUser());
         holder.message.setText(announcement.getText());
     }
 

@@ -1,6 +1,7 @@
 package org.hackru.oneapp.hackru.api.service;
 
 import org.hackru.oneapp.hackru.api.model.Announcement;
+import org.hackru.oneapp.hackru.api.model.AnnouncementsResponse;
 import org.hackru.oneapp.hackru.api.model.AuthorizeRequest;
 import org.hackru.oneapp.hackru.api.model.Event;
 import org.hackru.oneapp.hackru.api.model.Login;
@@ -20,8 +21,8 @@ public interface HackRUService {
     @POST("authorize")
     Call<Login> authorize(@Body AuthorizeRequest body);
 
-    @GET("announcements")
-    Call<List<Announcement>> getAnnouncements();
+    @GET("dayof-slack")
+    Call<AnnouncementsResponse> getAnnouncements();
 
     @GET("events")
     Call<List<Event>> getEvents();
