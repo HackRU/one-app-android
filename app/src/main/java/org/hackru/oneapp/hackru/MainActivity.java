@@ -56,10 +56,11 @@ public class MainActivity extends AppCompatActivity implements QRDialogueFragmen
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 if(response.body().get("statusCode").getAsInt() == 200) {
-                    Log.i(TAG, "Permission post submitted to API!");
+                    Log.e(TAG, "Permission post submitted to API!");
                     JsonObject body = response.body();
                     if(body.getAsJsonArray("body").get(0).getAsJsonObject().get("role").getAsJsonObject().get("organizer").getAsBoolean() || body.getAsJsonArray("body").get(0).getAsJsonObject().get("role").getAsJsonObject().get("director").getAsBoolean()) {
                         SharedPreferencesUtility.setPermission(MainActivity.this, true);
+                        fabScanner.setVisibility(View.VISIBLE);
                     }
                 } else {
                     Toast.makeText(getBaseContext(), "Unable to assess scanner permissions", Toast.LENGTH_LONG).show();
@@ -147,8 +148,8 @@ public class MainActivity extends AppCompatActivity implements QRDialogueFragmen
         fabQR = (FloatingActionButton) findViewById(R.id.fabQR);
         fabScanner = (FloatingActionButton) findViewById(R.id.fabScanner);
 
-        if(!SharedPreferencesUtility.getPermission(this)) {
-            fabScanner.setVisibility(View.GONE);
+        if(SharedPreferencesUtility.getPermission(this)) {
+            fabScanner.setVisibility(View.VISIBLE);
         }
 
         fabMenu.setClosedOnTouchOutside(true);
