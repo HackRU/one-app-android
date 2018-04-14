@@ -1,6 +1,7 @@
 package org.hackru.oneapp.hackru;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -10,6 +11,7 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
 import org.hackru.oneapp.hackru.api.model.Login;
+import org.hackru.oneapp.hackru.utils.SharedPreferencesUtility;
 
 public class MLHLoginActivity extends AppCompatActivity {
     String TAG = "WEBVIEW";
@@ -44,7 +46,7 @@ public class MLHLoginActivity extends AppCompatActivity {
 
         //Webview redirect logic
         myWebView.setWebViewClient(new WebViewClient() {
-            //TODO: Get this working if the stutter is an issue or there is time
+            //TODO: Get this working if the stutter is an issue or there is time to implement
 //            @Override
 //            public void onPageStarted(WebView view, String url, Bitmap favicon){
 //                myWebView.loadUrl(
@@ -73,9 +75,16 @@ public class MLHLoginActivity extends AppCompatActivity {
                     String json = test.substring(test.indexOf("authdata=")+9);
 
                     Log.e(TAG, json);
-                    return false;
+//                    String token = json.substring(json.indexOf("token"), json.indexOf("\","));
+//                    String email = json.substring(json.indexOf("email")+9, json.indexOf("\"}}"));
+                    String token = json.substring(json.indexOf("token")+9, json.indexOf(",")-1);
+                    String email = json.substring(json.indexOf("email")+9, json.indexOf("}}")-1);
+                    Log.e(TAG, token);
+                    Log.e(TAG, email);
+
+                    onLoginSuccess(email, token);
+                    return true;
                 } else {
-                    Log.e(TAG, "NOT THE PAGE WE'RE LOOKING FOR...");
                     return false;
                 }
             }
@@ -95,6 +104,13 @@ public class MLHLoginActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         startActivity(new Intent(this, LoginActivity.class));
+        finish();
+    }
+
+    public void onLoginSuccess(String email, String token) {
+        SharedPreferencesUtility.setEmail(this, email);
+        SharedPreferencesUtility.setAuthToken(this, token);
+        startActivity(new Intent(this, MainActivity.class));
         finish();
     }
 }
