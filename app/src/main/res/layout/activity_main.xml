@@ -34,6 +34,16 @@
             >
 
             <com.github.clans.fab.FloatingActionButton
+                android:id="@+id/fabLogout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_logout_white_24dp"
+                app:fab_colorNormal="@color/colorPrimary"
+                app:fab_colorPressed="@color/colorPrimary"
+                fab:fab_label="Logout"
+                fab:fab_size="mini" />
+
+            <com.github.clans.fab.FloatingActionButton
                 android:id="@+id/fabMap"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
