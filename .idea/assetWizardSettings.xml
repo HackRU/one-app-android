@@ -28,9 +28,10 @@
                         </option>
                         <option name="values">
                           <map>
+                            <entry key="assetSourceType" value="FILE" />
                             <entry key="color" value="ffffff" />
                             <entry key="outputName" value="ic_logout_white_24dp" />
-                            <entry key="sourceFile" value="C:\Users\Administrator" />
+                            <entry key="sourceFile" value="C:\Users\Administrator\Downloads\exit.svg" />
                           </map>
                         </option>
                       </PersistentState>
