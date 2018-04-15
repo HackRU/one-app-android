@@ -43,7 +43,7 @@
         <activity
             android:name=".BarcodeCaptureActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.Dialogue.Activity"></activity>
     </application>
 
 </manifest>

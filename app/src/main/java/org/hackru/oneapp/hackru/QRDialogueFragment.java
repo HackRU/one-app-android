@@ -55,4 +55,10 @@ public class QRDialogueFragment extends DialogFragment {
 //                .load(storageRef)
 //                .into(imageView);
     }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        Log.e(TAG, "DESTROYED");
+    }
 }

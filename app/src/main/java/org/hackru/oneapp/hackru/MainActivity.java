@@ -212,40 +212,42 @@ public class MainActivity extends AppCompatActivity {
         /* ===== /FIREBASE STUFF ===== */
 
         /* ===== SET PERMISSIONS ===== */
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("https://m7cwj1fy7c.execute-api.us-west-2.amazonaws.com/mlhtest/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-        HackRUService hackRUService = retrofit.create(HackRUService.class);
-        String email = SharedPreferencesUtility.getEmail(this);
-        ReadRequest request = new ReadRequest(email);
-        hackRUService.read(request).enqueue(new Callback<JsonObject>() {
-            @Override
-            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
-                if(response.body().get("statusCode").getAsInt() == 200) {
-                    Log.i(TAG, "Permission post submitted to API!");
-                    JsonObject body = response.body();
-                    boolean enabled = body.getAsJsonArray("body").get(0).getAsJsonObject().get("role").getAsJsonObject().get("organizer").getAsBoolean() || body.getAsJsonArray("body").get(0).getAsJsonObject().get("role").getAsJsonObject().get("director").getAsBoolean();
-                    if(enabled) {
-                        SharedPreferencesUtility.setPermission(MainActivity.this, true);
-                        if(fabMenu.isOpened()) {
-                            fabScanner.setVisibility(View.VISIBLE);
+        if (!SharedPreferencesUtility.getPermission(MainActivity.this)) {
+            Retrofit retrofit = new Retrofit.Builder()
+                    .baseUrl("https://m7cwj1fy7c.execute-api.us-west-2.amazonaws.com/mlhtest/")
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build();
+            HackRUService hackRUService = retrofit.create(HackRUService.class);
+            String email = SharedPreferencesUtility.getEmail(this);
+            ReadRequest request = new ReadRequest(email);
+            hackRUService.read(request).enqueue(new Callback<JsonObject>() {
+                @Override
+                public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                    if(response.body().get("statusCode").getAsInt() == 200) {
+                        Log.i(TAG, "Permission post submitted to API!");
+                        JsonObject body = response.body();
+                        boolean enabled = body.getAsJsonArray("body").get(0).getAsJsonObject().get("role").getAsJsonObject().get("organizer").getAsBoolean() || body.getAsJsonArray("body").get(0).getAsJsonObject().get("role").getAsJsonObject().get("director").getAsBoolean();
+                        if(enabled) {
+                            SharedPreferencesUtility.setPermission(MainActivity.this, true);
+                            if(fabMenu.isOpened()) {
+                                fabScanner.setVisibility(View.VISIBLE);
+                            } else {
+                                fabScanner.setVisibility(View.INVISIBLE);
+                            }
                         } else {
-                            fabScanner.setVisibility(View.INVISIBLE);
+                            SharedPreferencesUtility.setPermission(MainActivity.this, false);
                         }
                     } else {
-                        SharedPreferencesUtility.setPermission(MainActivity.this, false);
+                        Toast.makeText(getBaseContext(), "Unable to reach permissions API", Toast.LENGTH_LONG).show();
                     }
-                } else {
+                }
+
+                @Override
+                public void onFailure(Call<JsonObject> call, Throwable t) {
                     Toast.makeText(getBaseContext(), "Unable to reach permissions API", Toast.LENGTH_LONG).show();
                 }
-            }
-
-            @Override
-            public void onFailure(Call<JsonObject> call, Throwable t) {
-                Toast.makeText(getBaseContext(), "Unable to reach permissions API", Toast.LENGTH_LONG).show();
-            }
-        });
+            });
+        }
         /* ===== /SET PERMISSIONS ===== */
 
 
@@ -258,28 +260,5 @@ public class MainActivity extends AppCompatActivity {
         Intent loginActivityIntent = new Intent(this, LoginActivity.class);
         startActivity(loginActivityIntent);
         finish();
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == RC_BARCODE_CAPTURE) {
-            if (resultCode == CommonStatusCodes.SUCCESS) {
-                if (data != null) {
-                    Barcode barcode = data.getParcelableExtra(BarcodeCaptureActivity.BarcodeObject);
-//                    statusMessage.setText(R.string.barcode_success);
-//                    barcodeValue.setText(barcode.displayValue);
-                    Log.d(TAG, "Barcode read: " + barcode.displayValue);
-                } else {
-//                    statusMessage.setText(R.string.barcode_failure);
-                    Log.d(TAG, "No barcode captured, intent data is null");
-                }
-            } else {
-//                statusMessage.setText(String.format(getString(R.string.barcode_error),
-//                        CommonStatusCodes.getStatusCodeString(resultCode)));
-            }
-        }
-        else {
-            super.onActivityResult(requestCode, resultCode, data);
-        }
     }
 }

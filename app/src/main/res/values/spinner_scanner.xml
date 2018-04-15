@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="planets_array">
+        <item>Check-In</item>
+        <item>Lunch 1</item>
+        <item>Dinner</item>
+        <item>Midnight Surprise</item>
+        <item>T-Shirt</item>
+        <item>Breakfast</item>
+        <item>Lunch 2</item>
+    </string-array>
+</resources>

@@ -25,10 +25,12 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.hardware.Camera;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -37,6 +39,10 @@ import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.RelativeLayout;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -45,6 +51,9 @@ import com.google.android.gms.common.api.CommonStatusCodes;
 import com.google.android.gms.vision.MultiProcessor;
 import com.google.android.gms.vision.barcode.Barcode;
 import com.google.android.gms.vision.barcode.BarcodeDetector;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import org.hackru.oneapp.hackru.QRScanner.BarcodeGraphic;
 import org.hackru.oneapp.hackru.QRScanner.BarcodeGraphicTracker;
@@ -52,8 +61,18 @@ import org.hackru.oneapp.hackru.QRScanner.BarcodeTrackerFactory;
 import org.hackru.oneapp.hackru.QRScanner.Camera.CameraSource;
 import org.hackru.oneapp.hackru.QRScanner.Camera.CameraSourcePreview;
 import org.hackru.oneapp.hackru.QRScanner.Camera.GraphicOverlay;
+import org.hackru.oneapp.hackru.api.model.AuthorizeRequest;
+import org.hackru.oneapp.hackru.api.model.Login;
+import org.hackru.oneapp.hackru.api.service.HackRUService;
+import org.hackru.oneapp.hackru.utils.SharedPreferencesUtility;
 
 import java.io.IOException;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
  * Activity for the multi-tracker app.  This app detects barcodes and displays the value with the
@@ -82,6 +101,10 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
     private ScaleGestureDetector scaleGestureDetector;
     private GestureDetector gestureDetector;
 
+    Gson gson;
+    Retrofit retrofit;
+    HackRUService hackRUService;
+
     /**
      * Initializes the UI and creates the detector pipeline.
      */
@@ -89,6 +112,22 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
     public void onCreate(Bundle icicle) {
         super.onCreate(icicle);
         setContentView(R.layout.activity_barcode_capture);
+
+        gson = new Gson();
+//        Retrofit retrofit = new Retrofit.Builder()
+//                .baseUrl("https://m7cwj1fy7c.execute-api.us-west-2.amazonaws.com/mlhtest/")
+//                .addConverterFactory(GsonConverterFactory.create())
+//                .build();
+//        HackRUService hackRUService = retrofit.create(HackRUService.class);
+
+        Spinner spinner = (Spinner) findViewById(R.id.spinner);
+        // Create an ArrayAdapter using the string array and a default spinner layout
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+                R.array.planets_array, android.R.layout.simple_spinner_item);
+        // Specify the layout to use when the list of choices appears
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        // Apply the adapter to the spinner
+        spinner.setAdapter(adapter);
 
         mPreview = (CameraSourcePreview) findViewById(R.id.preview);
         mGraphicOverlay = (GraphicOverlay<BarcodeGraphic>) findViewById(R.id.graphicOverlay);
@@ -329,6 +368,17 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
         }
     }
 
+    public void makeBorder(String color) {
+        final ConstraintLayout cameraLayout = (ConstraintLayout) findViewById(R.id.cameraLayout);
+        cameraLayout.setBackgroundColor(Color.parseColor(color));
+    }
+
+    public void clearBorder() {
+        final ConstraintLayout cameraLayout = (ConstraintLayout) findViewById(R.id.cameraLayout);
+        cameraLayout.setBackgroundColor(Color.TRANSPARENT);
+
+    }
+
     /**
      * onTap returns the tapped barcode result to the calling Activity.
      *
@@ -368,8 +418,51 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
 //            data.putExtra(BarcodeObject, best);
 //            setResult(CommonStatusCodes.SUCCESS, data);
 //            finish();
+            String test = "{" +
+                    "'user_email': " + "'" + best.displayValue + "'," +
+                    "'auth_email': " + "'" + SharedPreferencesUtility.getEmail(this) + "'," +
+                    "'auth': " + "'" + SharedPreferencesUtility.getAuthToken(this) + "'," +
+                    "'updates': {'$set': {'registration_status': 'checked-in', 'day_of.checked_in': true}}" +
+                    "}";
+            JsonParser parser = new JsonParser();
+            JsonObject obj = parser.parse(test).getAsJsonObject();
 
-            Log.e(TAG, best.displayValue);
+            Retrofit retrofit = new Retrofit.Builder()
+                    .baseUrl("https://m7cwj1fy7c.execute-api.us-west-2.amazonaws.com/mlhtest/")
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build();
+            HackRUService hackRUService = retrofit.create(HackRUService.class);
+            final ConstraintLayout topLayout = (ConstraintLayout) findViewById(R.id.topLayout);
+            final Runnable clearBorder = new Runnable() {
+                public void run() {
+                    clearBorder();
+                }
+            };
+            makeBorder("#a8b2b7");
+
+            hackRUService.update(obj).enqueue(new Callback<JsonObject>() {
+                @Override
+                public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                    Log.e(TAG, "QR scan submitted to API!");
+                    if(response.code()==200) {
+                        makeBorder("#63af5f");
+                        String body = response.toString();
+                        Log.e(TAG, body);
+                        new android.os.Handler().postDelayed(clearBorder, 1000);
+                    } else {
+                        makeBorder("#c43535");
+                        new android.os.Handler().postDelayed(clearBorder, 1000);
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<JsonObject> call, Throwable t) {
+                    Log.e(TAG, "Unable to submit post to API.");
+                    makeBorder("#c43535");
+                    new android.os.Handler().postDelayed(clearBorder, 1000);
+                }
+            });
+
             return true;
         }
         return false;
