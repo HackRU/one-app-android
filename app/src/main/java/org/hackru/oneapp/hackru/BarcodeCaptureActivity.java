@@ -54,6 +54,7 @@ import com.google.android.gms.vision.barcode.BarcodeDetector;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.jaredrummler.materialspinner.MaterialSpinner;
 
 import org.hackru.oneapp.hackru.QRScanner.BarcodeGraphic;
 import org.hackru.oneapp.hackru.QRScanner.BarcodeGraphicTracker;
@@ -120,14 +121,14 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
 //                .build();
 //        HackRUService hackRUService = retrofit.create(HackRUService.class);
 
-        Spinner spinner = (Spinner) findViewById(R.id.spinner);
-        // Create an ArrayAdapter using the string array and a default spinner layout
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
-                R.array.planets_array, android.R.layout.simple_spinner_item);
-        // Specify the layout to use when the list of choices appears
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        // Apply the adapter to the spinner
-        spinner.setAdapter(adapter);
+        MaterialSpinner spinner = (MaterialSpinner) findViewById(R.id.spinner);
+        spinner.setItems("Check-In", "Lunch 1", "Dinner", "Midnight Surprise", "T-Shirt", "Breakfast", "Lunch 2");
+        spinner.setOnItemSelectedListener(new MaterialSpinner.OnItemSelectedListener<String>() {
+
+            @Override public void onItemSelected(MaterialSpinner view, int position, long id, String item) {
+                Log.e(TAG, item + " was slected");
+            }
+        });
 
         mPreview = (CameraSourcePreview) findViewById(R.id.preview);
         mGraphicOverlay = (GraphicOverlay<BarcodeGraphic>) findViewById(R.id.graphicOverlay);
