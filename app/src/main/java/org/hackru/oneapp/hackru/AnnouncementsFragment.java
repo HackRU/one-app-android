@@ -4,6 +4,7 @@ import org.hackru.oneapp.hackru.api.model.Announcement;
 import org.hackru.oneapp.hackru.api.model.AnnouncementsResponse;
 import org.hackru.oneapp.hackru.api.service.HackRUService;
 
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -13,7 +14,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,14 +49,25 @@ public class AnnouncementsFragment extends Fragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+    }
 
-        //Treat this as onCreate()
+    @Override
+    public void onResume() {
+        super.onResume();
+        checkDatabase();
+    }
+
+
+    public void checkDatabase() {
         announcementList = new ArrayList<Announcement>();
         recyclerView = (RecyclerView) ((MainActivity)getActivity()).findViewById(R.id.recyclerView);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity())); //getActivity() should get the activity's context? Instead of arguing "this"
         updateCards();
 
+        final ProgressBar loadingBar = (ProgressBar) getView().findViewById(R.id.loadingBar);
+        loadingBar.setIndeterminate(true);
+        loadingBar.setVisibility(ProgressBar.VISIBLE);
 
         //Fetch Announcements
         Retrofit retrofit = new Retrofit.Builder()
@@ -72,13 +86,16 @@ public class AnnouncementsFragment extends Fragment {
                     AnnouncementsResponse resp = response.body();
                     announcementList = resp.getBody();
                     Log.i("Announcements Response", resp.toString());
-
+                    loadingBar.setVisibility(View.GONE);
+                    recyclerView.setVisibility(View.VISIBLE);
                     updateCards();
                 } else {
                     Log.i("Announcements", "Bad response");
                     Log.i("Announcements", response.body().toString());
                     Log.i("Announcements", response.errorBody().toString());
                     Log.i("Announcements", response.message().toString());
+                    loadingBar.setVisibility(View.GONE);
+                    recyclerView.setVisibility(View.VISIBLE);
                 }
             }
 
@@ -86,12 +103,15 @@ public class AnnouncementsFragment extends Fragment {
             public void onFailure(Call<AnnouncementsResponse> call, Throwable t) {
                 Log.i("Announcements", "Get request failed");
                 Log.i("Announcements", t.getLocalizedMessage());
+                loadingBar.setVisibility(View.GONE);
+                recyclerView.setVisibility(View.VISIBLE);
             }
         });
     }
-
     public void updateCards() {
-        adapter = new AnnouncementAdapter(getActivity(), announcementList); //getActivity() should get the activity's context? Instead of arguing "this"
+        adapter = new AnnouncementAdapter(getActivity(), announcementList);
         recyclerView.setAdapter(adapter);
     }
+
+
 }

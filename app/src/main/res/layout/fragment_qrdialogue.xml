@@ -8,14 +8,14 @@
     android:paddingBottom="10dp"
     android:layout_gravity="center"
     android:orientation="vertical"
-    android:background="@color/colorPrimary">
+    android:background="#fff">
 
     <ImageView
         android:id="@+id/imageView"
-        android:layout_width="250dp"
-        android:layout_height="250dp"
+        android:layout_width="300dp"
+        android:layout_height="300dp"
         android:src="@drawable/test_qrcode"
-        android:tint="@color/colorAccent"/>
+        android:tint="@color/colorPrimaryDark"/>
 
     <TextView
         android:id="@+id/userEmail"
@@ -23,7 +23,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_marginTop="20dp"
-        android:textColor="@color/colorAccent"
+        android:textColor="@color/colorPrimaryDark"
         android:textSize="18sp"
         android:text="Email Supposed to be here..." />
 

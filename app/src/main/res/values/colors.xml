@@ -5,4 +5,6 @@
     <color name="colorStatusBar">#218fbd</color>
     <color name="colorAccent">#FFF</color>
     <color name="progressBarBackground">#05000000</color>
+
+    <color name="black_overlay">#66000000</color>
 </resources>

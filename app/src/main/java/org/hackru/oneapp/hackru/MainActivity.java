@@ -2,23 +2,18 @@ package org.hackru.oneapp.hackru;
 
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 //import android.support.design.widget.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
 import com.github.clans.fab.FloatingActionButton;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.common.api.CommonStatusCodes;
+import com.google.android.gms.vision.barcode.Barcode;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.storage.FileDownloadTask;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
-import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
 import android.support.v4.app.FragmentManager;
@@ -31,12 +26,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
-import org.hackru.oneapp.hackru.api.model.Login;
 import org.hackru.oneapp.hackru.api.model.ReadRequest;
 import org.hackru.oneapp.hackru.api.service.HackRUService;
 import org.hackru.oneapp.hackru.utils.SharedPreferencesUtility;
-
-import java.io.File;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -49,6 +41,8 @@ public class MainActivity extends AppCompatActivity {
 
     FloatingActionMenu fabMenu;
     FloatingActionButton fabLogout, fabMap, fabQR, fabScanner;
+
+    private static final int RC_BARCODE_CAPTURE = 9001;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -142,7 +136,6 @@ public class MainActivity extends AppCompatActivity {
 
         final QRDialogueFragment QRFragment = new QRDialogueFragment();
         final MapDialogueFragment mapFragment = new MapDialogueFragment();
-        final ScannerDialogueFragment scannerFragment = new ScannerDialogueFragment();
 
 
 
@@ -179,7 +172,12 @@ public class MainActivity extends AppCompatActivity {
         fabScanner.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 fabMenu.close(true);
-                scannerFragment.show(fragmentManager, "fragment_scannerdialogue");
+                // launch barcode activity.
+                Intent intent = new Intent(MainActivity.this, BarcodeCaptureActivity.class);
+                intent.putExtra(BarcodeCaptureActivity.AutoFocus, true);
+                intent.putExtra(BarcodeCaptureActivity.UseFlash, false);
+
+                startActivityForResult(intent, RC_BARCODE_CAPTURE);
             }
         });
         /* ===== /FLOATING ACTION BUTTON ===== */
@@ -214,40 +212,42 @@ public class MainActivity extends AppCompatActivity {
         /* ===== /FIREBASE STUFF ===== */
 
         /* ===== SET PERMISSIONS ===== */
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("https://m7cwj1fy7c.execute-api.us-west-2.amazonaws.com/mlhtest/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-        HackRUService hackRUService = retrofit.create(HackRUService.class);
-        String email = SharedPreferencesUtility.getEmail(this);
-        ReadRequest request = new ReadRequest(email);
-        hackRUService.read(request).enqueue(new Callback<JsonObject>() {
-            @Override
-            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
-                if(response.body().get("statusCode").getAsInt() == 200) {
-                    Log.i(TAG, "Permission post submitted to API!");
-                    JsonObject body = response.body();
-                    boolean enabled = body.getAsJsonArray("body").get(0).getAsJsonObject().get("role").getAsJsonObject().get("organizer").getAsBoolean() || body.getAsJsonArray("body").get(0).getAsJsonObject().get("role").getAsJsonObject().get("director").getAsBoolean();
-                    if(enabled) {
-                        SharedPreferencesUtility.setPermission(MainActivity.this, true);
-                        if(fabMenu.isOpened()) {
-                            fabScanner.setVisibility(View.VISIBLE);
+        if (!SharedPreferencesUtility.getPermission(MainActivity.this)) {
+            Retrofit retrofit = new Retrofit.Builder()
+                    .baseUrl("https://m7cwj1fy7c.execute-api.us-west-2.amazonaws.com/mlhtest/")
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build();
+            HackRUService hackRUService = retrofit.create(HackRUService.class);
+            String email = SharedPreferencesUtility.getEmail(this);
+            ReadRequest request = new ReadRequest(email);
+            hackRUService.read(request).enqueue(new Callback<JsonObject>() {
+                @Override
+                public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                    if(response.body().get("statusCode").getAsInt() == 200) {
+                        Log.i(TAG, "Permission post submitted to API!");
+                        JsonObject body = response.body();
+                        boolean enabled = body.getAsJsonArray("body").get(0).getAsJsonObject().get("role").getAsJsonObject().get("organizer").getAsBoolean() || body.getAsJsonArray("body").get(0).getAsJsonObject().get("role").getAsJsonObject().get("director").getAsBoolean();
+                        if(enabled) {
+                            SharedPreferencesUtility.setPermission(MainActivity.this, true);
+                            if(fabMenu.isOpened()) {
+                                fabScanner.setVisibility(View.VISIBLE);
+                            } else {
+                                fabScanner.setVisibility(View.INVISIBLE);
+                            }
                         } else {
-                            fabScanner.setVisibility(View.INVISIBLE);
+                            SharedPreferencesUtility.setPermission(MainActivity.this, false);
                         }
                     } else {
-                        SharedPreferencesUtility.setPermission(MainActivity.this, false);
+                        Toast.makeText(getBaseContext(), "Unable to reach permissions API", Toast.LENGTH_LONG).show();
                     }
-                } else {
+                }
+
+                @Override
+                public void onFailure(Call<JsonObject> call, Throwable t) {
                     Toast.makeText(getBaseContext(), "Unable to reach permissions API", Toast.LENGTH_LONG).show();
                 }
-            }
-
-            @Override
-            public void onFailure(Call<JsonObject> call, Throwable t) {
-                Toast.makeText(getBaseContext(), "Unable to reach permissions API", Toast.LENGTH_LONG).show();
-            }
-        });
+            });
+        }
         /* ===== /SET PERMISSIONS ===== */
 
 
