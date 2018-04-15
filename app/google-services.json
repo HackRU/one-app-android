@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "1069396905715",
+    "firebase_url": "https://hackru-521b4.firebaseio.com",
+    "project_id": "hackru-521b4",
+    "storage_bucket": "hackru-521b4.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1069396905715:android:5a87f3890d6a62c2",
+        "android_client_info": {
+          "package_name": "org.hackru.oneapp.hackru"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1069396905715-cvp8akn93ata4f124aees1acbapra0rv.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "org.hackru.oneapp.hackru",
+            "certificate_hash": "24b0ff85180ca6cfc4635b89eb2dc8a9093c0b91"
+          }
+        },
+        {
+          "client_id": "1069396905715-538ktoe9k23b8mftilu6endueovfj7em.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBjalCy1lpBFYiFRJzUVd67eF29RHDoi0Q"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1069396905715-538ktoe9k23b8mftilu6endueovfj7em.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

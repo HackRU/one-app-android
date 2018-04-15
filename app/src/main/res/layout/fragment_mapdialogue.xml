@@ -1,5 +1,6 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:padding="20dp"
@@ -7,11 +8,9 @@
     android:orientation="vertical"
     android:background="@color/colorPrimary">
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="18sp"
-        android:textColor="#fff"
-        android:layout_gravity="center"
-        android:text="Floor plan goes here..." />
+    <ImageView
+        android:id="@+id/mapImage"
+        android:layout_width="250dp"
+        android:layout_height="250dp"
+        />
 </LinearLayout>

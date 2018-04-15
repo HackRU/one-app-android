@@ -8,6 +8,16 @@ import android.support.design.widget.BottomNavigationView;
 //import android.support.design.widget.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
 import com.github.clans.fab.FloatingActionButton;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FileDownloadTask;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
@@ -26,6 +36,8 @@ import org.hackru.oneapp.hackru.api.model.ReadRequest;
 import org.hackru.oneapp.hackru.api.service.HackRUService;
 import org.hackru.oneapp.hackru.utils.SharedPreferencesUtility;
 
+import java.io.File;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -43,39 +55,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         // END BOILERPLATE CODE
-
-        /* ===== SET PERMISSIONS ===== */
-        Gson gson = new Gson();
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("https://m7cwj1fy7c.execute-api.us-west-2.amazonaws.com/mlhtest/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-
-        HackRUService hackRUService = retrofit.create(HackRUService.class);
-        String email = SharedPreferencesUtility.getEmail(this);
-        ReadRequest request = new ReadRequest(email);
-        hackRUService.read(request).enqueue(new Callback<JsonObject>() {
-            @Override
-            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
-                if(response.body().get("statusCode").getAsInt() == 200) {
-                    Log.e(TAG, "Permission post submitted to API!");
-                    JsonObject body = response.body();
-                    if(body.getAsJsonArray("body").get(0).getAsJsonObject().get("role").getAsJsonObject().get("organizer").getAsBoolean() || body.getAsJsonArray("body").get(0).getAsJsonObject().get("role").getAsJsonObject().get("director").getAsBoolean()) {
-                        SharedPreferencesUtility.setPermission(MainActivity.this, true);
-                        fabScanner.setVisibility(View.VISIBLE);
-                    }
-                } else {
-                    Toast.makeText(getBaseContext(), "Unable to assess scanner permissions", Toast.LENGTH_LONG).show();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<JsonObject> call, Throwable t) {
-                Toast.makeText(getBaseContext(), "Unable to assess scanner permissions", Toast.LENGTH_LONG).show();
-            }
-        });
-        /* ===== /SET PERMISSIONS ===== */
-
 
         /* ===== BOTTOM NAVIGATION ===== */
         //TODO: Fix jitter on navigation change
@@ -150,8 +129,13 @@ public class MainActivity extends AppCompatActivity {
         fabQR = (FloatingActionButton) findViewById(R.id.fabQR);
         fabScanner = (FloatingActionButton) findViewById(R.id.fabScanner);
 
+        // So the scanner knows whether or not to show when offline
         if(SharedPreferencesUtility.getPermission(this)) {
-            fabScanner.setVisibility(View.VISIBLE);
+            if(fabMenu.isOpened()) {
+                fabScanner.setVisibility(View.VISIBLE);
+            } else {
+                fabScanner.setVisibility(View.INVISIBLE);
+            }
         }
 
         fabMenu.setClosedOnTouchOutside(true);
@@ -199,6 +183,73 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         /* ===== /FLOATING ACTION BUTTON ===== */
+
+        /* ===== FIREBASE STUFF ===== */
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference databaseRef = database.getReference().child("mapEnabled");;
+        databaseRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                // This method is called once with the initial value and again whenever data at this location is updated.
+                boolean enabled = dataSnapshot.getValue(Boolean.class);
+                Log.e(TAG, "Map enabled is " + enabled);
+                if(enabled) {
+                    if (fabMenu.isOpened()) {
+                        fabMap.setVisibility(View.VISIBLE);
+                    } else {
+                        fabMap.setVisibility(View.INVISIBLE);
+                    }
+                } else {
+                    fabMap.setVisibility(View.GONE);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+                // Failed to read value
+                Log.w(TAG, "Failed to read value.", error.toException());
+            }
+        });
+
+        /* ===== /FIREBASE STUFF ===== */
+
+        /* ===== SET PERMISSIONS ===== */
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("https://m7cwj1fy7c.execute-api.us-west-2.amazonaws.com/mlhtest/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        HackRUService hackRUService = retrofit.create(HackRUService.class);
+        String email = SharedPreferencesUtility.getEmail(this);
+        ReadRequest request = new ReadRequest(email);
+        hackRUService.read(request).enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                if(response.body().get("statusCode").getAsInt() == 200) {
+                    Log.i(TAG, "Permission post submitted to API!");
+                    JsonObject body = response.body();
+                    boolean enabled = body.getAsJsonArray("body").get(0).getAsJsonObject().get("role").getAsJsonObject().get("organizer").getAsBoolean() || body.getAsJsonArray("body").get(0).getAsJsonObject().get("role").getAsJsonObject().get("director").getAsBoolean();
+                    if(enabled) {
+                        SharedPreferencesUtility.setPermission(MainActivity.this, true);
+                        if(fabMenu.isOpened()) {
+                            fabScanner.setVisibility(View.VISIBLE);
+                        } else {
+                            fabScanner.setVisibility(View.INVISIBLE);
+                        }
+                    } else {
+                        SharedPreferencesUtility.setPermission(MainActivity.this, false);
+                    }
+                } else {
+                    Toast.makeText(getBaseContext(), "Unable to reach permissions API", Toast.LENGTH_LONG).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+                Toast.makeText(getBaseContext(), "Unable to reach permissions API", Toast.LENGTH_LONG).show();
+            }
+        });
+        /* ===== /SET PERMISSIONS ===== */
+
 
     }
 

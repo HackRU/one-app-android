@@ -19,21 +19,27 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyA3oxkAOXvKa2pX38EFE2kS1wmYWpG8-tM" />
 
-        <activity android:name=".MainActivity"></activity>
+        <activity
+            android:name=".MainActivity"
+            android:screenOrientation="portrait"></activity>
         <activity
             android:name=".LoginActivity"
             android:theme="@style/AppTheme.NoActionBar"
-            android:windowSoftInputMode="stateUnchanged"></activity>
+            android:windowSoftInputMode="stateUnchanged"
+            android:screenOrientation="portrait"></activity>
         <activity
             android:name=".LauncherActivity"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme.NoActionBar"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".MLHLoginActivity"></activity>
+        <activity
+            android:name=".MLHLoginActivity"
+            android:screenOrientation="portrait"></activity>
     </application>
 
 </manifest>
