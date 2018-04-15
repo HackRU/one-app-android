@@ -444,11 +444,11 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
             hackRUService.update(obj).enqueue(new Callback<JsonObject>() {
                 @Override
                 public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
-                    Log.e(TAG, "QR scan submitted to API!");
+//                    Log.e(TAG, "QR scan submitted to API!");
                     if(response.code()==200) {
                         makeBorder("#63af5f");
                         String body = response.toString();
-                        Log.e(TAG, body);
+//                        Log.e(TAG, body);
                         new android.os.Handler().postDelayed(clearBorder, 1000);
                     } else {
                         makeBorder("#c43535");
@@ -463,7 +463,7 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
                     new android.os.Handler().postDelayed(clearBorder, 1000);
                 }
             });
-
+            Log.e(TAG, best.displayValue);
             return true;
         }
         return false;

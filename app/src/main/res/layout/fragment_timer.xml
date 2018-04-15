@@ -3,7 +3,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="org.hackru.oneapp.hackru.MainActivity">
+    tools:context="org.hackru.oneapp.hackru.MainActivity"
+    android:background="#eee"
+    >
 
     <RelativeLayout
         android:layout_width="match_parent"
