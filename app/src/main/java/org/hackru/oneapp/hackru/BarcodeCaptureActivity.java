@@ -376,8 +376,8 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
 
     public void clearBorder() {
         final ConstraintLayout cameraLayout = (ConstraintLayout) findViewById(R.id.cameraLayout);
-        cameraLayout.setBackgroundColor(Color.TRANSPARENT);
-
+//        cameraLayout.setBackgroundColor(Color.TRANSPARENT);
+        cameraLayout.setBackgroundColor(Color.parseColor("#23A9E1"));
     }
 
     /**
