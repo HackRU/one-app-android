@@ -2,23 +2,18 @@ package org.hackru.oneapp.hackru;
 
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 //import android.support.design.widget.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
 import com.github.clans.fab.FloatingActionButton;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.common.api.CommonStatusCodes;
+import com.google.android.gms.vision.barcode.Barcode;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.storage.FileDownloadTask;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
-import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
 import android.support.v4.app.FragmentManager;
@@ -31,12 +26,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
-import org.hackru.oneapp.hackru.api.model.Login;
 import org.hackru.oneapp.hackru.api.model.ReadRequest;
 import org.hackru.oneapp.hackru.api.service.HackRUService;
 import org.hackru.oneapp.hackru.utils.SharedPreferencesUtility;
-
-import java.io.File;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -49,6 +41,8 @@ public class MainActivity extends AppCompatActivity {
 
     FloatingActionMenu fabMenu;
     FloatingActionButton fabLogout, fabMap, fabQR, fabScanner;
+
+    private static final int RC_BARCODE_CAPTURE = 9001;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -142,7 +136,6 @@ public class MainActivity extends AppCompatActivity {
 
         final QRDialogueFragment QRFragment = new QRDialogueFragment();
         final MapDialogueFragment mapFragment = new MapDialogueFragment();
-        final ScannerDialogueFragment scannerFragment = new ScannerDialogueFragment();
 
 
 
@@ -179,7 +172,12 @@ public class MainActivity extends AppCompatActivity {
         fabScanner.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 fabMenu.close(true);
-                scannerFragment.show(fragmentManager, "fragment_scannerdialogue");
+                // launch barcode activity.
+                Intent intent = new Intent(MainActivity.this, BarcodeCaptureActivity.class);
+                intent.putExtra(BarcodeCaptureActivity.AutoFocus, true);
+                intent.putExtra(BarcodeCaptureActivity.UseFlash, false);
+
+                startActivityForResult(intent, RC_BARCODE_CAPTURE);
             }
         });
         /* ===== /FLOATING ACTION BUTTON ===== */
@@ -260,5 +258,28 @@ public class MainActivity extends AppCompatActivity {
         Intent loginActivityIntent = new Intent(this, LoginActivity.class);
         startActivity(loginActivityIntent);
         finish();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == RC_BARCODE_CAPTURE) {
+            if (resultCode == CommonStatusCodes.SUCCESS) {
+                if (data != null) {
+                    Barcode barcode = data.getParcelableExtra(BarcodeCaptureActivity.BarcodeObject);
+//                    statusMessage.setText(R.string.barcode_success);
+//                    barcodeValue.setText(barcode.displayValue);
+                    Log.d(TAG, "Barcode read: " + barcode.displayValue);
+                } else {
+//                    statusMessage.setText(R.string.barcode_failure);
+                    Log.d(TAG, "No barcode captured, intent data is null");
+                }
+            } else {
+//                statusMessage.setText(String.format(getString(R.string.barcode_error),
+//                        CommonStatusCodes.getStatusCodeString(resultCode)));
+            }
+        }
+        else {
+            super.onActivityResult(requestCode, resultCode, data);
+        }
     }
 }
