@@ -1,25 +1,54 @@
 package org.hackru.oneapp.hackru;
 
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 //import android.support.design.widget.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
 import com.github.clans.fab.FloatingActionButton;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FileDownloadTask;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
+import org.hackru.oneapp.hackru.api.model.Login;
+import org.hackru.oneapp.hackru.api.model.ReadRequest;
+import org.hackru.oneapp.hackru.api.service.HackRUService;
 import org.hackru.oneapp.hackru.utils.SharedPreferencesUtility;
 
-public class MainActivity extends AppCompatActivity implements QRDialogueFragment.OnLogoutClickListener {
-    String TAG = "";
+import java.io.File;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+
+public class MainActivity extends AppCompatActivity {
+    String TAG = "MainActivity";
 
     FloatingActionMenu fabMenu;
-    FloatingActionButton fabMap, fabQR, fabScanner;
+    FloatingActionButton fabLogout, fabMap, fabQR, fabScanner;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,9 +124,19 @@ public class MainActivity extends AppCompatActivity implements QRDialogueFragmen
         /* ===== FLOATING ACTION BUTTON ===== */
         //TODO: Fix buggy closing animation when timer fragment is selected
         fabMenu = (FloatingActionMenu) findViewById(R.id.fabMenu);
+        fabLogout = (FloatingActionButton) findViewById(R.id.fabLogout);
         fabMap = (FloatingActionButton) findViewById(R.id.fabMap);
         fabQR = (FloatingActionButton) findViewById(R.id.fabQR);
         fabScanner = (FloatingActionButton) findViewById(R.id.fabScanner);
+
+        // So the scanner knows whether or not to show when offline
+        if(SharedPreferencesUtility.getPermission(this)) {
+            if(fabMenu.isOpened()) {
+                fabScanner.setVisibility(View.VISIBLE);
+            } else {
+                fabScanner.setVisibility(View.INVISIBLE);
+            }
+        }
 
         fabMenu.setClosedOnTouchOutside(true);
 
@@ -105,6 +144,26 @@ public class MainActivity extends AppCompatActivity implements QRDialogueFragmen
         final MapDialogueFragment mapFragment = new MapDialogueFragment();
         final ScannerDialogueFragment scannerFragment = new ScannerDialogueFragment();
 
+
+
+        fabLogout.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                fabMenu.close(true);
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this, R.style.AppTheme_Dialogue_Alert);
+                builder.setMessage("Are you sure you want to logout?")
+                        .setPositiveButton("Logout", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                onLogoutClick();
+                            }
+                        })
+                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                // User cancelled the dialog
+                            }
+                        }).create().show();
+            }
+        });
         fabMap.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 fabMenu.close(true);
@@ -125,10 +184,79 @@ public class MainActivity extends AppCompatActivity implements QRDialogueFragmen
         });
         /* ===== /FLOATING ACTION BUTTON ===== */
 
+        /* ===== FIREBASE STUFF ===== */
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference databaseRef = database.getReference().child("mapEnabled");;
+        databaseRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                // This method is called once with the initial value and again whenever data at this location is updated.
+                boolean enabled = dataSnapshot.getValue(Boolean.class);
+                Log.e(TAG, "Map enabled is " + enabled);
+                if(enabled) {
+                    if (fabMenu.isOpened()) {
+                        fabMap.setVisibility(View.VISIBLE);
+                    } else {
+                        fabMap.setVisibility(View.INVISIBLE);
+                    }
+                } else {
+                    fabMap.setVisibility(View.GONE);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+                // Failed to read value
+                Log.w(TAG, "Failed to read value.", error.toException());
+            }
+        });
+
+        /* ===== /FIREBASE STUFF ===== */
+
+        /* ===== SET PERMISSIONS ===== */
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("https://m7cwj1fy7c.execute-api.us-west-2.amazonaws.com/mlhtest/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        HackRUService hackRUService = retrofit.create(HackRUService.class);
+        String email = SharedPreferencesUtility.getEmail(this);
+        ReadRequest request = new ReadRequest(email);
+        hackRUService.read(request).enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                if(response.body().get("statusCode").getAsInt() == 200) {
+                    Log.i(TAG, "Permission post submitted to API!");
+                    JsonObject body = response.body();
+                    boolean enabled = body.getAsJsonArray("body").get(0).getAsJsonObject().get("role").getAsJsonObject().get("organizer").getAsBoolean() || body.getAsJsonArray("body").get(0).getAsJsonObject().get("role").getAsJsonObject().get("director").getAsBoolean();
+                    if(enabled) {
+                        SharedPreferencesUtility.setPermission(MainActivity.this, true);
+                        if(fabMenu.isOpened()) {
+                            fabScanner.setVisibility(View.VISIBLE);
+                        } else {
+                            fabScanner.setVisibility(View.INVISIBLE);
+                        }
+                    } else {
+                        SharedPreferencesUtility.setPermission(MainActivity.this, false);
+                    }
+                } else {
+                    Toast.makeText(getBaseContext(), "Unable to reach permissions API", Toast.LENGTH_LONG).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+                Toast.makeText(getBaseContext(), "Unable to reach permissions API", Toast.LENGTH_LONG).show();
+            }
+        });
+        /* ===== /SET PERMISSIONS ===== */
+
+
     }
 
     public void onLogoutClick() {
         SharedPreferencesUtility.setAuthToken(MainActivity.this, "");
+        SharedPreferencesUtility.setEmail(MainActivity.this, "");
+        SharedPreferencesUtility.setPermission(MainActivity.this, false);
         Intent loginActivityIntent = new Intent(this, LoginActivity.class);
         startActivity(loginActivityIntent);
         finish();
