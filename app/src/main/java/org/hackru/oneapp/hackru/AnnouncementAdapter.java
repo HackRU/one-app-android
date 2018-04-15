@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import java.util.Date;
 import java.util.List;
 
 
@@ -38,8 +39,16 @@ public class AnnouncementAdapter extends RecyclerView.Adapter<AnnouncementAdapte
     @Override
     public void onBindViewHolder(AnnouncementViewHolder holder, int position) {
         Announcement announcement = announcementList.get(position);
-        holder.date.setText(announcement.getUser().getFirstName() +
-                " " + announcement.getUser().getLastName());
+
+        //The timestamp comes from the server as a string representing seconds (?)
+        //since Unix time started.
+        String timestampString = announcement.getTs();
+        double timestamp = Double.parseDouble(timestampString);
+        //Date constructor assumes the time to be in milliseconds since
+        //Unix time started
+        Date date = new Date((long)(timestamp * 1000));
+
+        holder.date.setText(date.toString());
         holder.message.setText(announcement.getText());
     }
 
