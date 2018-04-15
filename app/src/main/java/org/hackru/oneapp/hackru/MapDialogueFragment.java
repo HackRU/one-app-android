@@ -41,15 +41,14 @@ public class MapDialogueFragment extends DialogFragment {
 
         FirebaseStorage storage = FirebaseStorage.getInstance();
         StorageReference storageRef = storage.getReference();
-        StorageReference mapRef = storageRef.child("test.png");
-        mapRef = storage.getReferenceFromUrl("gs://hackru-521b4.appspot.com/test.png");
+        StorageReference mapRef = storageRef.child("map.png");
         Log.e(TAG, mapRef.getPath());
         Log.e(TAG, mapRef.getName());
         Log.e(TAG, mapRef.getBucket());
         ImageView mapImage = (ImageView) getView().findViewById(R.id.mapImage);
         Glide.with(getContext())
                 .using(new FirebaseImageLoader())
-                .load(storageRef)
+                .load(mapRef)
                 .into(mapImage);
     }
 
