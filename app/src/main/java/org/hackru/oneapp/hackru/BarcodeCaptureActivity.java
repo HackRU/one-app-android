@@ -26,6 +26,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.graphics.drawable.AnimationDrawable;
 import android.hardware.Camera;
 import android.os.Build;
 import android.os.Bundle;
@@ -40,6 +41,7 @@ import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
 import android.widget.ArrayAdapter;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
@@ -105,6 +107,7 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
     Gson gson;
     Retrofit retrofit;
     HackRUService hackRUService;
+    ConstraintLayout cameraLayout;
 
     /**
      * Initializes the UI and creates the detector pipeline.
@@ -116,11 +119,7 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
 
         setFinishOnTouchOutside(false);
         gson = new Gson();
-//        Retrofit retrofit = new Retrofit.Builder()
-//                .baseUrl("https://m7cwj1fy7c.execute-api.us-west-2.amazonaws.com/mlhtest/")
-//                .addConverterFactory(GsonConverterFactory.create())
-//                .build();
-//        HackRUService hackRUService = retrofit.create(HackRUService.class);
+        cameraLayout = (ConstraintLayout) findViewById(R.id.cameraLayout);
 
         MaterialSpinner spinner = (MaterialSpinner) findViewById(R.id.spinner);
         spinner.setItems("Check-In", "Lunch 1", "Dinner", "Midnight Surprise", "T-Shirt", "Breakfast", "Lunch 2");
@@ -370,15 +369,22 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
         }
     }
 
-    public void makeBorder(String color) {
-        final ConstraintLayout cameraLayout = (ConstraintLayout) findViewById(R.id.cameraLayout);
-        cameraLayout.setBackgroundColor(Color.parseColor(color));
+    public void onScanSuccess() {
+        cameraLayout.setBackgroundResource(R.drawable.scanner_success_animation);
+        AnimationDrawable successAnimation = (AnimationDrawable) cameraLayout.getBackground();
+        successAnimation.setEnterFadeDuration(500);
+        successAnimation.setExitFadeDuration(500);
+        successAnimation.setOneShot(true);
+        successAnimation.start();
     }
 
-    public void clearBorder() {
-        final ConstraintLayout cameraLayout = (ConstraintLayout) findViewById(R.id.cameraLayout);
-        cameraLayout.setBackgroundColor(Color.TRANSPARENT);
-//        cameraLayout.setBackgroundColor(Color.parseColor("#23A9E1"));
+    public void onScanFailure() {
+        cameraLayout.setBackgroundResource(R.drawable.scanner_failure_animation);
+        AnimationDrawable successAnimation = (AnimationDrawable) cameraLayout.getBackground();
+        successAnimation.setEnterFadeDuration(500);
+        successAnimation.setExitFadeDuration(500);
+        successAnimation.setOneShot(true);
+        successAnimation.start();
     }
 
     /**
@@ -415,11 +421,13 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
         }
 
         if (best != null) {
-            // heyo
-//            Intent data = new Intent();
+            //            Intent data = new Intent();
 //            data.putExtra(BarcodeObject, best);
 //            setResult(CommonStatusCodes.SUCCESS, data);
 //            finish();
+
+
+            /* ====== API CALL ====== */
             String test = "{" +
                     "'user_email': " + "'" + best.displayValue + "'," +
                     "'auth_email': " + "'" + SharedPreferencesUtility.getEmail(this) + "'," +
@@ -435,33 +443,29 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
                     .build();
             HackRUService hackRUService = retrofit.create(HackRUService.class);
             final ConstraintLayout topLayout = (ConstraintLayout) findViewById(R.id.topLayout);
-            final Runnable clearBorder = new Runnable() {
-                public void run() {
-                    clearBorder();
-                }
-            };
-            makeBorder("#a8b2b7");
+            cameraLayout.setBackgroundResource(R.drawable.scanner_loading_animation);
+            AnimationDrawable loadingAnimation = (AnimationDrawable) cameraLayout.getBackground();
+            loadingAnimation.setEnterFadeDuration(200);
+            loadingAnimation.setExitFadeDuration(200);
+            loadingAnimation.start();
 
             hackRUService.update(obj).enqueue(new Callback<JsonObject>() {
                 @Override
                 public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
 //                    Log.e(TAG, "QR scan submitted to API!");
                     if(response.code()==200) {
-                        makeBorder("#63af5f");
+                        onScanSuccess();
                         String body = response.toString();
 //                        Log.e(TAG, body);
-                        new android.os.Handler().postDelayed(clearBorder, 1000);
                     } else {
-                        makeBorder("#c43535");
-                        new android.os.Handler().postDelayed(clearBorder, 1000);
+                        onScanFailure();
                     }
                 }
 
                 @Override
                 public void onFailure(Call<JsonObject> call, Throwable t) {
                     Log.e(TAG, "Unable to submit post to API.");
-                    makeBorder("#c43535");
-                    new android.os.Handler().postDelayed(clearBorder, 1000);
+                    onScanFailure();
                 }
             });
             Log.e(TAG, best.displayValue);
