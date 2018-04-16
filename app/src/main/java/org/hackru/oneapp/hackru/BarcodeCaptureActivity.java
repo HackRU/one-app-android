@@ -114,6 +114,7 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
         super.onCreate(icicle);
         setContentView(R.layout.activity_barcode_capture);
 
+        setFinishOnTouchOutside(false);
         gson = new Gson();
 //        Retrofit retrofit = new Retrofit.Builder()
 //                .baseUrl("https://m7cwj1fy7c.execute-api.us-west-2.amazonaws.com/mlhtest/")
@@ -247,7 +248,7 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
         CameraSource.Builder builder = new CameraSource.Builder(getApplicationContext(), barcodeDetector)
                 .setFacing(CameraSource.CAMERA_FACING_BACK)
                 .setRequestedPreviewSize(1600, 1024)
-                .setRequestedFps(15.0f);
+                .setRequestedFps(24.0f);
 
         // make sure that auto focus is an available option
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
@@ -376,8 +377,8 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
 
     public void clearBorder() {
         final ConstraintLayout cameraLayout = (ConstraintLayout) findViewById(R.id.cameraLayout);
-//        cameraLayout.setBackgroundColor(Color.TRANSPARENT);
-        cameraLayout.setBackgroundColor(Color.parseColor("#23A9E1"));
+        cameraLayout.setBackgroundColor(Color.TRANSPARENT);
+//        cameraLayout.setBackgroundColor(Color.parseColor("#23A9E1"));
     }
 
     /**
