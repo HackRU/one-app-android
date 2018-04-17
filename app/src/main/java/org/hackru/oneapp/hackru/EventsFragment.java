@@ -16,8 +16,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
-import org.hackru.oneapp.hackru.api.model.Announcement;
-import org.hackru.oneapp.hackru.api.model.events.Event;
+import org.hackru.oneapp.hackru.api.model.Event;
 import org.hackru.oneapp.hackru.api.service.HackRUService;
 
 import java.util.ArrayList;
@@ -36,7 +35,7 @@ public class EventsFragment extends Fragment {
 
     private RecyclerView recyclerView;
     private EventAdapter adapter;
-    private List<JsonObject> eventList;
+    private List<Event> eventList;
     final String BASE_URL = "https://m7cwj1fy7c.execute-api.us-west-2.amazonaws.com/mlhtest/";
 
     public EventsFragment() {
@@ -47,7 +46,7 @@ public class EventsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_announcements, container, false);
+        return inflater.inflate(R.layout.fragment_events, container, false);
     }
 
     @Override
@@ -64,17 +63,17 @@ public class EventsFragment extends Fragment {
 
 
     public void checkDatabase() {
-        eventList = new ArrayList<JsonObject>();
-        recyclerView = (RecyclerView) ((MainActivity)getActivity()).findViewById(R.id.recyclerView);
+        eventList = new ArrayList<Event>();
+        recyclerView = (RecyclerView) ((MainActivity)getActivity()).findViewById(R.id.recyclerViewEvents);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity())); //getActivity() should get the activity's context? Instead of arguing "this"
         updateCards();
 
-        final ProgressBar loadingBar = (ProgressBar) getView().findViewById(R.id.loadingBar);
+        final ProgressBar loadingBar = (ProgressBar) getView().findViewById(R.id.loadingBarEvents);
         loadingBar.setIndeterminate(true);
         loadingBar.setVisibility(ProgressBar.VISIBLE);
 
-        //Fetch Announcements
+        //Fetch Events
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
@@ -91,14 +90,17 @@ public class EventsFragment extends Fragment {
                     JsonArray events = response.body().getAsJsonObject().get("body").getAsJsonArray();
                     Iterator iterator = events.iterator();
                     while (iterator.hasNext()) {
-                        Object test = iterator.next();
-                        JsonElement hi = (JsonElement)test;
-                        Log.e(TAG, hi.toString());
-
+                        JsonElement eventJSON = (JsonElement)iterator.next();
+//                        Log.e(TAG, hi.toString());
+                        String title = eventJSON.getAsJsonObject().get("summary").getAsString();
+                        String description = eventJSON.getAsJsonObject().get("description")!=null ? eventJSON.getAsJsonObject().get("description").getAsString() : null;
+                        String time = eventJSON.getAsJsonObject().get("start").getAsJsonObject().get("dateTime").getAsString();
+                        String place = eventJSON.getAsJsonObject().get("location")!=null ? eventJSON.getAsJsonObject().get("location").getAsString() : null;
+                        eventList.add(new Event(title, description, time, place));
                     }
                     loadingBar.setVisibility(View.GONE);
                     recyclerView.setVisibility(View.VISIBLE);
-//                    updateCards();
+                    updateCards();
                 } else {
                     Log.e(TAG, "Bad response");
                     Log.e(TAG, response.body().toString());

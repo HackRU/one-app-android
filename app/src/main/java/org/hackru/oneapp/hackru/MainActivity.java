@@ -87,7 +87,7 @@ public class MainActivity extends AppCompatActivity {
                     if(fragmentManager.findFragmentByTag("announcements")!=null && announcementsFragment!=null) {
                         // if the fragment exists, show it
                         fragmentTransaction.show(fragmentManager.findFragmentByTag("announcements"));
-                        announcementsFragment.updateCards();
+                        announcementsFragment.checkDatabase();
                     } else {
                         // if the fragment does not exist yet, add it to the fragment manager
                         announcementsFragment = new AnnouncementsFragment();
@@ -102,7 +102,7 @@ public class MainActivity extends AppCompatActivity {
                     if(fragmentManager.findFragmentByTag("events")!=null && eventsFragment!=null) {
                         // if the fragment exists, show it
                         fragmentTransaction.show(fragmentManager.findFragmentByTag("events"));
-                        eventsFragment.updateCards();
+                        eventsFragment.checkDatabase();
                     } else {
                         // if the fragment does not exist yet, add it to the fragment manager
                         eventsFragment = new EventsFragment();
