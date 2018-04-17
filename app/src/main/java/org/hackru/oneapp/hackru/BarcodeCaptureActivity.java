@@ -108,6 +108,7 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
     Retrofit retrofit;
     HackRUService hackRUService;
     ConstraintLayout cameraLayout;
+    String selectedEvent = null;
 
     /**
      * Initializes the UI and creates the detector pipeline.
@@ -127,6 +128,31 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
 
             @Override public void onItemSelected(MaterialSpinner view, int position, long id, String item) {
                 Log.e(TAG, item + " was slected");
+                switch(item) {
+                    case "Check-In":
+                        selectedEvent = null;
+                        break;
+                    case "Lunch 1":
+                        selectedEvent = "lunch_1";
+                        break;
+                    case "Dinner":
+                        selectedEvent = "dinner";
+                        break;
+                    case "Midnight Surprise":
+                        selectedEvent = "midnight_surprise";
+                        break;
+                    case "T-Shirt":
+                        selectedEvent = "t_shirt";
+                        break;
+                    case "Breakfast":
+                        selectedEvent = "breakfast";
+                        break;
+                    case "Lunch 2":
+                        selectedEvent = "lunch_2";
+                        break;
+                    default:
+                        Log.e(TAG, "ERROR READING DROPDOWN ITEM");
+                }
             }
         });
 
@@ -428,14 +454,25 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
 
 
             /* ====== API CALL ====== */
-            String test = "{" +
-                    "'user_email': " + "'" + best.displayValue + "'," +
-                    "'auth_email': " + "'" + SharedPreferencesUtility.getEmail(this) + "'," +
-                    "'auth': " + "'" + SharedPreferencesUtility.getAuthToken(this) + "'," +
-                    "'updates': {'$set': {'registration_status': 'checked-in', 'day_of.checked_in': true}}" +
-                    "}";
+            String post = "";
+            if(selectedEvent == null) {
+                post = "{" +
+                        "'user_email': " + "'" + best.displayValue + "'," +
+                        "'auth_email': " + "'" + SharedPreferencesUtility.getEmail(this) + "'," +
+                        "'auth': " + "'" + SharedPreferencesUtility.getAuthToken(this) + "'," +
+                        "'updates': {'$set': {'registration_status': 'checked-in', 'day_of.checked_in': true}}" +
+                        "}";
+            } else {
+                post = "{" +
+                        "'user_email': " + "'" + best.displayValue + "'," +
+                        "'auth_email': " + "'" + SharedPreferencesUtility.getEmail(this) + "'," +
+                        "'auth': " + "'" + SharedPreferencesUtility.getAuthToken(this) + "'," +
+                        "'updates': {'$inc': {'day_of." + selectedEvent +"': 1}}" +
+                        "}";
+            }
+
             JsonParser parser = new JsonParser();
-            JsonObject obj = parser.parse(test).getAsJsonObject();
+            JsonObject obj = parser.parse(post).getAsJsonObject();
 
             Retrofit retrofit = new Retrofit.Builder()
                     .baseUrl("https://m7cwj1fy7c.execute-api.us-west-2.amazonaws.com/mlhtest/")
@@ -448,6 +485,7 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
             loadingAnimation.setEnterFadeDuration(200);
             loadingAnimation.setExitFadeDuration(200);
             loadingAnimation.start();
+            Log.e(TAG, best.displayValue);
 
             hackRUService.update(obj).enqueue(new Callback<JsonObject>() {
                 @Override
@@ -456,7 +494,7 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
                     if(response.code()==200) {
                         onScanSuccess();
                         String body = response.toString();
-//                        Log.e(TAG, body);
+                        Log.e(TAG, body);
                     } else {
                         onScanFailure();
                     }
@@ -468,7 +506,6 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
                     onScanFailure();
                 }
             });
-            Log.e(TAG, best.displayValue);
             return true;
         }
         return false;
