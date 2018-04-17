@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -43,13 +44,24 @@ public class AnnouncementAdapter extends RecyclerView.Adapter<AnnouncementAdapte
         //The timestamp comes from the server as a string representing seconds (?)
         //since Unix time started.
         String timestampString = announcement.getTs();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("h:mm a 'on' M/d/yyyy");
         double timestamp = Double.parseDouble(timestampString);
+        String date = dateFormat.format(new Date((long) (timestamp*1000)));
         //Date constructor assumes the time to be in milliseconds since
         //Unix time started
-        Date date = new Date((long)(timestamp * 1000));
+//        Date date = new Date((long)(timestamp * 1000));
 
-        holder.date.setText(date.toString());
-        holder.message.setText(announcement.getText());
+        String message = announcement.getText();
+        while (message.indexOf("<") != -1 && message.indexOf(">") != -1) {
+            message = message.substring(0, message.indexOf("<")) + message.substring(message.indexOf(">") + 1);
+        }
+
+        while (message.indexOf(":", message.indexOf(":") + 1) != -1) {
+            message = message.substring(0, message.indexOf(":")) + message.substring(message.indexOf(":", message.indexOf(":")+1)+1);
+        }
+
+        holder.date.setText(date);
+        holder.message.setText(message);
     }
 
     @Override

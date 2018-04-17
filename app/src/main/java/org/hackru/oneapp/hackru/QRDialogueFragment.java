@@ -1,6 +1,7 @@
 package org.hackru.oneapp.hackru;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
@@ -15,8 +16,11 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.firebase.ui.storage.images.FirebaseImageLoader;
+import com.google.android.gms.vision.barcode.Barcode;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+
+import net.glxn.qrgen.android.QRCode;
 
 import org.hackru.oneapp.hackru.utils.SharedPreferencesUtility;
 
@@ -40,20 +44,12 @@ public class QRDialogueFragment extends DialogFragment {
         super.onViewCreated(view, savedInstanceState);
 
         TextView userEmail = (TextView) getView().findViewById(R.id.userEmail);
-        userEmail.setText(SharedPreferencesUtility.getEmail(getActivity()));
+        String email = SharedPreferencesUtility.getEmail(getContext());
+        userEmail.setText(email);
 
-        // Just testing FireBaseUI, this code should be deleted
-//        FirebaseStorage storage = FirebaseStorage.getInstance();
-//        StorageReference storageRef = storage.getReference();
-//        StorageReference mapRef = storageRef.child("test.png");
-//        Log.e(TAG, mapRef.getPath());
-//        Log.e(TAG, mapRef.getName());
-//        Log.e(TAG, mapRef.getBucket());
-//        ImageView imageView = (ImageView) getView().findViewById(R.id.imageView);
-//        Glide.with(getContext())
-//                .using(new FirebaseImageLoader())
-//                .load(storageRef)
-//                .into(imageView);
+        Bitmap myBitmap = QRCode.from(email).withColor(0xFF1F4AB5, 0xFFFFFFFF).withSize(700, 700).bitmap();
+        ImageView qrImage = (ImageView) getView().findViewById(R.id.qrImage);
+        qrImage.setImageBitmap(myBitmap);
     }
 
     @Override

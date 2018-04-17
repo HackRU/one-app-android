@@ -41,8 +41,12 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     implementation 'com.github.clans:fab:1.6.4'
 
+    // Stuff for the qr scanner
     implementation 'com.google.android.gms:play-services-vision:10.2.1'
     implementation 'com.jaredrummler:material-spinner:1.2.5'
+
+    // Stuff for the qr generator
+    implementation 'com.github.kenglxn.QRGen:android:2.4.0'
 
 }
 

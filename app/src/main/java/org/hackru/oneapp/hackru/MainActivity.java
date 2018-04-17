@@ -44,6 +44,8 @@ public class MainActivity extends AppCompatActivity {
 
     private static final int RC_BARCODE_CAPTURE = 9001;
 
+    AnnouncementsFragment announcementsFragment;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -81,12 +83,14 @@ public class MainActivity extends AppCompatActivity {
                     return true;
                 } else if(item.getItemId() == R.id.menu_announcements) {
 
-                    if(fragmentManager.findFragmentByTag("announcements")!=null) {
+                    if(fragmentManager.findFragmentByTag("announcements")!=null && announcementsFragment!=null) {
                         // if the fragment exists, show it
                         fragmentTransaction.show(fragmentManager.findFragmentByTag("announcements"));
+                        announcementsFragment.onResume();
                     } else {
                         // if the fragment does not exist yet, add it to the fragment manager
-                        fragmentTransaction.add(R.id.content_frame, new AnnouncementsFragment(), "announcements");
+                        announcementsFragment = new AnnouncementsFragment();
+                        fragmentTransaction.add(R.id.content_frame, announcementsFragment, "announcements");
                     }
 
                     if(fragmentManager.findFragmentByTag("events") !=null) {fragmentTransaction.hide(fragmentManager.findFragmentByTag("events"));}
