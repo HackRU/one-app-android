@@ -29,6 +29,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 
 public class AnnouncementsFragment extends Fragment {
+    String TAG = "AnnouncementFragment";
 
     private RecyclerView recyclerView;
     private AnnouncementAdapter adapter;
@@ -54,6 +55,7 @@ public class AnnouncementsFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+        Log.e(TAG, "onresume!!!");
         checkDatabase();
     }
 
