@@ -45,6 +45,7 @@ public class MainActivity extends AppCompatActivity {
     private static final int RC_BARCODE_CAPTURE = 9001;
 
     AnnouncementsFragment announcementsFragment;
+    EventsFragment eventsFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,7 +87,7 @@ public class MainActivity extends AppCompatActivity {
                     if(fragmentManager.findFragmentByTag("announcements")!=null && announcementsFragment!=null) {
                         // if the fragment exists, show it
                         fragmentTransaction.show(fragmentManager.findFragmentByTag("announcements"));
-                        announcementsFragment.onResume();
+                        announcementsFragment.checkDatabase();
                     } else {
                         // if the fragment does not exist yet, add it to the fragment manager
                         announcementsFragment = new AnnouncementsFragment();
@@ -98,12 +99,14 @@ public class MainActivity extends AppCompatActivity {
                     fragmentTransaction.commit();
                     return true;
                 } else if(item.getItemId() == R.id.menu_event) {
-                    if(fragmentManager.findFragmentByTag("events")!=null) {
+                    if(fragmentManager.findFragmentByTag("events")!=null && eventsFragment!=null) {
                         // if the fragment exists, show it
                         fragmentTransaction.show(fragmentManager.findFragmentByTag("events"));
+                        eventsFragment.checkDatabase();
                     } else {
                         // if the fragment does not exist yet, add it to the fragment manager
-                        fragmentTransaction.add(R.id.content_frame, new EventsFragment(), "events");
+                        eventsFragment = new EventsFragment();
+                        fragmentTransaction.add(R.id.content_frame, eventsFragment, "events");
                     }
 
                     if(fragmentManager.findFragmentByTag("timer") !=null) {fragmentTransaction.hide(fragmentManager.findFragmentByTag("timer"));}

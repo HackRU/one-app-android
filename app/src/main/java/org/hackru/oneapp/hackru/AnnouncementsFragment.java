@@ -62,12 +62,12 @@ public class AnnouncementsFragment extends Fragment {
 
     public void checkDatabase() {
         announcementList = new ArrayList<Announcement>();
-        recyclerView = (RecyclerView) ((MainActivity)getActivity()).findViewById(R.id.recyclerView);
+        recyclerView = (RecyclerView) ((MainActivity)getActivity()).findViewById(R.id.recyclerViewAnnouncements);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity())); //getActivity() should get the activity's context? Instead of arguing "this"
         updateCards();
 
-        final ProgressBar loadingBar = (ProgressBar) getView().findViewById(R.id.loadingBar);
+        final ProgressBar loadingBar = (ProgressBar) getView().findViewById(R.id.loadingBarAnnouncements);
         loadingBar.setIndeterminate(true);
         loadingBar.setVisibility(ProgressBar.VISIBLE);
 
