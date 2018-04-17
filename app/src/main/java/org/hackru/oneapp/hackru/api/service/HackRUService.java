@@ -4,11 +4,9 @@ import com.google.gson.JsonObject;
 
 import org.hackru.oneapp.hackru.api.model.AnnouncementsResponse;
 import org.hackru.oneapp.hackru.api.model.AuthorizeRequest;
-import org.hackru.oneapp.hackru.api.model.Event;
 import org.hackru.oneapp.hackru.api.model.Login;
 import org.hackru.oneapp.hackru.api.model.ReadRequest;
-
-import java.util.List;
+import org.hackru.oneapp.hackru.api.model.events.Event;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -32,6 +30,6 @@ public interface HackRUService {
     @GET("dayof-slack")
     Call<AnnouncementsResponse> getAnnouncements();
 
-    @GET("events")
-    Call<List<Event>> getEvents();
+    @GET("dayof-events")
+    Call<JsonObject> getEvents();
 }

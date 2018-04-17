@@ -1,3 +1,4 @@
+
 package org.hackru.oneapp.hackru.api.model.events;
 
 import com.google.gson.annotations.Expose;

@@ -1,3 +1,4 @@
+
 package org.hackru.oneapp.hackru.api.model.events;
 
 import java.util.List;
@@ -6,26 +7,18 @@ import com.google.gson.annotations.SerializedName;
 
 public class ConferenceData {
 
-    @SerializedName("conferenceSolution")
-    @Expose
-    private ConferenceSolution conferenceSolution;
     @SerializedName("createRequest")
     @Expose
     private CreateRequest createRequest;
     @SerializedName("entryPoints")
     @Expose
     private List<EntryPoint> entryPoints = null;
+    @SerializedName("conferenceSolution")
+    @Expose
+    private ConferenceSolution conferenceSolution;
     @SerializedName("signature")
     @Expose
     private String signature;
-
-    public ConferenceSolution getConferenceSolution() {
-        return conferenceSolution;
-    }
-
-    public void setConferenceSolution(ConferenceSolution conferenceSolution) {
-        this.conferenceSolution = conferenceSolution;
-    }
 
     public CreateRequest getCreateRequest() {
         return createRequest;
@@ -41,6 +34,14 @@ public class ConferenceData {
 
     public void setEntryPoints(List<EntryPoint> entryPoints) {
         this.entryPoints = entryPoints;
+    }
+
+    public ConferenceSolution getConferenceSolution() {
+        return conferenceSolution;
+    }
+
+    public void setConferenceSolution(ConferenceSolution conferenceSolution) {
+        this.conferenceSolution = conferenceSolution;
     }
 
     public String getSignature() {
