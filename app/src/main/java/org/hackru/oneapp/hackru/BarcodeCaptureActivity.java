@@ -511,8 +511,8 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
             final String finalPost = post;
             cameraLayout.setBackgroundResource(R.drawable.scanner_loading_animation);
             AnimationDrawable loadingAnimation = (AnimationDrawable) cameraLayout.getBackground();
-            loadingAnimation.setEnterFadeDuration(200);
-            loadingAnimation.setExitFadeDuration(200);
+            loadingAnimation.setEnterFadeDuration(400);
+            loadingAnimation.setExitFadeDuration(400);
             loadingAnimation.start();
             Log.e(TAG, best.displayValue);
 
