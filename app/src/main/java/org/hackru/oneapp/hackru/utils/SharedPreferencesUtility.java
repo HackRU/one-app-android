@@ -12,6 +12,7 @@ public class SharedPreferencesUtility {
     static final String PREF_AUTH_TOKEN= "authtoken";
     static final String PREF_EMAIL= "email";
     static final String PREF_PERMISSION= "permission";
+    static final String PREF_MAP_USED= "map_used";
 
     static SharedPreferences getSharedPreferences(Context ctx) {
         return PreferenceManager.getDefaultSharedPreferences(ctx);
@@ -46,5 +47,15 @@ public class SharedPreferencesUtility {
 
     public static boolean getPermission(Context ctx) {
         return getSharedPreferences(ctx).getBoolean(PREF_PERMISSION, false);
+    }
+
+    public static void setMapUsed(Context ctx, Boolean used) {
+        SharedPreferences.Editor editor = getSharedPreferences(ctx).edit();
+        editor.putBoolean(PREF_MAP_USED, used);
+        editor.commit();
+    }
+
+    public static boolean getMapUsed(Context ctx) {
+        return getSharedPreferences(ctx).getBoolean(PREF_MAP_USED, false);
     }
 }

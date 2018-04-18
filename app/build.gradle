@@ -48,6 +48,10 @@ dependencies {
     // Stuff for the qr generator
     implementation 'com.github.kenglxn.QRGen:android:2.4.0'
 
+    // For the zoomable map image
+    implementation 'com.jsibbold:zoomage:1.1.0'
+
+
 }
 
 apply plugin: 'com.google.gms.google-services'

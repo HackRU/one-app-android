@@ -44,7 +44,12 @@
             android:name=".BarcodeCaptureActivity"
             android:label=""
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.Dialogue.Activity"></activity>
+            android:theme="@style/AppTheme.Dialogue.Activity" />
+        <activity
+            android:name=".MapActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/title_activity_map"
+            android:theme="@style/FullscreenTheme"></activity>
     </application>
 
 </manifest>

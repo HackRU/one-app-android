@@ -142,7 +142,6 @@ public class MainActivity extends AppCompatActivity {
         fabMenu.setClosedOnTouchOutside(true);
 
         final QRDialogueFragment QRFragment = new QRDialogueFragment();
-        final MapDialogueFragment mapFragment = new MapDialogueFragment();
 
 
 
@@ -167,7 +166,8 @@ public class MainActivity extends AppCompatActivity {
         fabMap.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 fabMenu.close(true);
-                mapFragment.show(fragmentManager, "fragment_mapdialogue");
+//                mapFragment.show(fragmentManager, "fragment_mapdialogue");
+                startActivity(new Intent(MainActivity.this, MapActivity.class));
             }
         });
         fabQR.setOnClickListener(new View.OnClickListener() {
