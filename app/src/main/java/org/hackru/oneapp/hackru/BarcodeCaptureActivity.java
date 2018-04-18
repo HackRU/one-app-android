@@ -539,7 +539,14 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
                                             public void onClick(DialogInterface dialog, int id) {
                                                 conductScan(finalBest, finalPost);
                                             }
-                                        }).create().show();
+                                        }).setOnCancelListener(new DialogInterface.OnCancelListener() {
+                                    @Override
+                                    public void onCancel(DialogInterface dialog) {
+                                        onScanFailure();
+
+                                    }
+                                });
+                                builder.create().show();
                             } else {
                                 conductScan(finalBest, finalPost);
                             }
