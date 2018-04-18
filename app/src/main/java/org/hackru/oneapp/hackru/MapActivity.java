@@ -112,8 +112,8 @@ public class MapActivity extends AppCompatActivity {
 
                         }
                     }).create().show();
+            SharedPreferencesUtility.setMapUsed(MapActivity.this, true);
         }
-        SharedPreferencesUtility.setMapUsed(MapActivity.this, true);
 
         FirebaseStorage storage = FirebaseStorage.getInstance();
         StorageReference storageRef = storage.getReference();
