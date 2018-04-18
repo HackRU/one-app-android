@@ -54,6 +54,7 @@ import com.google.android.gms.vision.MultiProcessor;
 import com.google.android.gms.vision.barcode.Barcode;
 import com.google.android.gms.vision.barcode.BarcodeDetector;
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.jaredrummler.materialspinner.MaterialSpinner;
@@ -66,6 +67,7 @@ import org.hackru.oneapp.hackru.QRScanner.Camera.CameraSourcePreview;
 import org.hackru.oneapp.hackru.QRScanner.Camera.GraphicOverlay;
 import org.hackru.oneapp.hackru.api.model.AuthorizeRequest;
 import org.hackru.oneapp.hackru.api.model.Login;
+import org.hackru.oneapp.hackru.api.model.ReadRequest;
 import org.hackru.oneapp.hackru.api.service.HackRUService;
 import org.hackru.oneapp.hackru.utils.SharedPreferencesUtility;
 
@@ -117,6 +119,12 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
     public void onCreate(Bundle icicle) {
         super.onCreate(icicle);
         setContentView(R.layout.activity_barcode_capture);
+
+        retrofit = new Retrofit.Builder()
+                .baseUrl("https://m7cwj1fy7c.execute-api.us-west-2.amazonaws.com/mlhtest/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        hackRUService = retrofit.create(HackRUService.class);
 
         setFinishOnTouchOutside(false);
         gson = new Gson();
@@ -395,6 +403,32 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
         }
     }
 
+    public void conductScan(Barcode best, String post) {
+        JsonParser parser = new JsonParser();
+        JsonObject obj = parser.parse(post).getAsJsonObject();
+
+        hackRUService.update(obj).enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+//                    Log.e(TAG, "QR scan submitted to API!");
+                if(response.isSuccessful()) {
+                    onScanSuccess();
+                    String body = response.toString();
+                    Log.e(TAG, body);
+                } else {
+                    Toast.makeText(getBaseContext(), "Error in API request", Toast.LENGTH_LONG).show();
+                    onScanFailure();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+                Toast.makeText(getBaseContext(), "Unable to reach scanner API", Toast.LENGTH_LONG).show();
+                onScanFailure();
+            }
+        });
+    }
+
     public void onScanSuccess() {
         cameraLayout.setBackgroundResource(R.drawable.scanner_success_animation);
         AnimationDrawable successAnimation = (AnimationDrawable) cameraLayout.getBackground();
@@ -412,6 +446,7 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
         successAnimation.setOneShot(true);
         successAnimation.start();
     }
+
 
     /**
      * onTap returns the tapped barcode result to the calling Activity.
@@ -471,15 +506,9 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
                         "}";
             }
 
-            JsonParser parser = new JsonParser();
-            JsonObject obj = parser.parse(post).getAsJsonObject();
-
-            Retrofit retrofit = new Retrofit.Builder()
-                    .baseUrl("https://m7cwj1fy7c.execute-api.us-west-2.amazonaws.com/mlhtest/")
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .build();
-            HackRUService hackRUService = retrofit.create(HackRUService.class);
-            final ConstraintLayout topLayout = (ConstraintLayout) findViewById(R.id.topLayout);
+            ReadRequest request = new ReadRequest(best.displayValue);
+            final Barcode finalBest = best;
+            final String finalPost = post;
             cameraLayout.setBackgroundResource(R.drawable.scanner_loading_animation);
             AnimationDrawable loadingAnimation = (AnimationDrawable) cameraLayout.getBackground();
             loadingAnimation.setEnterFadeDuration(200);
@@ -487,25 +516,47 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
             loadingAnimation.start();
             Log.e(TAG, best.displayValue);
 
-            hackRUService.update(obj).enqueue(new Callback<JsonObject>() {
+            hackRUService.read(request).enqueue(new Callback<JsonObject>() {
                 @Override
                 public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
-//                    Log.e(TAG, "QR scan submitted to API!");
-                    if(response.code()==200) {
-                        onScanSuccess();
-                        String body = response.toString();
-                        Log.e(TAG, body);
+                    if(response.isSuccessful()) {
+                        JsonObject body = response.body();
+                        JsonElement event = body.getAsJsonArray("body").get(0).getAsJsonObject().get("day_of").getAsJsonObject().get(selectedEvent);
+                        if (event == null) {
+                            conductScan(finalBest, finalPost);
+                        } else {
+                            int scanCount = event.getAsInt();
+                            if(scanCount > 0) {
+                                android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(BarcodeCaptureActivity.this, R.style.AppTheme_Dialogue_Alert);
+                                if(scanCount == 1) builder.setMessage("This person has had 1 serving already. Do you want to decline them?");
+                                else builder.setMessage("This person has had " + scanCount + " servings already. Do you want to decline them?");
+                                builder.setPositiveButton("Decline", new DialogInterface.OnClickListener() {
+                                            public void onClick(DialogInterface dialog, int id) {
+                                                onScanFailure();
+                                            }
+                                        })
+                                        .setNegativeButton("Allow", new DialogInterface.OnClickListener() {
+                                            public void onClick(DialogInterface dialog, int id) {
+                                                conductScan(finalBest, finalPost);
+                                            }
+                                        }).create().show();
+                            } else {
+                                conductScan(finalBest, finalPost);
+                            }
+                        }
+
                     } else {
-                        onScanFailure();
+                        Toast.makeText(getBaseContext(), "Error checking user history, please try again", Toast.LENGTH_LONG).show();
                     }
                 }
 
                 @Override
                 public void onFailure(Call<JsonObject> call, Throwable t) {
-                    Log.e(TAG, "Unable to submit post to API.");
-                    onScanFailure();
+                    Toast.makeText(getBaseContext(), "Unable to reach scanner API", Toast.LENGTH_LONG).show();
                 }
             });
+
+
             return true;
         }
         return false;
