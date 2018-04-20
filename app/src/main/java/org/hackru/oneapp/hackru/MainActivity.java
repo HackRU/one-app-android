@@ -1,5 +1,9 @@
 package org.hackru.oneapp.hackru;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.annotation.NonNull;
@@ -24,6 +28,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.OvershootInterpolator;
 import android.widget.Toast;
 
 import org.hackru.oneapp.hackru.api.model.ReadRequest;
@@ -125,6 +130,35 @@ public class MainActivity extends AppCompatActivity {
         /* ===== FLOATING ACTION BUTTON ===== */
         //TODO: Fix buggy closing animation when timer fragment is selected
         fabMenu = (FloatingActionMenu) findViewById(R.id.fabMenu);
+
+        AnimatorSet set = new AnimatorSet();
+
+        ObjectAnimator scaleOutX = ObjectAnimator.ofFloat(fabMenu.getMenuIconView(), "scaleX", 1.0f, 0.2f);
+        ObjectAnimator scaleOutY = ObjectAnimator.ofFloat(fabMenu.getMenuIconView(), "scaleY", 1.0f, 0.2f);
+
+        ObjectAnimator scaleInX = ObjectAnimator.ofFloat(fabMenu.getMenuIconView(), "scaleX", 0.2f, 1.0f);
+        ObjectAnimator scaleInY = ObjectAnimator.ofFloat(fabMenu.getMenuIconView(), "scaleY", 0.2f, 1.0f);
+
+        scaleOutX.setDuration(50);
+        scaleOutY.setDuration(50);
+
+        scaleInX.setDuration(150);
+        scaleInY.setDuration(150);
+
+        scaleInX.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+                fabMenu.getMenuIconView().setImageResource(fabMenu.isOpened()
+                        ? R.drawable.ic_menu_white_24dp : R.drawable.ic_clear_white_24dp);
+            }
+        });
+
+        set.play(scaleOutX).with(scaleOutY);
+        set.play(scaleInX).with(scaleInY).after(scaleOutX);
+        set.setInterpolator(new OvershootInterpolator(2));
+
+        fabMenu.setIconToggleAnimatorSet(set);
+
         fabLogout = (FloatingActionButton) findViewById(R.id.fabLogout);
         fabMap = (FloatingActionButton) findViewById(R.id.fabMap);
         fabQR = (FloatingActionButton) findViewById(R.id.fabQR);
