@@ -17,6 +17,7 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,6 +36,8 @@ public class AnnouncementsFragment extends Fragment {
     private AnnouncementAdapter adapter;
     private List<Announcement> announcementList;
     final String BASE_URL = "https://m7cwj1fy7c.execute-api.us-west-2.amazonaws.com/mlhtest/";
+    ProgressBar loadingBar;
+    HackRUService hackRUService;
 
     public AnnouncementsFragment() {
         // Required empty public constructor
@@ -50,6 +53,22 @@ public class AnnouncementsFragment extends Fragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        announcementList = new ArrayList<Announcement>();
+        recyclerView = (RecyclerView) ((MainActivity)getActivity()).findViewById(R.id.recyclerViewAnnouncements);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+
+        loadingBar = (ProgressBar) getView().findViewById(R.id.loadingBarAnnouncements);
+        loadingBar.setIndeterminate(true);
+        loadingBar.setVisibility(ProgressBar.VISIBLE);
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        hackRUService = retrofit.create(HackRUService.class);
     }
 
     @Override
@@ -59,25 +78,16 @@ public class AnnouncementsFragment extends Fragment {
         checkDatabase();
     }
 
+    public boolean compareCache(List<Announcement> list) {
+        for (Announcement item : list) {
+            if(!announcementList.contains(item)) return true;
+        }
+        return false;
+    }
+
 
     public void checkDatabase() {
-        announcementList = new ArrayList<Announcement>();
-        recyclerView = (RecyclerView) ((MainActivity)getActivity()).findViewById(R.id.recyclerViewAnnouncements);
-        recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity())); //getActivity() should get the activity's context? Instead of arguing "this"
-        updateCards();
 
-        final ProgressBar loadingBar = (ProgressBar) getView().findViewById(R.id.loadingBarAnnouncements);
-        loadingBar.setIndeterminate(true);
-        loadingBar.setVisibility(ProgressBar.VISIBLE);
-
-        //Fetch Announcements
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(BASE_URL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-
-        HackRUService hackRUService = retrofit.create(HackRUService.class);
         Call<AnnouncementsResponse> getAnnouncements = hackRUService.getAnnouncements();
         getAnnouncements.enqueue(new Callback<AnnouncementsResponse>() {
 
@@ -86,11 +96,11 @@ public class AnnouncementsFragment extends Fragment {
                 if(response.isSuccessful()) {
                     Log.i("Announcements", "Get request successful");
                     AnnouncementsResponse resp = response.body();
-                    announcementList = resp.getBody();
-                    Log.i("Announcements Response", resp.toString());
-                    loadingBar.setVisibility(View.GONE);
-                    recyclerView.setVisibility(View.VISIBLE);
-                    updateCards();
+                    if (compareCache(resp.getBody())) {
+                        announcementList = resp.getBody();
+                        Log.i("Announcements Response", resp.toString());
+                        updateCards();
+                    }
                 } else {
                     Log.i("Announcements", "Bad response");
                     Log.i("Announcements", response.body().toString());
@@ -98,6 +108,7 @@ public class AnnouncementsFragment extends Fragment {
                     Log.i("Announcements", response.message().toString());
                     loadingBar.setVisibility(View.GONE);
                     recyclerView.setVisibility(View.VISIBLE);
+                    Toast.makeText(getContext(), "Error refreshing announcements", Toast.LENGTH_LONG).show();
                 }
             }
 
@@ -107,10 +118,13 @@ public class AnnouncementsFragment extends Fragment {
                 Log.i("Announcements", t.getLocalizedMessage());
                 loadingBar.setVisibility(View.GONE);
                 recyclerView.setVisibility(View.VISIBLE);
+                Toast.makeText(getContext(), "Error refreshing announcements", Toast.LENGTH_LONG).show();
             }
         });
     }
     public void updateCards() {
+        loadingBar.setVisibility(View.GONE);
+        recyclerView.setVisibility(View.VISIBLE);
         adapter = new AnnouncementAdapter(getActivity(), announcementList);
         recyclerView.setAdapter(adapter);
     }

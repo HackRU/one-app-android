@@ -37,6 +37,8 @@ public class EventsFragment extends Fragment {
     private EventAdapter adapter;
     private List<Event> eventList;
     final String BASE_URL = "https://m7cwj1fy7c.execute-api.us-west-2.amazonaws.com/mlhtest/";
+    HackRUService hackRUService;
+    ProgressBar loadingBar;
 
     public EventsFragment() {
         // Required empty public constructor
@@ -52,6 +54,22 @@ public class EventsFragment extends Fragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        eventList = new ArrayList<Event>();
+        recyclerView = (RecyclerView) ((MainActivity)getActivity()).findViewById(R.id.recyclerViewEvents);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity())); //getActivity() should get the activity's context? Instead of arguing "this"
+
+        loadingBar = (ProgressBar) getView().findViewById(R.id.loadingBarEvents);
+        loadingBar.setIndeterminate(true);
+        loadingBar.setVisibility(ProgressBar.VISIBLE);
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        hackRUService = retrofit.create(HackRUService.class);
     }
 
     @Override
@@ -61,25 +79,17 @@ public class EventsFragment extends Fragment {
         checkDatabase();
     }
 
+    public boolean compareCache(List<Event> list) {
+        for (Event item : list) {
+            if(!eventList.contains(item)) return true;
+        }
+
+        return false;
+    }
+
 
     public void checkDatabase() {
-        eventList = new ArrayList<Event>();
-        recyclerView = (RecyclerView) ((MainActivity)getActivity()).findViewById(R.id.recyclerViewEvents);
-        recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity())); //getActivity() should get the activity's context? Instead of arguing "this"
-        updateCards();
 
-        final ProgressBar loadingBar = (ProgressBar) getView().findViewById(R.id.loadingBarEvents);
-        loadingBar.setIndeterminate(true);
-        loadingBar.setVisibility(ProgressBar.VISIBLE);
-
-        //Fetch Events
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(BASE_URL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-
-        HackRUService hackRUService = retrofit.create(HackRUService.class);
         Call<JsonObject> getEvents = hackRUService.getEvents();
         getEvents.enqueue(new Callback<JsonObject>() {
 
@@ -98,16 +108,12 @@ public class EventsFragment extends Fragment {
                         String place = eventJSON.getAsJsonObject().get("location")!=null ? eventJSON.getAsJsonObject().get("location").getAsString() : null;
                         eventList.add(new Event(title, description, time, place));
                     }
-                    loadingBar.setVisibility(View.GONE);
-                    recyclerView.setVisibility(View.VISIBLE);
                     updateCards();
                 } else {
                     Log.e(TAG, "Bad response");
                     Log.e(TAG, response.body().toString());
                     Log.e(TAG, response.errorBody().toString());
                     Log.e(TAG, response.message().toString());
-                    loadingBar.setVisibility(View.GONE);
-                    recyclerView.setVisibility(View.VISIBLE);
                 }
             }
 
@@ -115,12 +121,12 @@ public class EventsFragment extends Fragment {
             public void onFailure(Call<JsonObject> call, Throwable t) {
                 Log.i(TAG, "Get request failed");
                 Log.i(TAG, t.getLocalizedMessage());
-                loadingBar.setVisibility(View.GONE);
-                recyclerView.setVisibility(View.VISIBLE);
             }
         });
     }
     public void updateCards() {
+        loadingBar.setVisibility(View.GONE);
+        recyclerView.setVisibility(View.VISIBLE);
         adapter = new EventAdapter(getActivity(), eventList);
         recyclerView.setAdapter(adapter);
     }
