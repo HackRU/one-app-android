@@ -25,14 +25,12 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
 import android.graphics.drawable.AnimationDrawable;
 import android.hardware.Camera;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -40,16 +38,10 @@ import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.widget.ArrayAdapter;
-import android.widget.RelativeLayout;
-import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
-import com.google.android.gms.common.api.CommonStatusCodes;
 import com.google.android.gms.vision.MultiProcessor;
 import com.google.android.gms.vision.barcode.Barcode;
 import com.google.android.gms.vision.barcode.BarcodeDetector;
@@ -65,8 +57,6 @@ import org.hackru.oneapp.hackru.QRScanner.BarcodeTrackerFactory;
 import org.hackru.oneapp.hackru.QRScanner.Camera.CameraSource;
 import org.hackru.oneapp.hackru.QRScanner.Camera.CameraSourcePreview;
 import org.hackru.oneapp.hackru.QRScanner.Camera.GraphicOverlay;
-import org.hackru.oneapp.hackru.api.model.AuthorizeRequest;
-import org.hackru.oneapp.hackru.api.model.Login;
 import org.hackru.oneapp.hackru.api.model.ReadRequest;
 import org.hackru.oneapp.hackru.api.service.HackRUService;
 import org.hackru.oneapp.hackru.utils.SharedPreferencesUtility;
@@ -403,6 +393,39 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
         }
     }
 
+    public void printLabel(String email) {
+//        retrofit = new Retrofit.Builder()
+//                .baseUrl("https://m7cwj1fy7c.execute-api.us-west-2.amazonaws.com/mlhtest/")
+//                .addConverterFactory(GsonConverterFactory.create())
+//                .build();
+//        hackRUService = retrofit.create(HackRUService.class);
+
+        final String finalEmail = email;
+
+        HackRUService labelService = new Retrofit.Builder()
+                .baseUrl("http://labels.hackru.org/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build()
+                .create(HackRUService.class);
+
+        Log.e(TAG, email);
+
+        labelService.printLabel(email).enqueue(new Callback() {
+            @Override
+            public void onResponse(Call call, Response response) {
+                Log.e(TAG, "TAG PRINTED");
+                Log.e(TAG, response.body().toString());
+            }
+
+            @Override
+            public void onFailure(Call call, Throwable t) {
+                Log.e(TAG, "ERROR PRINTING TAG");
+            }
+        });
+
+
+    }
+
     public void conductScan(Barcode best, String post) {
         JsonParser parser = new JsonParser();
         JsonObject obj = parser.parse(post).getAsJsonObject();
@@ -509,10 +532,11 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
             ReadRequest request = new ReadRequest(best.displayValue);
             final Barcode finalBest = best;
             final String finalPost = post;
+            final String email = best.displayValue;
             cameraLayout.setBackgroundResource(R.drawable.scanner_loading_animation);
             AnimationDrawable loadingAnimation = (AnimationDrawable) cameraLayout.getBackground();
-            loadingAnimation.setEnterFadeDuration(400);
-            loadingAnimation.setExitFadeDuration(400);
+            loadingAnimation.setEnterFadeDuration(200);
+            loadingAnimation.setExitFadeDuration(200);
             loadingAnimation.start();
             Log.e(TAG, best.displayValue);
 
@@ -521,13 +545,37 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
                 public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                     if(response.isSuccessful()) {
                         JsonObject body = response.body();
-                        JsonElement event = body.getAsJsonArray("body").get(0).getAsJsonObject().get("day_of").getAsJsonObject().get(selectedEvent);
+                        android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(BarcodeCaptureActivity.this, R.style.AppTheme_Dialogue_Alert);
+                        JsonObject dayOf = body.getAsJsonArray("body").get(0).getAsJsonObject().get("day_of").getAsJsonObject();
+                        JsonElement event = dayOf.get(selectedEvent);
                         if (event == null) {
-                            conductScan(finalBest, finalPost);
+                            if(dayOf.get("checked_in") == null || !dayOf.get("checked_in").getAsBoolean()) {
+                                printLabel(email);
+                                conductScan(finalBest, finalPost);
+                            } else {
+                                builder.setMessage("This person has already checked in. Do you want to print another label?");
+                                builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        onScanSuccess();
+                                        printLabel(email);
+                                    }
+                                })
+                                        .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                                            public void onClick(DialogInterface dialog, int id) {
+                                                onScanSuccess();
+                                            }
+                                        }).setOnCancelListener(new DialogInterface.OnCancelListener() {
+                                    @Override
+                                    public void onCancel(DialogInterface dialog) {
+                                        onScanSuccess();
+
+                                    }
+                                });
+                                builder.create().show();
+                            }
                         } else {
                             int scanCount = event.getAsInt();
                             if(scanCount > 0) {
-                                android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(BarcodeCaptureActivity.this, R.style.AppTheme_Dialogue_Alert);
                                 if(scanCount == 1) builder.setMessage("This person has had 1 serving already. Do you want to decline them?");
                                 else builder.setMessage("This person has had " + scanCount + " servings already. Do you want to decline them?");
                                 builder.setPositiveButton("Decline", new DialogInterface.OnClickListener() {

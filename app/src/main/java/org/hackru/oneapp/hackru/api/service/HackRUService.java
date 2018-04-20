@@ -12,6 +12,7 @@ import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
+import retrofit2.http.Path;
 
 /**
  * Created by Sean on 3/21/2018.
@@ -32,4 +33,8 @@ public interface HackRUService {
 
     @GET("dayof-events")
     Call<JsonObject> getEvents();
+
+    @GET("{email}")
+    Call<String> printLabel(@Path("email") String email);
+
 }

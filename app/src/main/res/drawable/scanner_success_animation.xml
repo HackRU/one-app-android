@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <animation-list xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <item android:duration="1000">
+    <item android:duration="1500">
         <color
-            android:color="#63af5f"
+            android:color="#1de813"
             />
     </item>
 
