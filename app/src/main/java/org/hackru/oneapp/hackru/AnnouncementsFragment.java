@@ -4,8 +4,8 @@ import org.hackru.oneapp.hackru.api.model.Announcement;
 import org.hackru.oneapp.hackru.api.model.AnnouncementsResponse;
 import org.hackru.oneapp.hackru.api.service.HackRUService;
 
-import android.app.ProgressDialog;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -14,8 +14,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
-import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
@@ -38,6 +36,8 @@ public class AnnouncementsFragment extends Fragment {
     final String BASE_URL = "https://m7cwj1fy7c.execute-api.us-west-2.amazonaws.com/mlhtest/";
     ProgressBar loadingBar;
     HackRUService hackRUService;
+    boolean firstRun = true;
+    private Parcelable recyclerViewState;
 
     public AnnouncementsFragment() {
         // Required empty public constructor
@@ -98,14 +98,14 @@ public class AnnouncementsFragment extends Fragment {
                     AnnouncementsResponse resp = response.body();
                     if (compareCache(resp.getBody())) {
                         announcementList = resp.getBody();
-                        Log.i("Announcements Response", resp.toString());
-                        updateCards();
+                        if(firstRun) {
+                            createCards();
+                            firstRun = false;
+                        } else {
+                            updateCards();
+                        }
                     }
                 } else {
-                    Log.i("Announcements", "Bad response");
-                    Log.i("Announcements", response.body().toString());
-                    Log.i("Announcements", response.errorBody().toString());
-                    Log.i("Announcements", response.message().toString());
                     loadingBar.setVisibility(View.GONE);
                     recyclerView.setVisibility(View.VISIBLE);
                     Toast.makeText(getContext(), "Error refreshing announcements", Toast.LENGTH_LONG).show();
@@ -122,11 +122,18 @@ public class AnnouncementsFragment extends Fragment {
             }
         });
     }
-    public void updateCards() {
+    public void createCards() {
         loadingBar.setVisibility(View.GONE);
         recyclerView.setVisibility(View.VISIBLE);
         adapter = new AnnouncementAdapter(getActivity(), announcementList);
         recyclerView.setAdapter(adapter);
+    }
+
+    public void updateCards() {
+        recyclerViewState = recyclerView.getLayoutManager().onSaveInstanceState();
+        adapter.notifyDataSetChanged();
+        Log.e(TAG, "UPDATE");
+        recyclerView.getLayoutManager().onRestoreInstanceState(recyclerViewState);
     }
 
 
