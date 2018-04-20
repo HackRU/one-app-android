@@ -1,6 +1,7 @@
 package org.hackru.oneapp.hackru;
 
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -11,7 +12,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -39,6 +39,8 @@ public class EventsFragment extends Fragment {
     final String BASE_URL = "https://m7cwj1fy7c.execute-api.us-west-2.amazonaws.com/mlhtest/";
     HackRUService hackRUService;
     ProgressBar loadingBar;
+    boolean firstRun = true;
+    private Parcelable recyclerViewState;
 
     public EventsFragment() {
         // Required empty public constructor
@@ -87,7 +89,6 @@ public class EventsFragment extends Fragment {
         return false;
     }
 
-
     public void checkDatabase() {
 
         Call<JsonObject> getEvents = hackRUService.getEvents();
@@ -96,6 +97,7 @@ public class EventsFragment extends Fragment {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 if(response.isSuccessful()) {
+                    List<Event> newEventList = new ArrayList<Event>();
                     Log.e(TAG, "Get request successful");
                     JsonArray events = response.body().getAsJsonObject().get("body").getAsJsonArray();
                     Iterator iterator = events.iterator();
@@ -106,9 +108,18 @@ public class EventsFragment extends Fragment {
                         String description = eventJSON.getAsJsonObject().get("description")!=null ? eventJSON.getAsJsonObject().get("description").getAsString() : null;
                         String time = eventJSON.getAsJsonObject().get("start").getAsJsonObject().get("dateTime").getAsString();
                         String place = eventJSON.getAsJsonObject().get("location")!=null ? eventJSON.getAsJsonObject().get("location").getAsString() : null;
-                        eventList.add(new Event(title, description, time, place));
+                        newEventList.add(new Event(title, description, time, place));
                     }
-                    updateCards();
+
+                    if(compareCache(newEventList)){
+                        eventList = newEventList;
+                        if(firstRun) {
+                            createCards();
+                            firstRun = false;
+                        } else {
+                            updateCards();
+                        }
+                    }
                 } else {
                     Log.e(TAG, "Bad response");
                     Log.e(TAG, response.body().toString());
@@ -124,11 +135,18 @@ public class EventsFragment extends Fragment {
             }
         });
     }
-    public void updateCards() {
+    public void createCards() {
         loadingBar.setVisibility(View.GONE);
         recyclerView.setVisibility(View.VISIBLE);
         adapter = new EventAdapter(getActivity(), eventList);
         recyclerView.setAdapter(adapter);
+    }
+
+    public void updateCards() {
+        recyclerViewState = recyclerView.getLayoutManager().onSaveInstanceState();
+        adapter.notifyDataSetChanged();
+        Log.e(TAG, "UPDATE");
+        recyclerView.getLayoutManager().onRestoreInstanceState(recyclerViewState);
     }
 
 
