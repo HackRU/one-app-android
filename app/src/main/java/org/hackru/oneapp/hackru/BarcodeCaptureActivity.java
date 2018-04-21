@@ -413,8 +413,8 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
         labelService.printLabel(email).enqueue(new Callback() {
             @Override
             public void onResponse(Call call, Response response) {
-                Log.e(TAG, "TAG PRINTED");
-                Log.e(TAG, response.body().toString());
+//                Log.e(TAG, "TAG PRINTED");
+//                Log.e(TAG, response.body().toString());
             }
 
             @Override
