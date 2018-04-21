@@ -53,12 +53,24 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
         String finalDate = event.time;
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX");
         try {
-            Date date = format.parse(event.time);
-            SimpleDateFormat dateFormat = new SimpleDateFormat("h:mm a 'on' EEEE");
-            finalDate = dateFormat.format(date);
+            Date dateStart = format.parse(event.time);
+            Date dateEnd = format.parse(event.endTime);
+//            Log.e(TAG, ""+dateStart.getTime());
+            SimpleDateFormat timeFormat = new SimpleDateFormat("h:mm a");
+            SimpleDateFormat dayFormat = new SimpleDateFormat("EEEE");
+            StringBuilder sb = new StringBuilder();
+            if (event.time.equals(event.endTime)) {
+                sb.append(timeFormat.format(dateStart)).append(" on ").append(dayFormat.format(dateStart));
+                finalDate = sb.toString();
+            } else {
+                sb.append(timeFormat.format(dateStart)).append(" - ").append(timeFormat.format(dateEnd)).append(" on ").append(dayFormat.format(dateStart));
+//            finalDate = dayFormat.format(dateStart);
+                finalDate = sb.toString();
+            }
         } catch (ParseException e) {
             e.printStackTrace();
         }
+
 
 
         holder.startTime.setText(finalDate);

@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -19,7 +20,10 @@ import com.google.gson.JsonObject;
 import org.hackru.oneapp.hackru.api.model.Event;
 import org.hackru.oneapp.hackru.api.service.HackRUService;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -103,6 +107,14 @@ public class EventsFragment extends Fragment {
                     Iterator iterator = events.iterator();
                     while (iterator.hasNext()) {
                         JsonElement eventJSON = (JsonElement)iterator.next();
+                        String endTime = eventJSON.getAsJsonObject().get("end").getAsJsonObject().get("dateTime").getAsString();
+                        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX");
+                            try {
+                                Date date = format.parse(endTime);
+                                if(System.currentTimeMillis() >= date.getTime()) continue;
+                            } catch (ParseException e) {
+                                e.printStackTrace();
+                            }
 //                        Log.e(TAG, hi.toString());
                         String title = eventJSON.getAsJsonObject().get("summary").getAsString();
                         String description = eventJSON.getAsJsonObject().get("description")!=null ? eventJSON.getAsJsonObject().get("description").getAsString() : null;
@@ -112,7 +124,12 @@ public class EventsFragment extends Fragment {
 //                        Log.e(TAG, "description["+newEventList.size()+"] = "+description);
 //                        Log.e(TAG, "time["+newEventList.size()+"] = "+time);
 //                        Log.e(TAG, "place["+newEventList.size()+"] = "+place);
-                        newEventList.add(new Event(title, description, time, place));
+                        newEventList.add(new Event(title, description, time, endTime, place));
+                    }
+
+                    if(newEventList.isEmpty()) {
+                        noMoreEvents();
+                        return;
                     }
 
                     if(compareCache(newEventList)){
@@ -152,6 +169,14 @@ public class EventsFragment extends Fragment {
         Log.e(TAG, "UPDATE");
         recyclerView.getLayoutManager().onRestoreInstanceState(recyclerViewState);
 //        createCards();
+    }
+
+    public void noMoreEvents() {
+        TextView endMessage = (TextView) getView().findViewById(R.id.noMoreEvents);
+        loadingBar.setVisibility(View.GONE);
+        recyclerView.setVisibility(View.GONE);
+        endMessage.setVisibility(View.VISIBLE);
+
     }
 
 
