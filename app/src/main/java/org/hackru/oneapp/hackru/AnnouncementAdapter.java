@@ -2,11 +2,13 @@ package org.hackru.oneapp.hackru;
 
 import org.hackru.oneapp.hackru.api.model.Announcement;
 import android.content.Context;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.text.Layout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
@@ -39,11 +41,18 @@ public class AnnouncementAdapter extends RecyclerView.Adapter<AnnouncementAdapte
 
     @Override
     public void onBindViewHolder(AnnouncementViewHolder holder, int position) {
+        holder.announcementCard.setVisibility(View.VISIBLE);
+        if(announcementList.isEmpty()) return;
         Announcement announcement = announcementList.get(position);
+        if(announcement == null) return;
 
         //The timestamp comes from the server as a string representing seconds (?)
         //since Unix time started.
         String timestampString = announcement.getTs();
+        if (timestampString == null || timestampString.equals("")) {
+            holder.announcementCard.setVisibility(View.GONE);
+            return;
+        }
         SimpleDateFormat dateFormat = new SimpleDateFormat("h:mm a 'on' M/d/yyyy");
         double timestamp = Double.parseDouble(timestampString);
         String date = dateFormat.format(new Date((long) (timestamp*1000)));
@@ -71,11 +80,13 @@ public class AnnouncementAdapter extends RecyclerView.Adapter<AnnouncementAdapte
 
     public class AnnouncementViewHolder extends RecyclerView.ViewHolder {
         TextView date, message;
+        CardView announcementCard;
 
         public AnnouncementViewHolder(View itemView) {
             super(itemView);
             date = (TextView) itemView.findViewById(R.id.date);
             message = (TextView) itemView.findViewById(R.id.message);
+            announcementCard = (CardView) itemView.findViewById(R.id.announcementCard);
         }
     }
 

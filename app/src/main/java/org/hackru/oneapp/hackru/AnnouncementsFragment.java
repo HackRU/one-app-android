@@ -79,6 +79,7 @@ public class AnnouncementsFragment extends Fragment {
     }
 
     public boolean compareCache(List<Announcement> list) {
+        if(list == null || list.isEmpty()) return false;
         for (Announcement item : list) {
             if(!announcementList.contains(item)) return true;
         }
@@ -98,6 +99,10 @@ public class AnnouncementsFragment extends Fragment {
                     AnnouncementsResponse resp = response.body();
                     if (compareCache(resp.getBody())) {
                         announcementList = resp.getBody();
+                        for(int i=0; i<announcementList.size(); i++) {
+                            if(announcementList.get(i) == null || announcementList.get(i).getText() == null || announcementList.get(i).getText().equals("")) announcementList.remove(i);
+                        }
+                        if(announcementList.isEmpty()) return;
                         if(firstRun) {
                             createCards();
                             firstRun = false;

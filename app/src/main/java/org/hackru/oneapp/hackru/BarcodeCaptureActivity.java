@@ -212,15 +212,15 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
 //                .show();
     }
 
-    @Override
-    public boolean onTouchEvent(MotionEvent e) {
-//        boolean b = scaleGestureDetector.onTouchEvent(e);
-        boolean b = false;
-
-        boolean c = gestureDetector.onTouchEvent(e);
-
-        return b || c || super.onTouchEvent(e);
-    }
+//    @Override
+//    public boolean onTouchEvent(MotionEvent e) {
+////        boolean b = scaleGestureDetector.onTouchEvent(e);
+//        boolean b = false;
+//
+//        boolean c = gestureDetector.onTouchEvent(e);
+//
+//        return b || c || super.onTouchEvent(e);
+//    }
 
     /**
      * Creates and starts the camera.  Note that this uses a higher resolution in comparison
