@@ -87,6 +87,7 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
     public static final String AutoFocus = "AutoFocus";
     public static final String UseFlash = "UseFlash";
     public static final String BarcodeObject = "Barcode";
+    public boolean isScanning = false;
 
     private CameraSource mCameraSource;
     private CameraSourcePreview mPreview;
@@ -170,7 +171,7 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
             requestCameraPermission();
         }
 
-        gestureDetector = new GestureDetector(this, new CaptureGestureListener());
+//        gestureDetector = new GestureDetector(this, new CaptureGestureListener());
 //        scaleGestureDetector = new ScaleGestureDetector(this, new ScaleListener());
 
 //        Snackbar.make(mGraphicOverlay, "Tap to capture. Pinch/Stretch to zoom",
@@ -474,190 +475,190 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
     /**
      * onTap returns the tapped barcode result to the calling Activity.
      *
-     * @param rawX - the raw position of the tap
-     * @param rawY - the raw position of the tap.
+     * param rawX - the raw position of the tap
+     * param rawY - the raw position of the tap.
      * @return true if the activity is ending.
      */
-    private boolean onTap(float rawX, float rawY) {
-        // Find tap point in preview frame coordinates.
-        int[] location = new int[2];
-        mGraphicOverlay.getLocationOnScreen(location);
-        float x = (rawX - location[0]) / mGraphicOverlay.getWidthScaleFactor();
-        float y = (rawY - location[1]) / mGraphicOverlay.getHeightScaleFactor();
-
-        // Find the barcode whose center is closest to the tapped point.
-        Barcode best = null;
-        float bestDistance = Float.MAX_VALUE;
-        for (BarcodeGraphic graphic : mGraphicOverlay.getGraphics()) {
-            Barcode barcode = graphic.getBarcode();
-            if (barcode.getBoundingBox().contains((int) x, (int) y)) {
-                // Exact hit, no need to keep looking.
-                best = barcode;
-                break;
-            }
-            float dx = x - barcode.getBoundingBox().centerX();
-            float dy = y - barcode.getBoundingBox().centerY();
-            float distance = (dx * dx) + (dy * dy);  // actually squared distance
-            if (distance < bestDistance) {
-                best = barcode;
-                bestDistance = distance;
-            }
-        }
-
-        if (best != null) {
-            //            Intent data = new Intent();
-//            data.putExtra(BarcodeObject, best);
-//            setResult(CommonStatusCodes.SUCCESS, data);
-//            finish();
-
-
-            /* ====== API CALL ====== */
-            String post = "";
-            if(selectedEvent == null) {
-                post = "{" +
-                        "'user_email': " + "'" + best.displayValue + "'," +
-                        "'auth_email': " + "'" + SharedPreferencesUtility.getEmail(this) + "'," +
-                        "'auth': " + "'" + SharedPreferencesUtility.getAuthToken(this) + "'," +
-                        "'updates': {'$set': {'registration_status': 'checked-in', 'day_of.checked_in': true}}" +
-                        "}";
-            } else {
-                post = "{" +
-                        "'user_email': " + "'" + best.displayValue + "'," +
-                        "'auth_email': " + "'" + SharedPreferencesUtility.getEmail(this) + "'," +
-                        "'auth': " + "'" + SharedPreferencesUtility.getAuthToken(this) + "'," +
-                        "'updates': {'$inc': {'day_of." + selectedEvent +"': 1}}" +
-                        "}";
-            }
-
-            ReadRequest request = new ReadRequest(best.displayValue);
-            final Barcode finalBest = best;
-            final String finalPost = post;
-            final String email = best.displayValue;
-            cameraLayout.setBackgroundResource(R.drawable.scanner_loading_animation);
-            AnimationDrawable loadingAnimation = (AnimationDrawable) cameraLayout.getBackground();
-            loadingAnimation.setEnterFadeDuration(200);
-            loadingAnimation.setExitFadeDuration(200);
-            loadingAnimation.start();
-            Log.e(TAG, best.displayValue);
-
-            hackRUService.read(request).enqueue(new Callback<JsonObject>() {
-                @Override
-                public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
-                    if(response.isSuccessful()) {
-                        JsonObject body = response.body();
-                        android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(BarcodeCaptureActivity.this, R.style.AppTheme_Dialogue_Alert);
-                        if(body.getAsJsonArray("body").size() == 0) {
-                            builder.setMessage("This person needs to sign up first!");
-                            builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int id) {
-                                    onScanFailure();
-                                }
-                            })
-                                    .setOnCancelListener(new DialogInterface.OnCancelListener() {
-                                @Override
-                                public void onCancel(DialogInterface dialog) {
-                                    onScanFailure();
-
-                                }
-                            });
-                            builder.create().show();
-                            return;
-                        }
-                        JsonElement registrationStatus = body.getAsJsonArray("body").get(0).getAsJsonObject().get("registration_status");
-                        if(SharedPreferencesUtility.getAllowOnlyAccepted(BarcodeCaptureActivity.this) && !(registrationStatus.getAsString().equals("coming") || registrationStatus.getAsString().equals("checked-in"))) {
-                            builder.setMessage("Before 11AM we only allow accepted hackers. This hacker cannot be checked in at this time.");
-                            builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int id) {
-                                    onScanFailure();
-                                }
-                            })
-                                    .setOnCancelListener(new DialogInterface.OnCancelListener() {
-                                        @Override
-                                        public void onCancel(DialogInterface dialog) {
-                                            onScanFailure();
-
-                                        }
-                                    });
-                            builder.create().show();
-                            return;
-                        }
-                        JsonObject dayOf = body.getAsJsonArray("body").get(0).getAsJsonObject().get("day_of").getAsJsonObject();
-                        JsonElement event = dayOf.get(selectedEvent);
-                        if (event == null) {
-                            if(dayOf.get("checked_in") == null || !dayOf.get("checked_in").getAsBoolean()) {
-                                printLabel(email);
-                                conductScan(finalBest, finalPost);
-                            } else {
-                                builder.setMessage("This person has already checked in. Do you want to print another label?");
-                                builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        onScanSuccess();
-                                        printLabel(email);
-                                    }
-                                })
-                                        .setNegativeButton("No", new DialogInterface.OnClickListener() {
-                                            public void onClick(DialogInterface dialog, int id) {
-                                                onScanSuccess();
-                                            }
-                                        }).setOnCancelListener(new DialogInterface.OnCancelListener() {
-                                    @Override
-                                    public void onCancel(DialogInterface dialog) {
-                                        onScanSuccess();
-
-                                    }
-                                });
-                                builder.create().show();
-                            }
-                        } else {
-                            int scanCount = event.getAsInt();
-                            if(scanCount > 0) {
-                                if(scanCount == 1) builder.setMessage("This person has had 1 serving already. Do you want to decline them?");
-                                else builder.setMessage("This person has had " + scanCount + " servings already. Do you want to decline them?");
-                                builder.setPositiveButton("Decline", new DialogInterface.OnClickListener() {
-                                            public void onClick(DialogInterface dialog, int id) {
-                                                onScanFailure();
-                                            }
-                                        })
-                                        .setNegativeButton("Allow", new DialogInterface.OnClickListener() {
-                                            public void onClick(DialogInterface dialog, int id) {
-                                                conductScan(finalBest, finalPost);
-                                            }
-                                        }).setOnCancelListener(new DialogInterface.OnCancelListener() {
-                                    @Override
-                                    public void onCancel(DialogInterface dialog) {
-                                        onScanFailure();
-
-                                    }
-                                });
-                                builder.create().show();
-                            } else {
-                                conductScan(finalBest, finalPost);
-                            }
-                        }
-
-                    } else {
-                        Toast.makeText(getBaseContext(), "Error checking user history, please try again", Toast.LENGTH_LONG).show();
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<JsonObject> call, Throwable t) {
-                    Toast.makeText(getBaseContext(), "Unable to reach scanner API", Toast.LENGTH_LONG).show();
-                }
-            });
-
-
-            return true;
-        }
-        return false;
-    }
-
-    private class CaptureGestureListener extends GestureDetector.SimpleOnGestureListener {
-        @Override
-        public boolean onSingleTapConfirmed(MotionEvent e) {
-            return onTap(e.getRawX(), e.getRawY()) || super.onSingleTapConfirmed(e);
-        }
-    }
+//    private boolean onTap(float rawX, float rawY) {
+//        // Find tap point in preview frame coordinates.
+//        int[] location = new int[2];
+//        mGraphicOverlay.getLocationOnScreen(location);
+//        float x = (rawX - location[0]) / mGraphicOverlay.getWidthScaleFactor();
+//        float y = (rawY - location[1]) / mGraphicOverlay.getHeightScaleFactor();
+//
+//        // Find the barcode whose center is closest to the tapped point.
+//        Barcode best = null;
+//        float bestDistance = Float.MAX_VALUE;
+//        for (BarcodeGraphic graphic : mGraphicOverlay.getGraphics()) {
+//            Barcode barcode = graphic.getBarcode();
+//            if (barcode.getBoundingBox().contains((int) x, (int) y)) {
+//                // Exact hit, no need to keep looking.
+//                best = barcode;
+//                break;
+//            }
+//            float dx = x - barcode.getBoundingBox().centerX();
+//            float dy = y - barcode.getBoundingBox().centerY();
+//            float distance = (dx * dx) + (dy * dy);  // actually squared distance
+//            if (distance < bestDistance) {
+//                best = barcode;
+//                bestDistance = distance;
+//            }
+//        }
+//
+//        if (best != null) {
+//            //            Intent data = new Intent();
+////            data.putExtra(BarcodeObject, best);
+////            setResult(CommonStatusCodes.SUCCESS, data);
+////            finish();
+//
+//
+//            /* ====== API CALL ====== */
+////            String post = "";
+////            if(selectedEvent == null) {
+////                post = "{" +
+////                        "'user_email': " + "'" + best.displayValue + "'," +
+////                        "'auth_email': " + "'" + SharedPreferencesUtility.getEmail(this) + "'," +
+////                        "'auth': " + "'" + SharedPreferencesUtility.getAuthToken(this) + "'," +
+////                        "'updates': {'$set': {'registration_status': 'checked-in', 'day_of.checked_in': true}}" +
+////                        "}";
+////            } else {
+////                post = "{" +
+////                        "'user_email': " + "'" + best.displayValue + "'," +
+////                        "'auth_email': " + "'" + SharedPreferencesUtility.getEmail(this) + "'," +
+////                        "'auth': " + "'" + SharedPreferencesUtility.getAuthToken(this) + "'," +
+////                        "'updates': {'$inc': {'day_of." + selectedEvent +"': 1}}" +
+////                        "}";
+////            }
+////
+////            ReadRequest request = new ReadRequest(best.displayValue);
+////            final Barcode finalBest = best;
+////            final String finalPost = post;
+////            final String email = best.displayValue;
+////            cameraLayout.setBackgroundResource(R.drawable.scanner_loading_animation);
+////            AnimationDrawable loadingAnimation = (AnimationDrawable) cameraLayout.getBackground();
+////            loadingAnimation.setEnterFadeDuration(200);
+////            loadingAnimation.setExitFadeDuration(200);
+////            loadingAnimation.start();
+////            Log.e(TAG, best.displayValue);
+////
+////            hackRUService.read(request).enqueue(new Callback<JsonObject>() {
+////                @Override
+////                public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+////                    if(response.isSuccessful()) {
+////                        JsonObject body = response.body();
+////                        android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(BarcodeCaptureActivity.this, R.style.AppTheme_Dialogue_Alert);
+////                        if(body.getAsJsonArray("body").size() == 0) {
+////                            builder.setMessage("This person needs to sign up first!");
+////                            builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+////                                public void onClick(DialogInterface dialog, int id) {
+////                                    onScanFailure();
+////                                }
+////                            })
+////                                    .setOnCancelListener(new DialogInterface.OnCancelListener() {
+////                                @Override
+////                                public void onCancel(DialogInterface dialog) {
+////                                    onScanFailure();
+////
+////                                }
+////                            });
+////                            builder.create().show();
+////                            return;
+////                        }
+////                        JsonElement registrationStatus = body.getAsJsonArray("body").get(0).getAsJsonObject().get("registration_status");
+////                        if(SharedPreferencesUtility.getAllowOnlyAccepted(BarcodeCaptureActivity.this) && !(registrationStatus.getAsString().equals("coming") || registrationStatus.getAsString().equals("checked-in"))) {
+////                            builder.setMessage("Before 11AM we only allow accepted hackers. This hacker cannot be checked in at this time.");
+////                            builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+////                                public void onClick(DialogInterface dialog, int id) {
+////                                    onScanFailure();
+////                                }
+////                            })
+////                                    .setOnCancelListener(new DialogInterface.OnCancelListener() {
+////                                        @Override
+////                                        public void onCancel(DialogInterface dialog) {
+////                                            onScanFailure();
+////
+////                                        }
+////                                    });
+////                            builder.create().show();
+////                            return;
+////                        }
+////                        JsonObject dayOf = body.getAsJsonArray("body").get(0).getAsJsonObject().get("day_of").getAsJsonObject();
+////                        JsonElement event = dayOf.get(selectedEvent);
+////                        if (event == null) {
+////                            if(dayOf.get("checked_in") == null || !dayOf.get("checked_in").getAsBoolean()) {
+////                                printLabel(email);
+////                                conductScan(finalBest, finalPost);
+////                            } else {
+////                                builder.setMessage("This person has already checked in. Do you want to print another label?");
+////                                builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+////                                    public void onClick(DialogInterface dialog, int id) {
+////                                        onScanSuccess();
+////                                        printLabel(email);
+////                                    }
+////                                })
+////                                        .setNegativeButton("No", new DialogInterface.OnClickListener() {
+////                                            public void onClick(DialogInterface dialog, int id) {
+////                                                onScanSuccess();
+////                                            }
+////                                        }).setOnCancelListener(new DialogInterface.OnCancelListener() {
+////                                    @Override
+////                                    public void onCancel(DialogInterface dialog) {
+////                                        onScanSuccess();
+////
+////                                    }
+////                                });
+////                                builder.create().show();
+////                            }
+////                        } else {
+////                            int scanCount = event.getAsInt();
+////                            if(scanCount > 0) {
+////                                if(scanCount == 1) builder.setMessage("This person has had 1 serving already. Do you want to decline them?");
+////                                else builder.setMessage("This person has had " + scanCount + " servings already. Do you want to decline them?");
+////                                builder.setPositiveButton("Decline", new DialogInterface.OnClickListener() {
+////                                            public void onClick(DialogInterface dialog, int id) {
+////                                                onScanFailure();
+////                                            }
+////                                        })
+////                                        .setNegativeButton("Allow", new DialogInterface.OnClickListener() {
+////                                            public void onClick(DialogInterface dialog, int id) {
+////                                                conductScan(finalBest, finalPost);
+////                                            }
+////                                        }).setOnCancelListener(new DialogInterface.OnCancelListener() {
+////                                    @Override
+////                                    public void onCancel(DialogInterface dialog) {
+////                                        onScanFailure();
+////
+////                                    }
+////                                });
+////                                builder.create().show();
+////                            } else {
+////                                conductScan(finalBest, finalPost);
+////                            }
+////                        }
+////
+////                    } else {
+////                        Toast.makeText(getBaseContext(), "Error checking user history, please try again", Toast.LENGTH_LONG).show();
+////                    }
+////                }
+////
+////                @Override
+////                public void onFailure(Call<JsonObject> call, Throwable t) {
+////                    Toast.makeText(getBaseContext(), "Unable to reach scanner API", Toast.LENGTH_LONG).show();
+////                }
+////            });
+//
+//
+//            return true;
+//        }
+//        return false;
+//    }
+//
+//    private class CaptureGestureListener extends GestureDetector.SimpleOnGestureListener {
+//        @Override
+//        public boolean onSingleTapConfirmed(MotionEvent e) {
+//            return onTap(e.getRawX(), e.getRawY()) || super.onSingleTapConfirmed(e);
+//        }
+//    }
 
     private class ScaleListener implements ScaleGestureDetector.OnScaleGestureListener {
 
@@ -713,8 +714,159 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
         }
     }
 
+
+
     @Override
     public void onBarcodeDetected(Barcode barcode) {
         //do something with barcode data returned
+        if(isScanning == true) return;
+        isScanning = true;
+
+        String post = "";
+        if(selectedEvent == null) {
+            post = "{" +
+                    "'user_email': " + "'" + barcode.displayValue + "'," +
+                    "'auth_email': " + "'" + SharedPreferencesUtility.getEmail(this) + "'," +
+                    "'auth': " + "'" + SharedPreferencesUtility.getAuthToken(this) + "'," +
+                    "'updates': {'$set': {'registration_status': 'checked-in', 'day_of.checked_in': true}}" +
+                    "}";
+        } else {
+            post = "{" +
+                    "'user_email': " + "'" + barcode.displayValue + "'," +
+                    "'auth_email': " + "'" + SharedPreferencesUtility.getEmail(this) + "'," +
+                    "'auth': " + "'" + SharedPreferencesUtility.getAuthToken(this) + "'," +
+                    "'updates': {'$inc': {'day_of." + selectedEvent +"': 1}}" +
+                    "}";
+        }
+
+        ReadRequest request = new ReadRequest(barcode.displayValue);
+        final Barcode finalBest = barcode;
+        final String finalPost = post;
+        final String email = barcode.displayValue;
+        cameraLayout.setBackgroundResource(R.drawable.scanner_loading_animation);
+        AnimationDrawable loadingAnimation = (AnimationDrawable) cameraLayout.getBackground();
+        loadingAnimation.setEnterFadeDuration(200);
+        loadingAnimation.setExitFadeDuration(200);
+        loadingAnimation.start();
+        Log.e(TAG, barcode.displayValue);
+
+        hackRUService.read(request).enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                if(response.isSuccessful()) {
+                    JsonObject body = response.body();
+                    android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(BarcodeCaptureActivity.this, R.style.AppTheme_Dialogue_Alert);
+                    if(body.getAsJsonArray("body").size() == 0) {
+                        builder.setMessage("This person needs to sign up first!");
+                        builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                onScanFailure();
+                                isScanning = false;
+                            }
+                        })
+                                .setOnCancelListener(new DialogInterface.OnCancelListener() {
+                                    @Override
+                                    public void onCancel(DialogInterface dialog) {
+                                        onScanFailure();
+                                        isScanning = false;
+
+                                    }
+                                });
+                        builder.create().show();
+                        return;
+                    }
+                    JsonElement registrationStatus = body.getAsJsonArray("body").get(0).getAsJsonObject().get("registration_status");
+                    if(SharedPreferencesUtility.getAllowOnlyAccepted(BarcodeCaptureActivity.this) && !(registrationStatus.getAsString().equals("coming") || registrationStatus.getAsString().equals("checked-in"))) {
+                        builder.setMessage("Before 11AM we only allow accepted hackers. This hacker cannot be checked in at this time.");
+                        builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                onScanFailure();
+                                isScanning = false;
+                            }
+                        })
+                                .setOnCancelListener(new DialogInterface.OnCancelListener() {
+                                    @Override
+                                    public void onCancel(DialogInterface dialog) {
+                                        onScanFailure();
+                                        isScanning = false;
+
+                                    }
+                                });
+                        builder.create().show();
+                        return;
+                    }
+                    JsonObject dayOf = body.getAsJsonArray("body").get(0).getAsJsonObject().get("day_of").getAsJsonObject();
+                    JsonElement event = dayOf.get(selectedEvent);
+                    if (event == null) {
+                        if(dayOf.get("checked_in") == null || !dayOf.get("checked_in").getAsBoolean()) {
+                            printLabel(email);
+                            conductScan(finalBest, finalPost);
+                            isScanning = false;
+                        } else {
+                            builder.setMessage("This person has already checked in. Do you want to print another label?");
+                            builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    onScanSuccess();
+                                    printLabel(email);
+                                    isScanning = false;
+                                }
+                            })
+                                    .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int id) {
+                                            onScanSuccess();
+                                            isScanning = false;
+                                        }
+                                    }).setOnCancelListener(new DialogInterface.OnCancelListener() {
+                                @Override
+                                public void onCancel(DialogInterface dialog) {
+                                    onScanSuccess();
+                                    isScanning = false;
+
+                                }
+                            });
+                            builder.create().show();
+                        }
+                    } else {
+                        int scanCount = event.getAsInt();
+                        if(scanCount > 0) {
+                            if(scanCount == 1) builder.setMessage("This person has had 1 serving already. Do you want to decline them?");
+                            else builder.setMessage("This person has had " + scanCount + " servings already. Do you want to decline them?");
+                            builder.setPositiveButton("Decline", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    onScanFailure();
+                                    isScanning = false;
+                                }
+                            })
+                                    .setNegativeButton("Allow", new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int id) {
+                                            conductScan(finalBest, finalPost);
+                                            isScanning = false;
+                                        }
+                                    }).setOnCancelListener(new DialogInterface.OnCancelListener() {
+                                @Override
+                                public void onCancel(DialogInterface dialog) {
+                                    onScanFailure();
+                                    isScanning = false;
+
+                                }
+                            });
+                            builder.create().show();
+                        } else {
+                            conductScan(finalBest, finalPost);
+                            isScanning = false;
+                        }
+                    }
+
+                } else {
+                    Toast.makeText(getBaseContext(), "Error checking user history, please try again", Toast.LENGTH_LONG).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+                isScanning = false;
+                Toast.makeText(getBaseContext(), "Unable to reach scanner API", Toast.LENGTH_LONG).show();
+            }
+        });
     }
 }
