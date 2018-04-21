@@ -563,6 +563,24 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
                             builder.create().show();
                             return;
                         }
+                        JsonElement registrationStatus = body.getAsJsonArray("body").get(0).getAsJsonObject().get("registration_status");
+                        if(!SharedPreferencesUtility.getAllowWaitlist(BarcodeCaptureActivity.this) && !registrationStatus.getAsString().equals("registered")) {
+                            builder.setMessage("Before 11AM we only allow accepted hackers. This hacker cannot be checked in at this time.");
+                            builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    onScanFailure();
+                                }
+                            })
+                                    .setOnCancelListener(new DialogInterface.OnCancelListener() {
+                                        @Override
+                                        public void onCancel(DialogInterface dialog) {
+                                            onScanFailure();
+
+                                        }
+                                    });
+                            builder.create().show();
+                            return;
+                        }
                         JsonObject dayOf = body.getAsJsonArray("body").get(0).getAsJsonObject().get("day_of").getAsJsonObject();
                         JsonElement event = dayOf.get(selectedEvent);
                         if (event == null) {

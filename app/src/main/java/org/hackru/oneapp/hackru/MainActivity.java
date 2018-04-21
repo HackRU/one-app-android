@@ -250,6 +250,19 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        database.getReference().child("allowWaitlist").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                boolean allow = dataSnapshot.getValue(Boolean.class);
+                SharedPreferencesUtility.setAllowWaitlist(MainActivity.this, allow);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
         /* ===== /FIREBASE STUFF ===== */
 
         /* ===== SET PERMISSIONS ===== */
