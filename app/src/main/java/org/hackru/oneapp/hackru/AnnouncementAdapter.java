@@ -52,13 +52,13 @@ public class AnnouncementAdapter extends RecyclerView.Adapter<AnnouncementAdapte
 //        Date date = new Date((long)(timestamp * 1000));
 
         String message = announcement.getText();
-        while (message.indexOf("<") != -1 && message.indexOf(">") != -1) {
-            message = message.substring(0, message.indexOf("<")) + message.substring(message.indexOf(">") + 1);
-        }
-
-        while (message.indexOf(":", message.indexOf(":") + 1) != -1) {
-            message = message.substring(0, message.indexOf(":")) + message.substring(message.indexOf(":", message.indexOf(":")+1)+1);
-        }
+//        while (message.indexOf("<") != -1 && message.indexOf(">") != -1) {
+//            message = message.substring(0, message.indexOf("<")) + message.substring(message.indexOf(">") + 1);
+//        }
+//
+//        while (message.indexOf(":", message.indexOf(":") + 1) != -1) {
+//            message = message.substring(0, message.indexOf(":")) + message.substring(message.indexOf(":", message.indexOf(":")+1)+1);
+//        }
 
         holder.date.setText(date);
         holder.message.setText(message);
