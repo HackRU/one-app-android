@@ -546,6 +546,23 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
                     if(response.isSuccessful()) {
                         JsonObject body = response.body();
                         android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(BarcodeCaptureActivity.this, R.style.AppTheme_Dialogue_Alert);
+                        if(body.getAsJsonArray("body").size() == 0) {
+                            builder.setMessage("This person needs to sign up first!");
+                            builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    onScanFailure();
+                                }
+                            })
+                                    .setOnCancelListener(new DialogInterface.OnCancelListener() {
+                                @Override
+                                public void onCancel(DialogInterface dialog) {
+                                    onScanFailure();
+
+                                }
+                            });
+                            builder.create().show();
+                            return;
+                        }
                         JsonObject dayOf = body.getAsJsonArray("body").get(0).getAsJsonObject().get("day_of").getAsJsonObject();
                         JsonElement event = dayOf.get(selectedEvent);
                         if (event == null) {
