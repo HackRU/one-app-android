@@ -2,6 +2,7 @@ package org.hackru.oneapp.hackru;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,6 +24,7 @@ import java.util.List;
  */
 
 public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHolder> {
+    String TAG = "EventAdapter";
 
     private Context context;
     private List<Event> eventList;
@@ -43,7 +45,10 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
     @Override
     public void onBindViewHolder(EventViewHolder holder, int position) {
         Event event = eventList.get(position);
-
+//        Log.e(TAG, "title["+position+"] = "+event.title);
+//        Log.e(TAG, "message["+position+"] = "+event.message);
+//        Log.e(TAG, "time["+position+"] = "+event.time);
+//        Log.e(TAG, "place["+position+"] = "+event.place);
 
         String finalDate = event.time;
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX");
@@ -58,17 +63,24 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
 
         holder.startTime.setText(finalDate);
         holder.title.setText(event.title);
-        if(event.message != null) {
+        if(event.place != null && event.place.length() > 0) {
+//            Log.e(TAG, ""+event.place);
+            holder.location.setVisibility(View.VISIBLE);
+            holder.location.setText("Where: " + event.place);
+        } else {
+            holder.location.setVisibility(View.GONE);
+        }
+        if(event.message != null && event.message.length() > 0) {
+//            Log.e(TAG, ""+event.message);
+            holder.message.setVisibility(View.VISIBLE);
             holder.message.setText(event.message);
         } else {
             holder.message.setVisibility(View.GONE);
         }
 
-        if (event.place != null) {
-            holder.location.setText("Where: " + event.place);
-        } else {
-            holder.location.setVisibility(View.GONE);
-        }
+//        if(holder.message.getText() == null || holder.message.getText().length() == 0) holder.message.setVisibility(View.GONE);
+//
+
     }
 
     @Override

@@ -108,6 +108,10 @@ public class EventsFragment extends Fragment {
                         String description = eventJSON.getAsJsonObject().get("description")!=null ? eventJSON.getAsJsonObject().get("description").getAsString() : null;
                         String time = eventJSON.getAsJsonObject().get("start").getAsJsonObject().get("dateTime").getAsString();
                         String place = eventJSON.getAsJsonObject().get("location")!=null ? eventJSON.getAsJsonObject().get("location").getAsString() : null;
+//                        Log.e(TAG, "title["+newEventList.size()+"] = "+title);
+//                        Log.e(TAG, "description["+newEventList.size()+"] = "+description);
+//                        Log.e(TAG, "time["+newEventList.size()+"] = "+time);
+//                        Log.e(TAG, "place["+newEventList.size()+"] = "+place);
                         newEventList.add(new Event(title, description, time, place));
                     }
 
@@ -147,6 +151,7 @@ public class EventsFragment extends Fragment {
         adapter.notifyDataSetChanged();
         Log.e(TAG, "UPDATE");
         recyclerView.getLayoutManager().onRestoreInstanceState(recyclerViewState);
+//        createCards();
     }
 
 
