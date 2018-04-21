@@ -135,11 +135,11 @@ public class LoginActivity extends AppCompatActivity {
         finish();
     }
 
-    public void onLoginFailed(Boolean connectionSuccess) {
+    public void onLoginFailed(boolean connectionSuccess) {
         if(connectionSuccess) {
             Toast.makeText(getBaseContext(), "Incorrect username or password", Toast.LENGTH_LONG).show();
         } else {
-            Toast.makeText(getBaseContext(), "Cannot reach server", Toast.LENGTH_LONG).show();
+            Toast.makeText(getBaseContext(), "Try logging in with MLH", Toast.LENGTH_LONG).show();
         }
 
         _loginButton.setEnabled(true);
