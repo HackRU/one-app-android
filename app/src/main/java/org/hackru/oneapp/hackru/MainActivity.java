@@ -11,8 +11,6 @@ import android.support.design.widget.BottomNavigationView;
 //import android.support.design.widget.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
 import com.github.clans.fab.FloatingActionButton;
-import com.google.android.gms.common.api.CommonStatusCodes;
-import com.google.android.gms.vision.barcode.Barcode;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -250,11 +248,11 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        database.getReference().child("allowWaitlist").addValueEventListener(new ValueEventListener() {
+        database.getReference().child("allowOnlyAccepted").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 boolean allow = dataSnapshot.getValue(Boolean.class);
-                SharedPreferencesUtility.setAllowWaitlist(MainActivity.this, allow);
+                SharedPreferencesUtility.setAllowOnlyAccepted(MainActivity.this, allow);
             }
 
             @Override

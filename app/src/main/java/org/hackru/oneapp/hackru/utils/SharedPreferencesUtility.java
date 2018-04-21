@@ -13,7 +13,7 @@ public class SharedPreferencesUtility {
     static final String PREF_EMAIL= "email";
     static final String PREF_PERMISSION= "permission";
     static final String PREF_MAP_USED= "map_used";
-    static final String PREF_ALLOW_WAITLIST = "allow_waitlist";
+    static final String PREF_ALLOW_ONLY_ACCEPTED = "allow_only_accepted";
 
     static SharedPreferences getSharedPreferences(Context ctx) {
         return PreferenceManager.getDefaultSharedPreferences(ctx);
@@ -60,13 +60,13 @@ public class SharedPreferencesUtility {
         return getSharedPreferences(ctx).getBoolean(PREF_MAP_USED, false);
     }
 
-    public static void setAllowWaitlist(Context ctx, Boolean allow) {
+    public static void setAllowOnlyAccepted(Context ctx, Boolean allow) {
         SharedPreferences.Editor editor = getSharedPreferences(ctx).edit();
-        editor.putBoolean(PREF_ALLOW_WAITLIST, allow);
+        editor.putBoolean(PREF_ALLOW_ONLY_ACCEPTED, allow);
         editor.commit();
     }
 
-    public static boolean getAllowWaitlist(Context ctx) {
-        return getSharedPreferences(ctx).getBoolean(PREF_ALLOW_WAITLIST, true);
+    public static boolean getAllowOnlyAccepted(Context ctx) {
+        return getSharedPreferences(ctx).getBoolean(PREF_ALLOW_ONLY_ACCEPTED, true);
     }
 }

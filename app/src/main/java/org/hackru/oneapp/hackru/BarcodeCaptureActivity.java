@@ -564,7 +564,7 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
                             return;
                         }
                         JsonElement registrationStatus = body.getAsJsonArray("body").get(0).getAsJsonObject().get("registration_status");
-                        if(!SharedPreferencesUtility.getAllowWaitlist(BarcodeCaptureActivity.this) && !registrationStatus.getAsString().equals("registered")) {
+                        if(SharedPreferencesUtility.getAllowOnlyAccepted(BarcodeCaptureActivity.this) && !registrationStatus.getAsString().equals("coming")) {
                             builder.setMessage("Before 11AM we only allow accepted hackers. This hacker cannot be checked in at this time.");
                             builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int id) {
