@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/bottom_navigation_announcements"
+        android:icon="@drawable/ic_announcements"
+        android:title="Announcements"
+        app:showAsAction="always"/>
+    <item
+        android:id="@+id/bottom_navigation_timer"
+        android:icon="@drawable/ic_timer"
+        android:title="Timer"
+        app:showAsAction="always"/>
+    <item
+        android:id="@+id/bottom_navigation_events"
+        android:icon="@drawable/ic_events"
+        android:title="Events"
+        app:showAsAction="always"/>
+</menu>

@@ -14,14 +14,16 @@ public class LauncherActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_launcher);
-        // END BOILERPLATE CODE
 
-        if(SharedPreferencesUtility.getAuthToken(LauncherActivity.this).length() == 0) { // If the user has never logged in, make them log in
+        if(SharedPreferencesUtility.getAuthToken(LauncherActivity.this).length() == 0) {
+            // If the user has never logged in, make them log in
             intent = new Intent(this, LoginActivity.class);
-        } else { // If the user has logged in before (still waiting on validate from Heman)
+        } else {
+            // If the user has logged in before
             intent = new Intent(this, MainActivity.class);
         }
 
+        // TODO: Is this really necessary? Are we guaranteed to read from SharedPreferences in time?
         new android.os.Handler().postDelayed(
                 new Runnable() {
                     public void run() {

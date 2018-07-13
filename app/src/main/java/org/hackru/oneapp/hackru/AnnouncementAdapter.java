@@ -4,11 +4,9 @@ import org.hackru.oneapp.hackru.api.model.Announcement;
 import android.content.Context;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
-import android.text.Layout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
@@ -34,7 +32,7 @@ public class AnnouncementAdapter extends RecyclerView.Adapter<AnnouncementAdapte
     @Override
     public AnnouncementViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(context);
-        View view = inflater.inflate(R.layout.announcements_card_layout, null);
+        View view = inflater.inflate(R.layout.item_announcements, null);
         AnnouncementViewHolder holder = new AnnouncementViewHolder(view);
         return holder;
     }

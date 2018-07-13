@@ -1,94 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:fab="http://schemas.android.com/tools"
-    android:id="@+id/activity_main"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_above="@+id/bottom_navigation">
-
-
+    android:layout_height="match_parent"
+    >
 
     <FrameLayout
-        android:id="@+id/content_frame"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:id="@+id/fragment_container_main"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@+id/bottom_navigation"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        >
+
     </FrameLayout>
-
-        <com.github.clans.fab.FloatingActionMenu
-            android:id="@+id/fabMenu"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_alignBottom="@+id/content_frame"
-            android:layout_alignRight="@+id/content_frame"
-            android:layout_gravity="bottom|right"
-            android:layout_marginBottom="24dp"
-            android:layout_marginRight="24dp"
-            android:src="@drawable/ic_menu_white_24dp"
-            fab:menu_icon="@drawable/ic_menu_white_24dp"
-            app:menu_icon="@drawable/ic_menu_white_24dp"
-            app:menu_colorNormal="@color/colorPrimary"
-            app:menu_colorPressed="@color/colorPrimary"
-            >
-
-            <com.github.clans.fab.FloatingActionButton
-                android:id="@+id/fabLogout"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ic_logout_white_24dp"
-                app:fab_colorNormal="@color/colorPrimary"
-                app:fab_colorPressed="@color/colorPrimary"
-                fab:fab_label="Logout"
-                fab:fab_size="mini" />
-
-            <com.github.clans.fab.FloatingActionButton
-                android:id="@+id/fabMap"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ic_map_white_24dp"
-                app:fab_colorNormal="@color/colorPrimary"
-                app:fab_colorPressed="@color/colorPrimary"
-                fab:fab_label="Map"
-                fab:fab_size="mini" />
-
-            <com.github.clans.fab.FloatingActionButton
-                android:id="@+id/fabQR"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ic_action_qrcode"
-                app:fab_colorNormal="@color/colorPrimary"
-                app:fab_colorPressed="@color/colorPrimary"
-                fab:fab_label="QR Code"
-                fab:fab_size="mini" />
-
-            <com.github.clans.fab.FloatingActionButton
-                android:id="@+id/fabScanner"
-                android:visibility="gone"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ic_camera_white_24dp"
-                app:fab_colorNormal="@color/colorPrimary"
-                app:fab_colorPressed="@color/colorPrimary"
-                fab:fab_label="Scanner"
-                fab:fab_size="mini" />
-        </com.github.clans.fab.FloatingActionMenu>
-    </RelativeLayout>
 
     <android.support.design.widget.BottomNavigationView
         android:id="@+id/bottom_navigation"
-        android:layout_alignParentBottom="true"
-        app:elevation="16dp"
-        android:background="@color/colorPrimary"
         android:layout_width="match_parent"
         android:layout_height="56dp"
-        android:layout_gravity="bottom"
-        app:itemBackground="?attr/colorPrimary"
-        app:itemIconTint="@drawable/selector_bottomnavigation_item"
-        app:itemTextColor="@drawable/selector_bottomnavigation_item"
-        app:menu="@menu/bottomnavigationmenu"
+        android:layout_gravity="start"
+        android:background="@color/colorPrimary"
+        app:itemIconTint="@drawable/bottom_navigation_colors"
+        app:itemTextColor="@drawable/bottom_navigation_colors"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:menu="@menu/bottom_navigation"
         />
-</RelativeLayout>
+
+</android.support.constraint.ConstraintLayout>
