@@ -23,7 +23,7 @@ public class LauncherActivity extends AppCompatActivity {
             intent = new Intent(this, MainActivity.class);
         }
 
-        // TODO: Is this really necessary? Are we guaranteed to read from SharedPreferences in time?
+        // TODO: Is this really necessary? If SharedPreferences is async, this should be changed
         new android.os.Handler().postDelayed(
                 new Runnable() {
                     public void run() {
