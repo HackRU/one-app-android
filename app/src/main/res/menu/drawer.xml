@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/drawer_map"
+        android:title="@string/title_map"
+        android:icon="@drawable/ic_map_black_24dp"/>
+    <item
+        android:id="@+id/drawer_scanner"
+        android:title="@string/title_scanner"
+        android:icon="@drawable/ic_scanner_black_24dp"/>
+
+    <!-- This group has an id because when a group has a custom id, android renders it with a divider -->
+    <group android:id="@+id/drawer_group_bottom" android:checkableBehavior="none">
+        <item
+            android:id="@+id/drawer_settings"
+            android:title="@string/title_settings"
+            android:icon="@drawable/ic_settings_black_24dp"/>
+        <item
+            android:id="@+id/drawer_feedback"
+            android:title="@string/title_feedback"
+            android:icon="@drawable/ic_announcements_black_24dp"/>
+        <item
+            android:id="@+id/drawer_about"
+            android:title="@string/title_about"
+            android:icon="@drawable/ic_about_black_24dp"/>
+    </group>
+
+</menu>
