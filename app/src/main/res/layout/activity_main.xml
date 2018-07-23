@@ -11,23 +11,20 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <!-- TODO: Implement AppBarLayout for hiding app bar on scroll -->
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:theme="@style/AppTheme.AppBarOverlay"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary" />
+
         <FrameLayout
             android:id="@+id/fragment_container"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             app:layout_constraintBottom_toTopOf="@+id/bottom_navigation"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <android.support.design.widget.AppBarLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:theme="@style/AppTheme.AppBarOverlay">
-                <android.support.v7.widget.Toolbar
-                    android:id="@+id/toolbar"
-                    android:layout_width="match_parent"
-                    android:layout_height="?attr/actionBarSize"
-                    android:background="?attr/colorPrimary" />
-            </android.support.design.widget.AppBarLayout>
+            app:layout_constraintTop_toBottomOf="@+id/toolbar" >
 
         </FrameLayout>
 

@@ -18,8 +18,7 @@ class MainActivity : AppCompatActivity() {
 
         setUpActionBar()
 
-        // Set Timer as the default tab when the app is opened for the first time in a while or was
-        // terminated manually by the user
+        // Set Timer as the default tab when the app is opened for the first time or was terminated manually by the user
         if (savedInstanceState == null) {
             bottom_navigation.selectedItemId = R.id.bottom_navigation_timer
             switchFragment(TimerFragment.newInstance())
@@ -82,6 +81,20 @@ class MainActivity : AppCompatActivity() {
                 .commit()
     }
 
+    /**
+     * Sets up our custom toolbar as the app's Action Bar/App Bar (the two terms are completely
+     * interchangeable).
+     *
+     * It is best practice to use a theme without an action bar and then implement
+     * a custom one because when you don't create a custom one, a native action bar is used that
+     * looks different on each API level (for example, on API level 19-20 the native action bar
+     * doesn't follow the Material Design spec).
+     *
+     * We also implement a custom action bar so that we can give it more functionality than is
+     * available in native action bars, like putting a menu button on it that pulls out
+     * the navigation drawer when pressed, or hiding the action bar when the user is scrolling
+     * through a list.
+     */
     private fun setUpActionBar() {
         setSupportActionBar(toolbar)
         val drawerToggle = ActionBarDrawerToggle(
@@ -90,10 +103,18 @@ class MainActivity : AppCompatActivity() {
         drawerToggle.syncState()
     }
 
+    /**
+     * This method is called whenever the user presses the back button while in MainActivity.
+     */
     override fun onBackPressed() {
         if(drawer_layout.isDrawerOpen(GravityCompat.START)) {
+            // If the navigation drawer is open, it is good UX etiquette to close the navigation
+            // drawer when the user presses the back button.
             drawer_layout.closeDrawer(GravityCompat.START)
         } else {
+            // If the navigation drawer is already closed, then let the android system handle what
+            // the back button does. In the case of MainActivity, the app will exit and MainActivity
+            // will be destroyed.
             super.onBackPressed()
         }
     }

@@ -4,4 +4,9 @@
         <item name="windowNoTitle">true</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
     </style>
+
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
+        <!-- TODO: Is there any way to simulate app bar elevation on devices below API 21? -->
+        <item name="android:elevation">4dp</item>
+    </style>
 </resources>
