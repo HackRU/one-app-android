@@ -30,13 +30,25 @@ Download the app from the Google Play store [here](https://play.google.com/store
 List of features goes here...
 
 ## Style Guide
+#### General
 * Contributors should follow our [Git Style Guide](https://github.com/agis/git-style-guide)
 * Contributors should follow Google's [Android Kotlin Style Guide](https://android.github.io/kotlin-guides/style.html)
 
-#### Additional Notes
+#### Gradle
+* When you add a dependency, put it with its relevant category. If there is no category that is specific enough, make a new one with a multi-line comment. Categories should be for specific functionality
+    * For example: `/* QR Codes */` would encapsulate all the dependencies that are needed for generating and scanning QR codes
+
+* When you add a dependency, briefly describe its purpose in a single-line comment above it
+	* For example:
+      ```
+      // Converts json to POJOs (Plain Old Java Objects) and vise versa
+      implementation 'com.google.code.gson:gson:2.8.5'
+      ```
+
+#### Resource Files
 * Drawable and Layout resource files should be prefixed with what type of UI element they are
 	* A drawable example: `ic_settings_black_24dp.xml` is prefixed `ic_` for icon
-	* A layout example: `rv_item_announcement.xml` is the layout for an announcment list item that is displayed using a RecyclerView (`rv_item` for RecyclerView item)
+	* A layout example: `rv_item_announcement.xml` is the layout for an announcement list item that is displayed using a RecyclerView (`rv_item` for RecyclerView item)
 
 * Since Kotlin allows us to reference views without using `findViewById(Int)`, IDs for views should be lowercase with words separated by underscores. This allows us to quickly identify in Kotlin if an object is a reference to a view or not. In most cases, IDs are prefixed with the type of view they are.
 	* For example: `rv_announcements` is the ID of the RecyclerView for announcements
@@ -44,13 +56,10 @@ List of features goes here...
 
 ## TO-DO List
 
-* Finish/polish readme
-* Finalize navigation design
-* Refacter bottom navigation logic
-* Refacter networking
-* Redo the scanner!!
-* Fix those terrible login bugs from Spring 2018
-* Implement informative error reporting (to users)
+* Re-implement networking
+* Re-implement the scanner
+* Convert the timer, events, announcements, map, and QR floating action button to Kotlin
+* Coordinate with the backend (lcs) about announcement notifications
 
 ## Links to Further docs
 
