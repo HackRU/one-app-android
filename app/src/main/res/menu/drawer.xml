@@ -17,10 +17,6 @@
             android:title="@string/title_settings"
             android:icon="@drawable/ic_settings_black_24dp"/>
         <item
-            android:id="@+id/drawer_feedback"
-            android:title="@string/title_feedback"
-            android:icon="@drawable/ic_announcements_black_24dp"/>
-        <item
             android:id="@+id/drawer_about"
             android:title="@string/title_about"
             android:icon="@drawable/ic_about_black_24dp"/>

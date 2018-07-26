@@ -1,6 +1,7 @@
 package org.hackru.oneapp.hackru
 
 import android.os.Bundle
+import android.support.design.widget.BottomNavigationView
 import android.support.design.widget.NavigationView
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
@@ -19,10 +20,10 @@ class MainActivity : AppCompatActivity() {
         setUpActionBar()
 
         // Set Timer as the default tab when the app is opened for the first time or was terminated manually by the user
-        if (savedInstanceState == null) {
-            bottom_navigation.selectedItemId = R.id.bottom_navigation_timer
-            switchFragment(TimerFragment.newInstance())
-        }
+        bottom_navigation.selectedItemId = R.id.bottom_navigation_timer
+        switchFragment(TimerFragment.newInstance())
+
+        // Listen for when the user clicks on one of the bottom navigation items
         bottom_navigation.setOnNavigationItemSelectedListener {
             return@setOnNavigationItemSelectedListener when(it.itemId) {
                 R.id.bottom_navigation_announcements -> {
@@ -44,6 +45,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        // Listen for when the user clicks on one of the navigation drawer items
         drawer_navigation.setNavigationItemSelectedListener {
             when (it.itemId) {
                 R.id.drawer_map -> {
@@ -53,9 +55,6 @@ class MainActivity : AppCompatActivity() {
 
                 }
                 R.id.drawer_settings -> {
-
-                }
-                R.id.drawer_feedback -> {
 
                 }
                 R.id.drawer_about -> {
