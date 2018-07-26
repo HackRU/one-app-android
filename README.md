@@ -35,13 +35,13 @@ List of features goes here...
 * Contributors should follow Google's [Android Kotlin Style Guide](https://android.github.io/kotlin-guides/style.html)
 
 #### Gradle
-* When you add a dependency, put it with its relevant category. If there is no category that is specific enough, make a new one with a multi-line comment. Categories should be for specific functionality
+* When you add a dependency, put it underneath its relevant category. If there is no category that is specific enough, make a new one with a multi-line comment. Categories should be for specific functionality
     * For example: `/* QR Codes */` would encapsulate all the dependencies that are needed for generating and scanning QR codes
 
 * When you add a dependency, briefly describe its purpose in a single-line comment above it
 	* For example:
       ```
-      // Converts json to POJOs (Plain Old Java Objects) and vise versa
+      // Converts json to Java objects and vise versa
       implementation 'com.google.code.gson:gson:2.8.5'
       ```
 

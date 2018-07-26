@@ -35,7 +35,7 @@ dependencies {
     /* Networking */
     // We use Retrofit to handle networking
     implementation 'com.squareup.retrofit2:retrofit:2.4.0'
-    // Converts json to POJOs (Plain Old Java Objects) and vise versa
+    // Converts json to Java objects and vise versa
     implementation 'com.google.code.gson:gson:2.8.5'
     // Needed for retrofit to automatically use gson to convert json to POJOs
     implementation 'com.squareup.retrofit2:converter-gson:2.4.0'
