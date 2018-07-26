@@ -30,8 +30,17 @@ Download the app from the Google Play store [here](https://play.google.com/store
 List of features goes here...
 
 ## Style Guide
+* Contributors should follow our [Git Style Guide](https://github.com/agis/git-style-guide)
+* Contributors should follow Google's [Android Kotlin Style Guide](https://android.github.io/kotlin-guides/style.html)
 
-TBA
+#### Additional Notes
+* Drawable and Layout resource files should be prefixed with what type of UI element they are
+	* A drawable example: `ic_settings_black_24dp.xml` is prefixed `ic_` for icon
+	* A layout example: `rv_item_announcement.xml` is the layout for an announcment list item that is displayed using a RecyclerView (`rv_item` for RecyclerView item)
+
+* Since Kotlin allows us to reference views without using `findViewById(Int)`, IDs for views should be lowercase with words separated by underscores. This allows us to quickly identify in Kotlin if an object is a reference to a view or not. In most cases, IDs are prefixed with the type of view they are.
+	* For example: `rv_announcements` is the ID of the RecyclerView for announcements
+	* For example: `button_retry` is the ID of a retry button
 
 ## TO-DO List
 
