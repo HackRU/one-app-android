@@ -58,7 +58,9 @@ List of features goes here...
 
 * Re-implement networking
 * Re-implement the scanner
-* Convert the timer, events, announcements, map, and QR floating action button to Kotlin
+* Convert the timer, events, and QR floating action button to Kotlin
+* Implement the map with [picasso](http://square.github.io/picasso/)
+* Convert announcements to Kotlin and implement a ViewPager for Saturday and Sunday
 * Coordinate with the backend (lcs) about announcement notifications
 
 ## Links to Further docs
