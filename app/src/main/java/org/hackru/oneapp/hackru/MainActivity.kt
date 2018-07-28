@@ -1,5 +1,6 @@
 package org.hackru.oneapp.hackru
 
+import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.BottomNavigationView
 import android.support.design.widget.NavigationView
@@ -58,6 +59,9 @@ class MainActivity : AppCompatActivity() {
 
                 }
                 R.id.drawer_about -> {
+                    // Intents allow us to start a new activity. First parameter is context, where is we are right now, and second is where we wanna go.
+                    val aboutPageIntent = Intent(this,AboutActivity::class.java)
+                    startActivity(aboutPageIntent)
 
                 }
             }
