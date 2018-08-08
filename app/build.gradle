@@ -4,6 +4,8 @@ apply plugin: 'kotlin-android'
 
 apply plugin: 'kotlin-android-extensions'
 
+apply plugin: 'kotlin-kapt'
+
 android {
     compileSdkVersion 27
     defaultConfig {
@@ -39,6 +41,23 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.8.5'
     // Needed for retrofit to automatically use gson to convert json to POJOs
     implementation 'com.squareup.retrofit2:converter-gson:2.4.0'
+    // Allows us to monitor Retrofit networking with logcat
+    implementation 'com.squareup.okhttp3:logging-interceptor:3.8.0'
+
+    /* App Architecture */
+    def lifecycle_version = '1.1.1'
+    def room_version = "1.1.1"
+    def dagger_version = "2.16"
+    // ViewModel and LiveData
+    implementation "android.arch.lifecycle:extensions:$lifecycle_version"
+    // We use Room for persisting data to local device storage
+    implementation "android.arch.persistence.room:runtime:$room_version"
+    // Allows us to use Room's required annotations
+    kapt "android.arch.persistence.room:compiler:$room_version"
+    // We use Dagger for dependency injection
+    implementation "com.google.dagger:dagger:$dagger_version"
+    // Allows us to use Dagger's required annotations
+    kapt "com.google.dagger:dagger-compiler:$dagger_version"
 
     /* Testing and Quality Assurance */
     testImplementation 'junit:junit:4.12'
