@@ -20,8 +20,7 @@ class AnnouncementsFragment : android.support.v4.app.Fragment() {
     // TAG is used with Android's Log class to organize debugging logs
     val TAG = "AnnouncementsFragment"
     private lateinit var viewModel: AnnouncementsViewModel
-    @Inject
-    private lateinit var viewModelFactory: AnnouncementsViewModelFactory
+    @Inject lateinit var viewModelFactory: AnnouncementsViewModelFactory
     private lateinit var mainActivity: MainActivity
     private val announcementsAdapter = AnnouncementsAdapter()
 
