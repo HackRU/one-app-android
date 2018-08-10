@@ -5,11 +5,9 @@ import android.arch.lifecycle.ViewModelProviders
 import android.content.Context
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.LinearLayout
 import android.widget.Toast
 import kotlinx.android.synthetic.main.fragment_announcements.*
 import org.hackru.oneapp.hackru.HackRUApp
@@ -24,7 +22,7 @@ class AnnouncementsFragment : android.support.v4.app.Fragment() {
     private lateinit var viewModel: AnnouncementsViewModel
     @Inject
     private lateinit var viewModelFactory: AnnouncementsViewModelFactory
-    private lateinit var mainActiviy: MainActivity
+    private lateinit var mainActivity: MainActivity
     private val announcementsAdapter = AnnouncementsAdapter()
 
 
@@ -36,8 +34,8 @@ class AnnouncementsFragment : android.support.v4.app.Fragment() {
     override fun onAttach(context: Context?) {
         super.onAttach(context)
         // TODO: Guarantee non-null activity
-        mainActiviy = context as MainActivity
-        (mainActiviy.application as HackRUApp).appComponent.inject(this)
+        mainActivity = context as MainActivity
+        (mainActivity.application as HackRUApp).appComponent.inject(this)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?) =
@@ -53,7 +51,7 @@ class AnnouncementsFragment : android.support.v4.app.Fragment() {
             // TODO: Use a decorator instead here instead of margin in rv_item_announcement.xml
         }
 
-        viewModel = ViewModelProviders.of(mainActiviy, viewModelFactory).get(AnnouncementsViewModel::class.java)
+        viewModel = ViewModelProviders.of(mainActivity, viewModelFactory).get(AnnouncementsViewModel::class.java)
         viewModel.announcements.observe(this, Observer {
             it?.let {
                 when(it.state) {
