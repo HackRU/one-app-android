@@ -13,7 +13,7 @@ android {
         minSdkVersion 19
         targetSdkVersion 27
         versionCode 10
-        versionName "2.0.0"
+        versionName "2.0.0-prealpha"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -29,7 +29,7 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation"org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
+    implementation"org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 
     /* Android Support Library */
     implementation 'com.android.support:appcompat-v7:27.1.1'
