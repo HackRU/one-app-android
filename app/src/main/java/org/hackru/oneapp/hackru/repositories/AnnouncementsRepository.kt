@@ -36,7 +36,7 @@ class AnnouncementsRepository @Inject constructor(val announcementsDao: Announce
                 if (data != null && response.isSuccessful) {
                     val announcements = mutableListOf<AnnouncementsModel.Announcement>()
                     data.forEach {
-                        if(it.text != null && it.text.isNotEmpty() && it.ts != null && it.subType == null) {
+                        if(it.text != null && it.text.isNotEmpty() && it.ts != null && it.subtype == null) {
                             announcements.add(AnnouncementsModel.Announcement(it.ts, it.text))
                         }
                     }

@@ -7,7 +7,7 @@ object AnnouncementsModel {
 
     data class Response(val statusCode: String, val body: List<SlackMessage>) {
         data class SlackMessage(val ts: String?,
-                                val subType: String?,
+                                val subtype: String?,
                                 val text: String?)
     }
 
