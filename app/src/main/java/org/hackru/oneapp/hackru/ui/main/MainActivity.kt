@@ -1,4 +1,4 @@
-package org.hackru.oneapp.hackru
+package org.hackru.oneapp.hackru.ui.main
 
 import android.os.Bundle
 import android.support.v4.view.GravityCompat
@@ -41,7 +41,7 @@ class MainActivity : AppCompatActivity() {
                 }
                 R.id.bottom_navigation_events -> {
                     // User clicked on Events
-                    switchFragment(EventsFragment.instance)
+                    switchFragment(EventsFragment.newInstance())
                    true
                 }
                 else -> false

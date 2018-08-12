@@ -15,32 +15,10 @@ class EventsFragment : android.support.v4.app.Fragment() {
 
     companion object {
         // Wondering why we use newInstance() instead of a constructor? Read this: https://stackoverflow.com/a/30867846/9968228
-        val instance: EventsFragment
-            get() = EventsFragment()
-//        fun newInstance() = EventsFragment()
+        fun newInstance() = EventsFragment()
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?) =
             inflater.inflate(R.layout.fragment_events, container, false)
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        val eventsAdapter = EventsAdapter()
-        rv_events.apply {
-            layoutManager = LinearLayoutManager(context)
-            adapter = eventsAdapter
-        }
-    }
-//    override fun onActivityCreated(savedInstanceState: Bundle?) {
-//        super.onActivityCreated(savedInstanceState)
-//
-//        val eventsAdapter = EventsAdapter()
-//        rv_events.apply {
-//            layoutManager = LinearLayoutManager(context)
-//            adapter = eventsAdapter
-//        }
-//
-//    }
 
 }
