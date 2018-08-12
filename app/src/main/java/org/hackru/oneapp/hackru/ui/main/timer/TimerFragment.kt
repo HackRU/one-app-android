@@ -1,8 +1,9 @@
-package org.hackru.oneapp.hackru
+package org.hackru.oneapp.hackru.ui.main.timer
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import org.hackru.oneapp.hackru.R
 
 class TimerFragment : android.support.v4.app.Fragment() {
     // TAG is used with Android's Log class to organize debugging logs
