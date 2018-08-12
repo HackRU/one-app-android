@@ -1,4 +1,4 @@
-package org.hackru.oneapp.hackru.ui.main
+package org.hackru.oneapp.hackru
 
 import android.os.Bundle
 import android.support.v4.view.GravityCompat

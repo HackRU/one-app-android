@@ -7,18 +7,6 @@ object AnnouncementsModel {
 
     data class Response(val statusCode: String, val body: List<SlackMessage>) {
         data class SlackMessage(val ts: String?,
-<<<<<<< HEAD
-                                val subType: String?,
-                                val text: String?)
-    }
-
-    @Entity
-    data class Announcement(val ts: String,
-                            val text: String) {
-        // A guaranteed non-null and unique key is required for persisting an object with Room
-        @PrimaryKey(autoGenerate = true) var databaseKey: Int? = null
-    }
-=======
                                 val subtype: String?,
                                 val text: String?)
     }
@@ -37,6 +25,5 @@ object AnnouncementsModel {
     @Entity
     data class Announcement(@PrimaryKey val ts: String,
                             val text: String)
->>>>>>> d69d810010cf862c0eddee67b3a7d58691f5f572
 
 }
