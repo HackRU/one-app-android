@@ -7,13 +7,20 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 
 android {
-    compileSdkVersion 27
+    compileSdkVersion 28
     defaultConfig {
         applicationId "org.hackru.oneapp.hackru"
         minSdkVersion 19
+<<<<<<< HEAD
         targetSdkVersion 27
         versionCode 10
         versionName "2.0.0"
+=======
+        targetSdkVersion 28
+        versionCode 10
+        versionName '2.0.0'
+        versionNameSuffix 'prealpha'
+>>>>>>> d69d810010cf862c0eddee67b3a7d58691f5f572
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -25,27 +32,40 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    productFlavors {
+    }
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation"org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 
     /* Android Support Library */
-    implementation 'com.android.support:appcompat-v7:27.1.1'
-    implementation 'com.android.support:design:27.1.1'
+    def support_version = "28.0.0-rc01"
+    implementation "com.android.support:appcompat-v7:$support_version"
+    implementation "com.android.support:design:$support_version"
     implementation 'com.android.support.constraint:constraint-layout:1.1.2'
+<<<<<<< HEAD
     implementation 'com.android.support:support-vector-drawable:27.1.1'
     implementation 'com.android.support:recyclerview-v7:27.1.1'
     implementation 'com.android.support:cardview-v7:27.1.1'
+=======
+    implementation "com.android.support:support-vector-drawable:$support_version"
+    implementation "com.android.support:recyclerview-v7:$support_version"
+    implementation "com.android.support:cardview-v7:$support_version"
+>>>>>>> d69d810010cf862c0eddee67b3a7d58691f5f572
 
     /* Networking */
+
     // We use Retrofit to handle networking
     implementation 'com.squareup.retrofit2:retrofit:2.4.0'
+
     // Converts json to Java objects and vise versa
     implementation 'com.google.code.gson:gson:2.8.5'
+
     // Needed for retrofit to automatically use gson to convert json to POJOs
     implementation 'com.squareup.retrofit2:converter-gson:2.4.0'
+<<<<<<< HEAD
     // Allows us to monitor Retrofit networking with logcat
     implementation 'com.squareup.okhttp3:logging-interceptor:3.8.0'
 
@@ -61,6 +81,29 @@ dependencies {
     kapt "android.arch.persistence.room:compiler:$room_version"
     // We use Dagger for dependency injection
     implementation "com.google.dagger:dagger:$dagger_version"
+=======
+
+    // Allows us to monitor Retrofit networking with logcat
+    implementation 'com.squareup.okhttp3:logging-interceptor:3.8.0'
+
+    /* App Architecture */
+    def lifecycle_version = "1.1.1"
+    def room_version = "1.1.1"
+    def dagger_version = "2.16"
+
+    // ViewModel and LiveData
+    implementation "android.arch.lifecycle:extensions:$lifecycle_version"
+
+    // We use Room for persisting data to local device storage
+    implementation "android.arch.persistence.room:runtime:$room_version"
+
+    // Allows us to use Room's required annotations
+    kapt "android.arch.persistence.room:compiler:$room_version"
+
+    // We use Dagger for dependency injection
+    implementation "com.google.dagger:dagger:$dagger_version"
+
+>>>>>>> d69d810010cf862c0eddee67b3a7d58691f5f572
     // Allows us to use Dagger's required annotations
     kapt "com.google.dagger:dagger-compiler:$dagger_version"
 

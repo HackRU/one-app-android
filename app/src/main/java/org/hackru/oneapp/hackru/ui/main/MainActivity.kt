@@ -1,4 +1,4 @@
-package org.hackru.oneapp.hackru
+package org.hackru.oneapp.hackru.ui.main
 
 import android.os.Bundle
 import android.support.v4.view.GravityCompat
@@ -21,8 +21,10 @@ class MainActivity : AppCompatActivity() {
         setUpActionBar()
 
         // Set Timer as the default tab when the app is opened for the first time or was terminated manually by the user
-        bottom_navigation.selectedItemId = R.id.bottom_navigation_timer
-        switchFragment(TimerFragment.newInstance())
+        if(savedInstanceState == null) {
+            bottom_navigation.selectedItemId = R.id.bottom_navigation_timer
+            switchFragment(TimerFragment.newInstance())
+        }
 
         // Listen for when the user clicks on one of the bottom navigation items
         bottom_navigation.setOnNavigationItemSelectedListener {
