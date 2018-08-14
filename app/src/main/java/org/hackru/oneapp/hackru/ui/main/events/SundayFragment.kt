@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.Toast
 import kotlinx.android.synthetic.main.fragment_announcements.*
+import kotlinx.android.synthetic.main.fragment_saturday_sunday.*
 import org.hackru.oneapp.hackru.R
 import org.hackru.oneapp.hackru.api.Resource
 import org.hackru.oneapp.hackru.ui.main.MainActivity
@@ -31,14 +32,14 @@ class SundayFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        rv_announcements.apply {
+        rv_events.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = eventsAdapter
             // TODO: Use a decorator instead here instead of margin in rv_item_announcement.xml
         }
 
         viewModel = ViewModelProviders.of(activity as MainActivity).get(EventsViewModel::class.java)
-        viewModel.saturdayEvents.observe(this, Observer {
+        viewModel.sundayEvents.observe(this, Observer {
             it?.let {
                 when(it.state) {
                     Resource.LOADING -> {

@@ -3,7 +3,7 @@
     android:layout_width="match_parent" android:layout_height="match_parent" xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <android.support.v7.widget.Toolbar
-        android:id="@+id/toolbar"
+        android:id="@+id/toolbar_events"
         android:layout_width="match_parent"
         android:layout_height="48dp"
         android:background="@color/colorPrimary"
@@ -23,18 +23,18 @@
             android:id="@+id/sat_tab"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Saturday" />
+            android:text="SATURDAY" />
 
         <android.support.design.widget.TabItem
             android:id="@+id/sun_tab"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Sunday" />
+            android:text="SUNDAY" />
 
     </android.support.design.widget.TabLayout>
 
     <android.support.v4.view.ViewPager
-        android:id="@+id/view_pager"
+        android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior" />

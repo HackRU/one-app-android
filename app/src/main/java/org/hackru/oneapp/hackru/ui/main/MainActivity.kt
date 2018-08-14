@@ -5,9 +5,12 @@ import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.tablayout_events.*
 import org.hackru.oneapp.hackru.R
 import org.hackru.oneapp.hackru.ui.main.announcements.AnnouncementsFragment
+import org.hackru.oneapp.hackru.ui.main.events.EventsAdapter
 import org.hackru.oneapp.hackru.ui.main.events.EventsFragment
+import org.hackru.oneapp.hackru.ui.main.events.SaturdayFragment
 import org.hackru.oneapp.hackru.ui.main.timer.TimerFragment
 
 class MainActivity : AppCompatActivity() {
@@ -42,7 +45,8 @@ class MainActivity : AppCompatActivity() {
                 R.id.bottom_navigation_events -> {
                     // User clicked on Events
                     switchFragment(EventsFragment.newInstance())
-                   true
+                    supportFragmentManager.beginTransaction().replace(R.id.fragment_container,EventsFragment())
+                    true
                 }
                 else -> false
             }
