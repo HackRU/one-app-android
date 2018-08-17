@@ -23,7 +23,7 @@ class EventsViewModel : ViewModel() {
     private val sundayEventsList = mutableListOf<EventsModel.Event>()
 
     init {
-        for(i in 0..7) {
+        for(i in 0 until titles.size) {
             saturdayEventsList.add(EventsModel.Event(times[i], titles[i], details[i]))
             sundayEventsList.add(EventsModel.Event(times[i], titles[i], details[i]))
         }

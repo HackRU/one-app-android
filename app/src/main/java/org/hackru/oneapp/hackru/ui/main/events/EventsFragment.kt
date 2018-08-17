@@ -4,34 +4,26 @@ import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentStatePagerAdapter
-import android.support.v4.view.ViewPager
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import org.hackru.oneapp.hackru.R
 import android.view.View
+import kotlinx.android.synthetic.main.fragment_events.*
 
 class EventsFragment : Fragment() {
     val TAG = "EventsFragment"
-    lateinit var viewPager: ViewPager
-    private lateinit var viewPagerAdapter: ViewPagerAdapter
 
     companion object {
         fun newInstance() = EventsFragment()
     }
 
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        return inflater.inflate(R.layout.fragment_events, container, false)
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
-        val rootView = inflater.inflate(R.layout.fragment_events, container, false)
-
-        viewPager = view?.findViewById(R.id.container) as ViewPager
-        viewPagerAdapter = ViewPagerAdapter(childFragmentManager)
-        viewPager.adapter = viewPagerAdapter
-        return rootView
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        container_events.adapter = ViewPagerAdapter(childFragmentManager)
     }
 
     internal inner class ViewPagerAdapter(fm: FragmentManager) : FragmentStatePagerAdapter(fm) {
