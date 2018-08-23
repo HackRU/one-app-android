@@ -9,7 +9,6 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import org.hackru.oneapp.hackru.R
 import android.view.View
-import android.widget.TextView
 import kotlinx.android.synthetic.main.fragment_events.*
 
 class EventsFragment : Fragment() {

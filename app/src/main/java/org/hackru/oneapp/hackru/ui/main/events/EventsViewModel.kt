@@ -33,13 +33,13 @@ class EventsViewModel : ViewModel() {
         }
     }
 
-    val saturdayEvents: MutableLiveData<Resource<List<EventsModel.Event>>> = MutableLiveData()
+        val saturdayEvents: MutableLiveData<Resource<List<EventsModel.Event>>> = MutableLiveData()
         get() {
             field.value = Resource.success(saturdayEventsList.toList())
             return field
         }
 
-    val sundayEvents: MutableLiveData<Resource<List<EventsModel.Event>>> = MutableLiveData()
+        val sundayEvents: MutableLiveData<Resource<List<EventsModel.Event>>> = MutableLiveData()
         get() {
             field.value = Resource.success(sundayEventsList.toList())
             return field
