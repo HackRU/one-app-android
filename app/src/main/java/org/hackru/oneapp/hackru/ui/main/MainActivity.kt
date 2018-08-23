@@ -42,7 +42,7 @@ class MainActivity : AppCompatActivity() {
                 R.id.bottom_navigation_events -> {
                     // User clicked on Events
                     switchFragment(EventsFragment.newInstance())
-                    true
+                   true
                 }
                 else -> false
             }

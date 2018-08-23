@@ -18,7 +18,18 @@ class AnnouncementsAdapter : RecyclerView.Adapter<AnnouncementsAdapter.ViewHolde
             notifyDataSetChanged()
         }
 
+    var test = arrayOf("<!channel> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce interdum porttitor turpis quis tincidunt.",
+            "<!channel2> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce interdum porttitor turpis quis tincidunt.",
+            "<CD45SRT> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce interdum porttitor turpis quis tincidunt.",
+            "<CD367TY> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce interdum porttitor turpis quis tincidunt.",
+    "<CD89DFT> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce interdum porttitor turpis quis tincidunt.",
+    "<CD45SRT> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce interdum porttitor turpis quis tincidunt.",
+    "<CD35KPF> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce interdum porttitor turpis quis tincidunt.",
+    "<CD26ALP> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce interdum porttitor turpis quis tincidunt.",
+    "<CD29IYR> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce interdum porttitor turpis quis tincidunt.")
+
     override fun getItemCount() = items.size
+//    override fun getItemCount() = test.size
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val itemView = LayoutInflater.from(parent.context).inflate(R.layout.rv_item_announcement, parent, false)
@@ -26,7 +37,10 @@ class AnnouncementsAdapter : RecyclerView.Adapter<AnnouncementsAdapter.ViewHolde
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.announcement_text.text = items[position].text
+        var s = MessageParser.stringParser(items[position].text)
+        holder.announcement_text.text = s
+//        holder.announcement_text.text = items[position].text    ORIGINAL_ONE
+//        holder.announcement_text.text = test[position]
     }
 
 
