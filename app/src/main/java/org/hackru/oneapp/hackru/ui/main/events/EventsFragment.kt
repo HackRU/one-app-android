@@ -25,6 +25,8 @@ class EventsFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         container_events.adapter = ViewPagerAdapter(childFragmentManager)
+        container_events.addOnPageChangeListener(TabLayout.TabLayoutOnPageChangeListener(tab_layout))
+        tab_layout.addOnTabSelectedListener(TabLayout.ViewPagerOnTabSelectedListener(container_events))
     }
 
     internal inner class ViewPagerAdapter(fm: FragmentManager) : FragmentStatePagerAdapter(fm) {
