@@ -8,6 +8,8 @@ import kotlinx.android.synthetic.main.activity_main.*
 import org.hackru.oneapp.hackru.R
 import org.hackru.oneapp.hackru.ui.main.announcements.AnnouncementsFragment
 import org.hackru.oneapp.hackru.ui.main.events.EventsFragment
+import org.hackru.oneapp.hackru.ui.main.qrscanner.RUScanner.MaterialBarcodeScanner
+import org.hackru.oneapp.hackru.ui.main.qrscanner.RUScanner.MaterialBarcodeScannerBuilder
 import org.hackru.oneapp.hackru.ui.main.timer.TimerFragment
 
 class MainActivity : AppCompatActivity() {
@@ -55,7 +57,12 @@ class MainActivity : AppCompatActivity() {
 
                 }
                 R.id.drawer_scanner -> {
-
+                    val qrCodeScanning: MaterialBarcodeScanner = MaterialBarcodeScannerBuilder()
+                            .withActivity(this)
+                            .withEnableAutoFocus(true)
+                            .withBackfacingCamera()
+                            .build()
+                    qrCodeScanning.startScan()
                 }
                 R.id.drawer_settings -> {
 
