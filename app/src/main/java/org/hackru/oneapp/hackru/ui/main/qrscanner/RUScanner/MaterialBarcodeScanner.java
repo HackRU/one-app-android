@@ -16,6 +16,9 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 public class MaterialBarcodeScanner {
 
     /**
@@ -34,6 +37,7 @@ public class MaterialBarcodeScanner {
     private FrameLayout mContentView; //Content frame for fragments
 
     private OnResultListener onResultListener;
+    private ArrayList<String> mEvents;
 
     public MaterialBarcodeScanner(@NonNull MaterialBarcodeScannerBuilder materialBarcodeScannerBuilder) {
         this.mMaterialBarcodeScannerBuilder = materialBarcodeScannerBuilder;
@@ -76,6 +80,7 @@ public class MaterialBarcodeScanner {
             //Open activity
             EventBus.getDefault().postSticky(this);
             Intent intent = new Intent(mMaterialBarcodeScannerBuilder.getActivity(), MaterialBarcodeScannerActivity.class);
+            intent.putStringArrayListExtra(MaterialBarcodeScannerActivity.EVENTS, mEvents);
             mMaterialBarcodeScannerBuilder.getActivity().startActivity(intent);
         }
     }

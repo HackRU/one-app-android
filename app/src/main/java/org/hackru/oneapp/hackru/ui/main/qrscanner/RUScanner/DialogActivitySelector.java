@@ -45,8 +45,6 @@ public class DialogActivitySelector extends DialogFragment{
     }
 
     public static DialogActivitySelector newInstance(String array[]){
-
-
         Bundle bundle = new Bundle();
         bundle.putStringArray(KEY_EVENTS,array);
 

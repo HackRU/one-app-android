@@ -23,11 +23,13 @@ import org.greenrobot.eventbus.ThreadMode;
 import org.hackru.oneapp.hackru.R;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class MaterialBarcodeScannerActivity extends AppCompatActivity {
 
     private static final int RC_HANDLE_GMS = 9001;
     private static final String RQ_DIALOG = "rq_dialog";
+    public static final String EVENTS = "events_extra";
 
     private static final String TAG = "MaterialBarcodeScanner";
 
@@ -41,6 +43,8 @@ public class MaterialBarcodeScannerActivity extends AppCompatActivity {
     private GraphicOverlay<BarcodeGraphic> mGraphicOverlay;
 
     private SoundPoolPlayer mSoundPoolPlayer;
+
+    private String[] mEvents;
 
     /**
      * true if no further barcode should be detected or given as a result
@@ -57,6 +61,10 @@ public class MaterialBarcodeScannerActivity extends AppCompatActivity {
         }else{
             Log.e(TAG, "Barcode scanner could not go into fullscreen mode!");
         }
+
+        ArrayList<String> eventsList = getIntent().getStringArrayListExtra(EVENTS);
+        mEvents = new String[eventsList.size()];
+        mEvents = eventsList.toArray(mEvents);
         setContentView(R.layout.barcode_capture);
     }
 
@@ -77,6 +85,10 @@ public class MaterialBarcodeScannerActivity extends AppCompatActivity {
         }
         setupButtons();
         setupCenterTracker();
+    }
+
+    private void setupEvents(){
+        // get events from database
     }
 
     private void setupCenterTracker() {
@@ -104,8 +116,9 @@ public class MaterialBarcodeScannerActivity extends AppCompatActivity {
         selectActivityButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // open dialog to select activity
-                DialogActivitySelector dialog = DialogActivitySelector.newInstance(new String[]{"Breakfast", "Lunch", "Dinner", "Lunch 2", "Event X"});
+                // open dialog to select activityactivity
+                // pass in events array
+                DialogActivitySelector dialog = DialogActivitySelector.newInstance(mEvents);
                 dialog.show(getFragmentManager(),RQ_DIALOG);
 
 

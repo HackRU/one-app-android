@@ -36,8 +36,6 @@ public class MaterialBarcodeScannerBuilder {
 
     protected boolean mFlashEnabledByDefault = false;
 
-    protected ArrayList<String> mEvents;
-
     protected int mBarcodeFormats = Barcode.ALL_FORMATS;
 
     protected String mText = "";
@@ -109,10 +107,6 @@ public class MaterialBarcodeScannerBuilder {
         return this;
     }
 
-    public MaterialBarcodeScannerBuilder withEvents(ArrayList<String> events){
-        mEvents = events;
-        return this;
-    }
 
     /**
      * Enables or disables auto focusing on the camera
@@ -230,13 +224,6 @@ public class MaterialBarcodeScannerBuilder {
             throw new RuntimeException("Please pass an activity to the MaterialBarcodeScannerBuilder");
         }
 
-        if(mEvents == null){
-            Toast.makeText(getActivity(), "No events provided. Using default", Toast.LENGTH_SHORT).show();
-            mEvents = new ArrayList<>();
-            mEvents.add("Breakfast");
-            mEvents.add("Lunch");
-            mEvents.add("Dinner");
-        }
         mUsed = true;
         buildMobileVisionBarcodeDetector();
         MaterialBarcodeScanner materialBarcodeScanner = new MaterialBarcodeScanner(this);
