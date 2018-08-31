@@ -6,49 +6,48 @@
     android:layout_height="match_parent">
 
     <android.support.design.widget.AppBarLayout
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:paddingTop="8dp"
-        android:theme="@style/AppTheme.AppBarOverlay">
-
-    <!--<android.support.v7.widget.Toolbar-->
-        <!--android:id="@+id/toolbar_events"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="?attr/actionBarSize"-->
-        <!--android:layout_weight="1"-->
-        <!--android:background="?attr/colorPrimary"-->
-        <!--app:popupTheme="@style/AppTheme.PopupOverlay"-->
-        <!--app:elevation="0dp" />-->
-
-    <android.support.design.widget.TabLayout
-        android:id="@+id/tab_layout"
+        android:id="@+id/appbarlayout_events"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:tabIndicatorHeight="3dp"
-        app:tabIndicatorColor="@color/colorAccent"
-        app:tabSelectedTextColor="#FFFFFF"
-        app:tabTextColor="@color/colorPrimaryDark"
-        app:tabIndicatorAnimationDuration="1">
+        android:paddingTop="8dp"
+        android:theme="@style/AppTheme.AppBarOverlay"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
-        <android.support.design.widget.TabItem
-            android:id="@+id/sat_tab"
-            android:layout_width="wrap_content"
+        <android.support.design.widget.TabLayout
+            android:id="@+id/tab_layout"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="SATURDAY" />
+            app:tabIndicatorAnimationDuration="1"
+            app:tabIndicatorColor="@color/colorAccent"
+            app:tabIndicatorHeight="3dp"
+            app:tabSelectedTextColor="#FFFFFF"
+            app:tabTextColor="@color/colorPrimaryDark">
 
-        <android.support.design.widget.TabItem
-            android:id="@+id/sun_tab"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="SUNDAY" />
+            <android.support.design.widget.TabItem
+                android:id="@+id/sat_tab"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="SATURDAY" />
 
-    </android.support.design.widget.TabLayout>
+            <android.support.design.widget.TabItem
+                android:id="@+id/sun_tab"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="SUNDAY" />
+
+        </android.support.design.widget.TabLayout>
     </android.support.design.widget.AppBarLayout>
 
     <android.support.v4.view.ViewPager
         android:id="@+id/container_events"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+        android:layout_height="0dp"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/appbarlayout_events" />
 
 </android.support.constraint.ConstraintLayout>
