@@ -1,11 +1,13 @@
 package org.hackru.oneapp.hackru.ui.main
 
+import android.os.Build
 import android.os.Bundle
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
 import org.hackru.oneapp.hackru.R
+import org.hackru.oneapp.hackru.Utils
 import org.hackru.oneapp.hackru.ui.main.announcements.AnnouncementsFragment
 import org.hackru.oneapp.hackru.ui.main.events.EventsFragment
 import org.hackru.oneapp.hackru.ui.main.timer.TimerFragment
@@ -31,16 +33,19 @@ class MainActivity : AppCompatActivity() {
             return@setOnNavigationItemSelectedListener when(it.itemId) {
                 R.id.bottom_navigation_announcements -> {
                     // User clicked on Announcements
+                    toggleActionBarElevation(true)
                     switchFragment(AnnouncementsFragment.newInstance())
                     true
                 }
                 R.id.bottom_navigation_timer -> {
                     // User clicked on Timer
+                    toggleActionBarElevation(true)
                     switchFragment(TimerFragment.newInstance())
                     true
                 }
                 R.id.bottom_navigation_events -> {
                     // User clicked on Events
+                    toggleActionBarElevation(false)
                     switchFragment(EventsFragment.newInstance())
                     true
                 }
@@ -120,4 +125,20 @@ class MainActivity : AppCompatActivity() {
             super.onBackPressed()
         }
     }
+
+    /**
+     * Toggles elevation on the supportActionBar. This is needed because the supportActionBar shouldn't
+     * have any elevation when the user is on EventsFragment, but it should have elevation otherwise.
+     *
+     * @param toggle Whether or not the supportActionBar should have elevation. True is yes, false is no
+     */
+    fun toggleActionBarElevation(toggle: Boolean) {
+        if(Build.VERSION.SDK_INT >= 21) {
+            supportActionBar?.elevation = run {
+                if(toggle) Utils.convertDpToPx(this, 4f)
+                else 0f
+            }
+        }
+    }
+
 }

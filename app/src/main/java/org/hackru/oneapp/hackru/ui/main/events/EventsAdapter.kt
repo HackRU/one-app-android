@@ -1,12 +1,11 @@
 package org.hackru.oneapp.hackru.ui.main.events
 
-import android.content.Context
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import kotlinx.android.synthetic.main.rv_item_events.view.*
+import kotlinx.android.synthetic.main.rv_item_event.view.*
 import org.hackru.oneapp.hackru.R
 import org.hackru.oneapp.hackru.api.models.EventsModel
 
@@ -23,7 +22,7 @@ class EventsAdapter : RecyclerView.Adapter<EventsAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(viewGroup: ViewGroup, i: Int): ViewHolder {
         val v = LayoutInflater.from(viewGroup.context)
-                .inflate(R.layout.rv_item_events, viewGroup, false)
+                .inflate(R.layout.rv_item_event, viewGroup, false)
         return ViewHolder(v)
     }
 
