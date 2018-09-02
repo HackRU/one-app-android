@@ -32,8 +32,7 @@ class AnnouncementsAdapter : RecyclerView.Adapter<AnnouncementsAdapter.ViewHolde
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        var s = MessageParser.stringParser(items[position].text)
-        holder.announcement_text.text = s
+        holder.announcement_text.text = MessageParser.stringParser(items[position].text)
 //        holder.announcement_text.text = items[position].text    //ORIGINAL_ONE
     }
 

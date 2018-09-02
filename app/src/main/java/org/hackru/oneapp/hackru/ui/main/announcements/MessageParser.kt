@@ -3,10 +3,10 @@ package org.hackru.oneapp.hackru.ui.main.announcements
 import android.text.Spannable
 import android.text.SpannableStringBuilder
 import android.text.util.Linkify
-import android.widget.TextView
 import java.util.*
 import android.graphics.Typeface
 import android.text.style.StyleSpan
+import android.text.SpannableString
 
 
 class MessageParser {
@@ -18,7 +18,7 @@ class MessageParser {
             val st = StringTokenizer(string)
             val buffer = StringBuffer()
 //            val specCharStr = " !#$%&'()*+,-./;<=>?@[]^_`{|}~3DXoOpPb<>"
-            val specChar = "*&;-"
+            val specChar = "&;-"
             val num = "1234567890"
 
             while (st.hasMoreTokens()) {
@@ -26,7 +26,8 @@ class MessageParser {
                 val strArr = word.split("".toRegex())
 
                 if (word.indexOf('<') != -1 && word.indexOf('>') != -1 && word.indexOf('!') != -1 || word.indexOf('@') != -1
-                            || word.indexOf(':') != -1 && word.lastIndexOf(':',word.length-1) != -1){
+                            || word.indexOf(':') != -1 && word.lastIndexOf(':',word.length-1) != -1
+                            || word.indexOf('*') != -1 && word.lastIndexOf('*',word.length-1) != -1){
                     isEmoji = true
                 }
                 /** to check if it's emoticons like */
@@ -42,7 +43,7 @@ class MessageParser {
                     buffer.append("$word ")
                 }
                 if(word.indexOf('*') != -1 && word.lastIndexOf('*',word.length-1) != -1){
-                    val str = word.makePartialTextsBold()
+                    val str = word.boldTexts()
                     buffer.append("$str ")
                 }
 
@@ -54,7 +55,7 @@ class MessageParser {
             return buffer.toString()
         }
 
-        private fun String.makePartialTextsBold(): SpannableStringBuilder {
+        private fun String.boldTexts(): SpannableStringBuilder {
             var copy = this
             return SpannableStringBuilder().apply {
                 var setSpan = true
@@ -73,7 +74,6 @@ class MessageParser {
                 }while (copy.isNotEmpty())
             }
         }
-
     }
 }
 
