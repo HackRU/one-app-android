@@ -18,15 +18,10 @@ class AnnouncementsAdapter : RecyclerView.Adapter<AnnouncementsAdapter.ViewHolde
             notifyDataSetChanged()
         }
 
-    var test = arrayOf("<!channel> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce interdum porttitor turpis quis tincidunt.",
-            "<!channel2> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce interdum porttitor turpis quis tincidunt.",
-            "<CD45SRT> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce interdum porttitor turpis quis tincidunt.",
-            "<CD367TY> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce interdum porttitor turpis quis tincidunt.",
-    "<CD89DFT> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce interdum porttitor turpis quis tincidunt.",
-    "<CD45SRT> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce interdum porttitor turpis quis tincidunt.",
-    "<CD35KPF> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce interdum porttitor turpis quis tincidunt.",
-    "<CD26ALP> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce interdum porttitor turpis quis tincidunt.",
-    "<CD29IYR> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce interdum porttitor turpis quis tincidunt.")
+    var test = arrayOf("<!channel> IGNORE *Hello* _world_ `kotlin` ~nullException~ <https://kotlinlang.org/> :grin: <@UCF00BCG6> This is a testing message (the last one)",
+            "<!channel> IGNORE *Hello* _world_ `kotlin` ~nullException~ <https://kotlinlang.org/> :grin: <@UCF00BCG6> This is a testing message (the last one)",
+            "<!channel> IGNORE *Hello* _world_ `kotlin` ~nullException~ <https://kotlinlang.org/> :grin: <@UCF00BCG6> This is a testing message (the last one)",
+            "<!channel> IGNORE *Hello* _world_ `kotlin` ~nullException~ <https://kotlinlang.org/> :grin: <@UCF00BCG6> This is a testing message (the last one)")
 
     override fun getItemCount() = items.size
 //    override fun getItemCount() = test.size
@@ -39,8 +34,7 @@ class AnnouncementsAdapter : RecyclerView.Adapter<AnnouncementsAdapter.ViewHolde
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         var s = MessageParser.stringParser(items[position].text)
         holder.announcement_text.text = s
-//        holder.announcement_text.text = items[position].text    ORIGINAL_ONE
-//        holder.announcement_text.text = test[position]
+//        holder.announcement_text.text = items[position].text    //ORIGINAL_ONE
     }
 
 
