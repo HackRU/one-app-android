@@ -7,6 +7,10 @@ import java.util.*
 import android.graphics.Typeface
 import android.text.style.StyleSpan
 import android.text.SpannableString
+import android.view.View
+import android.widget.TextView
+import kotlinx.android.synthetic.main.rv_item_announcement.view.*
+import org.hackru.oneapp.hackru.R
 
 
 class MessageParser {
@@ -17,20 +21,23 @@ class MessageParser {
             var isEmoji = false
             val st = StringTokenizer(string)
             val buffer = StringBuffer()
-//            val specCharStr = " !#$%&'()*+,-./;<=>?@[]^_`{|}~3DXoOpPb<>"
-            val specChar = "&;-"
+            val specChar = "&;"
             val num = "1234567890"
 
             while (st.hasMoreTokens()) {
-                val word = st.nextToken()
+                var word = st.nextToken()
                 val strArr = word.split("".toRegex())
 
                 if (word.indexOf('<') != -1 && word.indexOf('>') != -1 && word.indexOf('!') != -1 || word.indexOf('@') != -1
                             || word.indexOf(':') != -1 && word.lastIndexOf(':',word.length-1) != -1
-                            || word.indexOf('*') != -1 && word.lastIndexOf('*',word.length-1) != -1){
+                            || word.indexOf('*') != -1 && word.lastIndexOf('*',word.length-1) != -1
+                            || word.indexOf('_') != -1 && word.lastIndexOf('_',word.length-1) != -1
+                            || word.indexOf('~') != -1 && word.lastIndexOf('~',word.length-1) != -1
+                            || word.indexOf('`') != -1 && word.lastIndexOf('`',word.length-1) != -1
+                            || word.indexOf('&') != -1 && word.lastIndexOf(';',word.length-1) != -1){
                     isEmoji = true
                 }
-                /** to check if it's emoticons like */
+
                 else{
                     for(i in 0 until word.length) {
                         isEmoji = strArr[i].contains(specChar)
@@ -39,16 +46,34 @@ class MessageParser {
                         buffer.append("$word ")
                     }
                 }
-                if(word.indexOf('/') != -1 && word.indexOf('.') != -1){
-                    buffer.append("$word ")
-                }
                 if(word.indexOf('*') != -1 && word.lastIndexOf('*',word.length-1) != -1){
                     val str = word.boldTexts()
                     buffer.append("$str ")
                 }
+                if(word.indexOf('_') != -1 && word.lastIndexOf('_',word.length-1) != -1){
+                    val str = word.italicTexts()
+                    buffer.append("$str ")
+                }
+                if(word.indexOf('`') != -1 && word.lastIndexOf('`',word.length-1) != -1){
+                    val str = word.codeTexts()
+                    buffer.append("$str ")
+                }
+                if(word.indexOf('~') != -1 && word.lastIndexOf('~',word.length-1) != -1){
+                    val str = word.removeTexts()
+                    buffer.append("$str ")
+                }
+                if(word.contains(specChar)){
+                    word = word.replace(Regex("""[&;]"""), "")
+                    buffer.append("$word ")
+                }
+                if(word.indexOf('/') != -1 && word.indexOf('.') != -1 &&
+                        word.indexOf('<') != -1 && word.indexOf('>') != -1){
+                    word = word.replace(Regex("""[<>#]"""), "")
+                    buffer.append("$word ")
+                }
 
                 /** <---to check if the word is (time) */
-                if(strArr[0].contains(num)) {
+                if(word.contains(Regex("""[0123456789]""")) && word.contains(':')) {
                     buffer.append("$word ")
                 }
             }
@@ -67,16 +92,70 @@ class MessageParser {
                     val start = length
                     append(next)
                     if (setSpan) {
-                        setSpan(StyleSpan(Typeface.BOLD), start, length,
-                                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+                        setSpan(StyleSpan(Typeface.BOLD), start, length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
                     }
                     copy = copy.removePrefix(next).removePrefix("*")
                 }while (copy.isNotEmpty())
             }
         }
-    }
-}
 
-//                val linkView = findViewById(R.id.noteview) as TextView
-//                linkView.text = "www.google.com"
-//                Linkify.addLinks(linkView, Linkify.ALL)
+        private fun String.italicTexts(): SpannableStringBuilder {
+            var copy = this
+            return SpannableStringBuilder().apply {
+                var setSpan = true
+                var next: String
+                do{
+                    setSpan = !setSpan
+                    next = if (length == 0) copy.substringBefore("_", "")
+                    else copy.substringBefore("_")
+                    val start = length
+                    append(next)
+                    if (setSpan) {
+                        setSpan(StyleSpan(Typeface.ITALIC), start, length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+                    }
+                    copy = copy.removePrefix(next).removePrefix("_")
+                }while (copy.isNotEmpty())
+            }
+        }
+
+        private fun String.codeTexts(): SpannableStringBuilder {
+            var copy = this
+            return SpannableStringBuilder().apply {
+                var setSpan = true
+                var next: String
+                do{
+                    setSpan = !setSpan
+                    next = if (length == 0) copy.substringBefore("`", "")
+                    else copy.substringBefore("`")
+                    val start = length
+                    append(next)
+                    if (setSpan) {
+                        setSpan(StyleSpan(Typeface.NORMAL), start, length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+                    }
+                    copy = copy.removePrefix(next).removePrefix("`")
+                }while (copy.isNotEmpty())
+            }
+        }
+
+        private fun String.removeTexts(): SpannableStringBuilder {
+            var copy = this
+            return SpannableStringBuilder().apply {
+                var setSpan = true
+                var next: String
+                do{
+                    setSpan = !setSpan
+                    next = if (length == 0) copy.substringBefore("~", "")
+                    else copy.substringBefore("~")
+                    val start = length
+                    append(next)
+                    if (setSpan) {
+                        setSpan(StyleSpan(Typeface.NORMAL), start, length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+                    }
+                    copy = copy.removePrefix(next).removePrefix("~")
+                }while (copy.isNotEmpty())
+            }
+        }
+
+    }
+
+}

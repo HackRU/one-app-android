@@ -1,6 +1,7 @@
 package org.hackru.oneapp.hackru.ui.main.announcements
 
 import android.support.v7.widget.RecyclerView
+import android.text.util.Linkify
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,13 +19,7 @@ class AnnouncementsAdapter : RecyclerView.Adapter<AnnouncementsAdapter.ViewHolde
             notifyDataSetChanged()
         }
 
-    var test = arrayOf("<!channel> IGNORE *Hello* _world_ `kotlin` ~nullException~ <https://kotlinlang.org/> :grin: <@UCF00BCG6> This is a testing message (the last one)",
-            "<!channel> IGNORE *Hello* _world_ `kotlin` ~nullException~ <https://kotlinlang.org/> :grin: <@UCF00BCG6> This is a testing message (the last one)",
-            "<!channel> IGNORE *Hello* _world_ `kotlin` ~nullException~ <https://kotlinlang.org/> :grin: <@UCF00BCG6> This is a testing message (the last one)",
-            "<!channel> IGNORE *Hello* _world_ `kotlin` ~nullException~ <https://kotlinlang.org/> :grin: <@UCF00BCG6> This is a testing message (the last one)")
-
     override fun getItemCount() = items.size
-//    override fun getItemCount() = test.size
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val itemView = LayoutInflater.from(parent.context).inflate(R.layout.rv_item_announcement, parent, false)
