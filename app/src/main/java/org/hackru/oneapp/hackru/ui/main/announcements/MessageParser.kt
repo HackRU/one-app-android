@@ -22,7 +22,6 @@ class MessageParser {
             val st = StringTokenizer(string)
             val buffer = StringBuffer()
             val specChar = "&;"
-            val num = "1234567890"
 
             while (st.hasMoreTokens()) {
                 var word = st.nextToken()
@@ -54,13 +53,10 @@ class MessageParser {
                     val str = word.italicTexts()
                     buffer.append("$str ")
                 }
-                if(word.indexOf('`') != -1 && word.lastIndexOf('`',word.length-1) != -1){
-                    val str = word.codeTexts()
-                    buffer.append("$str ")
-                }
-                if(word.indexOf('~') != -1 && word.lastIndexOf('~',word.length-1) != -1){
-                    val str = word.removeTexts()
-                    buffer.append("$str ")
+                if(word.indexOf('`') != -1 && word.lastIndexOf('`',word.length-1) != -1 ||
+                        word.indexOf('~') != -1 && word.lastIndexOf('~',word.length-1) != -1){
+                    word = word.replace(Regex("""[`~]"""), "")
+                    buffer.append("$word ")
                 }
                 if(word.contains(specChar)){
                     word = word.replace(Regex("""[&;]"""), "")
@@ -81,78 +77,40 @@ class MessageParser {
         }
 
         private fun String.boldTexts(): SpannableStringBuilder {
-            var copy = this
+            var clone = this
             return SpannableStringBuilder().apply {
                 var setSpan = true
                 var next: String
                 do{
                     setSpan = !setSpan
-                    next = if (length == 0) copy.substringBefore("*", "")
-                    else copy.substringBefore("*")
+                    next = if (length == 0) clone.substringBefore("*", "")
+                    else clone.substringBefore("*")
                     val start = length
                     append(next)
                     if (setSpan) {
                         setSpan(StyleSpan(Typeface.BOLD), start, length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
                     }
-                    copy = copy.removePrefix(next).removePrefix("*")
-                }while (copy.isNotEmpty())
+                    clone = clone.removePrefix(next).removePrefix("*")
+                }while (clone.isNotEmpty())
             }
         }
 
         private fun String.italicTexts(): SpannableStringBuilder {
-            var copy = this
+            var clone = this
             return SpannableStringBuilder().apply {
                 var setSpan = true
                 var next: String
                 do{
                     setSpan = !setSpan
-                    next = if (length == 0) copy.substringBefore("_", "")
-                    else copy.substringBefore("_")
+                    next = if (length == 0) clone.substringBefore("_", "")
+                    else clone.substringBefore("_")
                     val start = length
                     append(next)
                     if (setSpan) {
                         setSpan(StyleSpan(Typeface.ITALIC), start, length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
                     }
-                    copy = copy.removePrefix(next).removePrefix("_")
-                }while (copy.isNotEmpty())
-            }
-        }
-
-        private fun String.codeTexts(): SpannableStringBuilder {
-            var copy = this
-            return SpannableStringBuilder().apply {
-                var setSpan = true
-                var next: String
-                do{
-                    setSpan = !setSpan
-                    next = if (length == 0) copy.substringBefore("`", "")
-                    else copy.substringBefore("`")
-                    val start = length
-                    append(next)
-                    if (setSpan) {
-                        setSpan(StyleSpan(Typeface.NORMAL), start, length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-                    }
-                    copy = copy.removePrefix(next).removePrefix("`")
-                }while (copy.isNotEmpty())
-            }
-        }
-
-        private fun String.removeTexts(): SpannableStringBuilder {
-            var copy = this
-            return SpannableStringBuilder().apply {
-                var setSpan = true
-                var next: String
-                do{
-                    setSpan = !setSpan
-                    next = if (length == 0) copy.substringBefore("~", "")
-                    else copy.substringBefore("~")
-                    val start = length
-                    append(next)
-                    if (setSpan) {
-                        setSpan(StyleSpan(Typeface.NORMAL), start, length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-                    }
-                    copy = copy.removePrefix(next).removePrefix("~")
-                }while (copy.isNotEmpty())
+                    clone = clone.removePrefix(next).removePrefix("_")
+                }while (clone.isNotEmpty())
             }
         }
 
