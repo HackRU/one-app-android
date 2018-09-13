@@ -63,6 +63,7 @@ class MainActivity : AppCompatActivity() {
                     val qrCodeScanning:MaterialBarcodeScanner = MaterialBarcodeScannerBuilder()
                             .withActivity(this)
                             .withEnableAutoFocus(true)
+                            .withCenterTracker()
                             .withBackfacingCamera()
                             .build()
                     qrCodeScanning.startScan()
