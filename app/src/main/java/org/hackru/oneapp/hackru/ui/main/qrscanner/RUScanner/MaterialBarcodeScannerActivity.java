@@ -62,9 +62,10 @@ public class MaterialBarcodeScannerActivity extends AppCompatActivity {
             Log.e(TAG, "Barcode scanner could not go into fullscreen mode!");
         }
 
-        ArrayList<String> eventsList = getIntent().getStringArrayListExtra(EVENTS);
+       /* ArrayList<String> eventsList = getIntent().getStringArrayListExtra(EVENTS);
         mEvents = new String[eventsList.size()];
-        mEvents = eventsList.toArray(mEvents);
+        mEvents = eventsList.toArray(mEvents);*/
+
         setContentView(R.layout.barcode_capture);
     }
 
@@ -118,7 +119,7 @@ public class MaterialBarcodeScannerActivity extends AppCompatActivity {
             public void onClick(View view) {
                 // open dialog to select activityactivity
                 // pass in events array
-                DialogActivitySelector dialog = DialogActivitySelector.newInstance(mEvents);
+                DialogActivitySelector dialog = DialogActivitySelector.newInstance();
                 dialog.show(getFragmentManager(),RQ_DIALOG);
 
 
@@ -130,8 +131,8 @@ public class MaterialBarcodeScannerActivity extends AppCompatActivity {
      * Starts or restarts the camera source, if it exists.  If the camera source doesn't exist yet
      * (e.g., because onResume was called before the camera source was created), this will be called
      * again when the camera source is created.
-     */
-    private void startCameraSource() throws SecurityException {
+     */    private void startCameraSource() throws SecurityException {
+
         // check that the device has play services available.
        mSoundPoolPlayer = new SoundPoolPlayer(this);
         int code = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(

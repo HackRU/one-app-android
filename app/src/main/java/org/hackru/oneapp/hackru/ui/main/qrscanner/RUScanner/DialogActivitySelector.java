@@ -19,9 +19,13 @@ public class DialogActivitySelector extends DialogFragment{
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         View v = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_activity_selector, null);
-        Bundle b = getArguments();
 
-        String eventsArray[] = b.getStringArray(KEY_EVENTS);
+        // hardcoded events
+        String eventsArray[] = new String[5];
+        eventsArray[0] = "Breakfast" ;
+        eventsArray[0] = "Lunch";
+        eventsArray[0] = "Dinner";
+        eventsArray[0] = "Midnight Snack";
 
         ListView eventList = v.findViewById(R.id.lv_events_list);
 
@@ -34,6 +38,7 @@ public class DialogActivitySelector extends DialogFragment{
               // get the item that was clicked and dimiss
                 TextView clicked = (TextView) view;
                 String returndata = clicked.getText().toString();
+
                 dismiss();
             }
         });
@@ -44,12 +49,9 @@ public class DialogActivitySelector extends DialogFragment{
 
     }
 
-    public static DialogActivitySelector newInstance(String array[]){
-        Bundle bundle = new Bundle();
-        bundle.putStringArray(KEY_EVENTS,array);
+    public static DialogActivitySelector newInstance(){
 
         DialogActivitySelector dialog = new DialogActivitySelector();
-        dialog.setArguments(bundle);
         return dialog;
     }
 }
