@@ -5,8 +5,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- TODO: Implement swipe to refresh -->
-
     <android.support.v7.widget.RecyclerView
         android:id="@+id/rv_announcements"
         android:layout_width="match_parent"
@@ -30,4 +28,5 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/rv_announcements" />
+
 </android.support.constraint.ConstraintLayout>
