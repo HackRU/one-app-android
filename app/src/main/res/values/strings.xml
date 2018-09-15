@@ -9,6 +9,10 @@
     <string name="title_feedback">Feedback</string>
     <string name="title_about">About</string>
 
+    <!-- Timer -->
+    <string name="timer_count_title">Time Left:</string>
+    <string name="timer_default_count">00:00:00</string>
+
     <!-- Accessibility -->
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
