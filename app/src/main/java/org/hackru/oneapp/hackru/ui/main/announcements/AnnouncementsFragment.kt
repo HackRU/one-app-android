@@ -62,7 +62,7 @@ class AnnouncementsFragment : android.support.v4.app.Fragment() {
                     Resource.SUCCESS -> {
                         // The resource has successfully been fetched
                         progressbar_announcements.visibility = View.GONE
-                        announcementsAdapter.items = it.data!!
+                        announcementsAdapter.items = it.data
                     }
                     Resource.FAILURE -> {
                         // There was an error fetching the resource

@@ -47,7 +47,7 @@ class SaturdayFragment : Fragment() {
                     }
                     Resource.SUCCESS -> {
                         // The resource has successfully been fetched
-                        eventsAdapter.items = it.data!!
+                        eventsAdapter.items = it.data
                     }
                     Resource.FAILURE -> {
                         // There was an error fetching the resource

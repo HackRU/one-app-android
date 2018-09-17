@@ -17,7 +17,7 @@ class AnnouncementsRepository @Inject constructor(val announcementsDao: Announce
 
     fun loadAllAnnouncements(): LiveData<Resource<List<AnnouncementsModel.Announcement>>> {
         val result = MediatorLiveData<Resource<List<AnnouncementsModel.Announcement>>>()
-        result.value = Resource.loading()
+        result.value = Resource.loading(emptyList())
         val dbSource = announcementsDao.loadAll()
         result.addSource(dbSource) { data ->
             if(data?.isEmpty() == false) {
@@ -43,15 +43,15 @@ class AnnouncementsRepository @Inject constructor(val announcementsDao: Announce
                     result.value = Resource.success(announcements.toList())
                     SaveToDatabaseAsyncTask(announcementsDao).execute(announcements)
                 } else {
-                    result.value = Resource.failure("Couldn't refresh announcements (unknown error)")
+                    result.value = Resource.failure("Couldn't refresh announcements (unknown error)", emptyList())
                 }
             }
 
             override fun onFailure(call: Call<AnnouncementsModel.Response>?, t: Throwable?) {
                 if(t is IOException) {
-                    result.value = Resource.failure("Couldn't refresh announcements (no internet)")
+                    result.value = Resource.failure("Couldn't refresh announcements (no internet)", emptyList())
                 } else {
-                    result.value = Resource.failure("Couldn't refresh announcements (deserialization error)")
+                    result.value = Resource.failure("Couldn't refresh announcements (deserialization error)", emptyList())
                 }
             }
         })

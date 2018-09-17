@@ -47,7 +47,7 @@ class TimerFragment : android.support.v4.app.Fragment() {
                     }
                     Resource.SUCCESS -> {
                         // The resource has successfully been fetched
-                        val deadline = it.data!!
+                        val deadline = it.data
                         val millisecondsLeft = deadline * 1000 - GregorianCalendar().timeInMillis
 
                         if(millisecondsLeft > 0) {
