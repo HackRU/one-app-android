@@ -27,7 +27,7 @@ class TimerFragment : android.support.v4.app.Fragment() {
         fun newInstance() = TimerFragment()
     }
 
-    override fun onAttach(context: Context?) {
+    override fun onAttach(context: Context) {
         super.onAttach(context)
         mainActivity = context as MainActivity
     }
