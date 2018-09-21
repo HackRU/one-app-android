@@ -5,6 +5,7 @@ import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
+import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_main.*
 import org.hackru.oneapp.hackru.R
 import org.hackru.oneapp.hackru.ui.main.announcements.AnnouncementsFragment
@@ -59,12 +60,15 @@ class MainActivity : AppCompatActivity() {
                 }
                 R.id.drawer_scanner -> {
 
-                    val events:ArrayList<String> = ArrayList()
                     val qrCodeScanning:MaterialBarcodeScanner = MaterialBarcodeScannerBuilder()
                             .withActivity(this)
                             .withEnableAutoFocus(true)
                             .withCenterTracker()
                             .withBackfacingCamera()
+                            .withResultListener {
+                                Log.d(TAG,it.displayValue)
+                                Toast.makeText(this,"QR Code Scanner:" + " " + it.displayValue, Toast.LENGTH_LONG).show();
+                            }
                             .build()
                     qrCodeScanning.startScan()
                 }

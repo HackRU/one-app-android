@@ -1,8 +1,11 @@
 package org.hackru.oneapp.hackru.ui.main.qrscanner.RUScanner;
 
+import android.app.Activity;
 import android.app.Dialog;
+import android.content.Intent;
 import android.hardware.Camera;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -10,6 +13,7 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
@@ -30,6 +34,7 @@ public class MaterialBarcodeScannerActivity extends AppCompatActivity {
     private static final int RC_HANDLE_GMS = 9001;
     private static final String RQ_DIALOG = "rq_dialog";
     public static final String EVENTS = "events_extra";
+    private static final int RC_DIALOG_ACTIVITY = 9002;
 
     private static final String TAG = "MaterialBarcodeScanner";
 
@@ -44,7 +49,6 @@ public class MaterialBarcodeScannerActivity extends AppCompatActivity {
 
     private SoundPoolPlayer mSoundPoolPlayer;
 
-    private String[] mEvents;
 
     /**
      * true if no further barcode should be detected or given as a result
@@ -112,13 +116,24 @@ public class MaterialBarcodeScannerActivity extends AppCompatActivity {
         }
     }
 
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+            if(resultCode != Activity.RESULT_OK){
+                return;
+            } else {
+                if(requestCode == RC_DIALOG_ACTIVITY){
+                    String chosen = data.getStringExtra(DialogActivitySelector.KEY_EVENTS);
+                    Toast.makeText(this,chosen,Toast.LENGTH_SHORT).show();
+                }
+            }
+    }
+
     private void setupButtons() {
         Button selectActivityButton = findViewById(R.id.btn_select_activity);
         selectActivityButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // open dialog to select activityactivity
-                // pass in events array
                 DialogActivitySelector dialog = DialogActivitySelector.newInstance();
                 dialog.show(getFragmentManager(),RQ_DIALOG);
 
