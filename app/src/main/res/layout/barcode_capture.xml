@@ -6,17 +6,17 @@
     android:keepScreenOn="true"
     android:orientation="vertical">
 
-    <org.hackru.oneapp.hackru.ui.main.qrscanner.RUScanner.CameraSourcePreview
+    <org.hackru.oneapp.hackru.ui.drawer.scanner.CameraSourcePreview
         android:id="@+id/preview"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <org.hackru.oneapp.hackru.ui.main.qrscanner.RUScanner.GraphicOverlay
+        <org.hackru.oneapp.hackru.ui.drawer.scanner.GraphicOverlay
             android:id="@+id/graphicOverlay"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
-    </org.hackru.oneapp.hackru.ui.main.qrscanner.RUScanner.CameraSourcePreview>
+    </org.hackru.oneapp.hackru.ui.drawer.scanner.CameraSourcePreview>
 
     <RelativeLayout
         android:layout_width="match_parent"

@@ -10,8 +10,8 @@ import kotlinx.android.synthetic.main.activity_main.*
 import org.hackru.oneapp.hackru.R
 import org.hackru.oneapp.hackru.ui.main.announcements.AnnouncementsFragment
 import org.hackru.oneapp.hackru.ui.main.events.EventsFragment
-import org.hackru.oneapp.hackru.ui.main.qrscanner.RUScanner.MaterialBarcodeScanner
-import org.hackru.oneapp.hackru.ui.main.qrscanner.RUScanner.MaterialBarcodeScannerBuilder
+import org.hackru.oneapp.hackru.ui.drawer.scanner.MaterialBarcodeScanner
+import org.hackru.oneapp.hackru.ui.drawer.scanner.MaterialBarcodeScannerBuilder
 import org.hackru.oneapp.hackru.ui.main.timer.TimerFragment
 
 class MainActivity : AppCompatActivity() {

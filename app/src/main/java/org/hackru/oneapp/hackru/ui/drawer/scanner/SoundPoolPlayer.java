@@ -1,4 +1,4 @@
-package org.hackru.oneapp.hackru.ui.main.qrscanner.RUScanner;
+package org.hackru.oneapp.hackru.ui.drawer.scanner;
 
 import android.content.Context;
 import android.media.AudioManager;

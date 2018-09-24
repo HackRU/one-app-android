@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hackru.oneapp.hackru.ui.main.qrscanner.RUScanner;
+package org.hackru.oneapp.hackru.ui.drawer.scanner;
 
 import com.google.android.gms.vision.MultiProcessor;
 import com.google.android.gms.vision.Tracker;

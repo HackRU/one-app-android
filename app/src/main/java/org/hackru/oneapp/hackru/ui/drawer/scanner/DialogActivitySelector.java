@@ -1,6 +1,5 @@
-package org.hackru.oneapp.hackru.ui.main.qrscanner.RUScanner;
+package org.hackru.oneapp.hackru.ui.drawer.scanner;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
@@ -11,8 +10,6 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import org.hackru.oneapp.hackru.R;
 

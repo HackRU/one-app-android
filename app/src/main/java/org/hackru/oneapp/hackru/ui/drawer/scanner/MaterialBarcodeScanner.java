@@ -1,14 +1,12 @@
-package org.hackru.oneapp.hackru.ui.main.qrscanner.RUScanner;
+package org.hackru.oneapp.hackru.ui.drawer.scanner;
 
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
-import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
-import android.widget.Toast;
 
 import com.google.android.gms.vision.barcode.Barcode;
 
@@ -17,7 +15,6 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class MaterialBarcodeScanner {
 

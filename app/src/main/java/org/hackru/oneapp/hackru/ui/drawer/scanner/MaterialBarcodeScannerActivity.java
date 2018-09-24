@@ -1,4 +1,4 @@
-package org.hackru.oneapp.hackru.ui.main.qrscanner.RUScanner;
+package org.hackru.oneapp.hackru.ui.drawer.scanner;
 
 import android.app.Activity;
 import android.app.Dialog;
@@ -27,7 +27,6 @@ import org.greenrobot.eventbus.ThreadMode;
 import org.hackru.oneapp.hackru.R;
 
 import java.io.IOException;
-import java.util.ArrayList;
 
 public class MaterialBarcodeScannerActivity extends AppCompatActivity {
 

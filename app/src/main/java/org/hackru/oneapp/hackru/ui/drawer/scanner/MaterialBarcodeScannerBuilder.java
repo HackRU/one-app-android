@@ -1,18 +1,13 @@
-package org.hackru.oneapp.hackru.ui.main.qrscanner.RUScanner;
+package org.hackru.oneapp.hackru.ui.drawer.scanner;
 
 import android.app.Activity;
 import android.graphics.Color;
 import android.hardware.Camera;
 import android.support.annotation.NonNull;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.google.android.gms.vision.barcode.Barcode;
 import com.google.android.gms.vision.barcode.BarcodeDetector;
-
-import org.hackru.oneapp.hackru.R;
-
-import java.util.ArrayList;
 
 public class MaterialBarcodeScannerBuilder {
 
