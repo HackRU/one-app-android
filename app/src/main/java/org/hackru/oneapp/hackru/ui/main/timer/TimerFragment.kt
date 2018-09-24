@@ -30,6 +30,7 @@ class TimerFragment : android.support.v4.app.Fragment() {
     override fun onAttach(context: Context) {
         super.onAttach(context)
         mainActivity = context as MainActivity
+        mainActivity.supportActionBar?.title = getString(R.string.title_timer)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?) =
