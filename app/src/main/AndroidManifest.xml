@@ -25,9 +25,8 @@
 
         </activity>
         <activity
-            android:theme="@style/AppTheme"
-            android:name=".ui.drawer.scanner.MaterialBarcodeScannerActivity"
-            android:label="Please just work" >
+            android:theme="@style/AppTheme.NoActionBar"
+            android:name=".ui.drawer.scanner.MaterialBarcodeScannerActivity">
         </activity>
     </application>
 
