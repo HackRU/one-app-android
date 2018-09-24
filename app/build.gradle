@@ -78,6 +78,13 @@ dependencies {
     // Allows us to use Dagger's required annotations
     kapt "com.google.dagger:dagger-compiler:$dagger_version"
 
+    // mobile vision for QR code scanning and eventbus which is a dependency.
+    implementation 'com.google.android.gms:play-services-vision:15.0.2'
+    implementation 'org.greenrobot:eventbus:3.0.0'
+    // This library allows us to use a cool pre-made animated checkmark
+    implementation 'com.github.cdflynn:checkview:v1.1'
+
+
     /* Testing and Quality Assurance */
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'

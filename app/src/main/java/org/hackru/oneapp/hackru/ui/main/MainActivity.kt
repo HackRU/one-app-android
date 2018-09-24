@@ -5,11 +5,15 @@ import android.os.Bundle
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
+import android.util.Log
+import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_main.*
 import org.hackru.oneapp.hackru.R
 import org.hackru.oneapp.hackru.Utils
 import org.hackru.oneapp.hackru.ui.main.announcements.AnnouncementsFragment
 import org.hackru.oneapp.hackru.ui.main.events.EventsFragment
+import org.hackru.oneapp.hackru.ui.drawer.scanner.MaterialBarcodeScanner
+import org.hackru.oneapp.hackru.ui.drawer.scanner.MaterialBarcodeScannerBuilder
 import org.hackru.oneapp.hackru.ui.main.timer.TimerFragment
 
 class MainActivity : AppCompatActivity() {
@@ -61,6 +65,13 @@ class MainActivity : AppCompatActivity() {
                 }
                 R.id.drawer_scanner -> {
 
+                    val qrCodeScanning:MaterialBarcodeScanner = MaterialBarcodeScannerBuilder()
+                            .withActivity(this)
+                            .withEnableAutoFocus(true)
+                            .withCenterTracker()
+                            .withBackfacingCamera()
+                            .build()
+                    qrCodeScanning.startScan()
                 }
                 R.id.drawer_settings -> {
 
