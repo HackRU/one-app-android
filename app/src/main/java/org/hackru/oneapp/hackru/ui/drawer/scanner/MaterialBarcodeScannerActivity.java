@@ -1,6 +1,7 @@
 package org.hackru.oneapp.hackru.ui.drawer.scanner;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Intent;
 import android.hardware.Camera;
@@ -8,12 +9,12 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
@@ -48,13 +49,81 @@ public class MaterialBarcodeScannerActivity extends AppCompatActivity {
 
     private SoundPoolPlayer mSoundPoolPlayer;
 
-
-    /**
-     * true if no further barcode should be detected or given as a result
-     */
-    private boolean mDetectionConsumed = false;
+    private String previous = "";
 
     private boolean mFlashOn = false;
+
+    private void sendCode() {
+        AlertDialog alertDialog = new AlertDialog.Builder(MaterialBarcodeScannerActivity.this)
+                .setView(getLayoutInflater().inflate(R.layout.dialog_progress_circle, null))
+                .setTitle("Sending to server...")
+                .setCancelable(false)
+                .create();
+        alertDialog.show();
+    }
+
+    /**
+     * Starts or restarts the camera source, if it exists.  If the camera source doesn't exist yet
+     * (e.g., because onResume was called before the camera source was created), this will be called
+     * again when the camera source is created.
+     */
+    private void startCameraSource() throws SecurityException {
+
+        // check that the device has play services available.
+        mSoundPoolPlayer = new SoundPoolPlayer(this);
+        int code = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(
+                getApplicationContext());
+        if (code != ConnectionResult.SUCCESS) {
+            Dialog dialog = GoogleApiAvailability.getInstance().getErrorDialog(this, code, RC_HANDLE_GMS);
+            dialog.show();
+        }
+        mGraphicOverlay = (GraphicOverlay<BarcodeGraphic>)findViewById(R.id.graphicOverlay);
+        BarcodeGraphicTracker.NewDetectionListener listener =  new BarcodeGraphicTracker.NewDetectionListener() {
+            @Override
+            public void onNewDetection(Barcode barcode) {
+                Log.d(TAG, "Barcode detected! - " + barcode.displayValue);
+                EventBus.getDefault().postSticky(barcode);
+                updateCenterTrackerForDetectedState();
+                if(mMaterialBarcodeScannerBuilder.isBleepEnabled()){
+                    //                        mSoundPoolPlayer.playShortResource(R.raw.bleep);
+                }
+                //                    mGraphicOverlay.postDelayed(new Runnable() {
+                //                        @Override
+                //                        public void run() {
+                //                            finish();
+                //                        }
+                //                    },50);
+
+                // Customization code
+                if(!barcode.displayValue.equals(previous)) {
+                    Log.d(TAG, "New code!");
+                    previous = barcode.displayValue;
+                    // TODO: Make network request
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            sendCode();
+                        }
+                    });
+                }
+
+
+            }
+        };
+        BarcodeTrackerFactory barcodeFactory = new BarcodeTrackerFactory(mGraphicOverlay, listener, mMaterialBarcodeScannerBuilder.getTrackerColor());
+        barcodeDetector.setProcessor(new MultiProcessor.Builder<>(barcodeFactory).build());
+        CameraSource mCameraSource = mMaterialBarcodeScannerBuilder.getCameraSource();
+        if (mCameraSource != null) {
+            try {
+                mCameraSourcePreview = (CameraSourcePreview) findViewById(R.id.preview);
+                mCameraSourcePreview.start(mCameraSource, mGraphicOverlay);
+            } catch (IOException e) {
+                Log.e(TAG, "Unable to start camera source.", e);
+                mCameraSource.release();
+                mCameraSource = null;
+            }
+        }
+    }
 
     @Override
     public void onCreate(Bundle bundle) {
@@ -67,7 +136,7 @@ public class MaterialBarcodeScannerActivity extends AppCompatActivity {
 
        /* ArrayList<String> eventsList = getIntent().getStringArrayListExtra(EVENTS);
         mEvents = new String[eventsList.size()];
-        mEvents = eventsList.toArray(mEvents);*/
+        mEvents = eventsList.oArray(mEvents);*/
 
         setContentView(R.layout.barcode_capture);
     }
@@ -123,7 +192,6 @@ public class MaterialBarcodeScannerActivity extends AppCompatActivity {
             } else {
                 if(requestCode == RC_DIALOG_ACTIVITY){
                     String chosen = data.getStringExtra(DialogActivitySelector.KEY_EVENTS);
-                    Toast.makeText(this,chosen,Toast.LENGTH_SHORT).show();
                 }
             }
     }
@@ -139,56 +207,6 @@ public class MaterialBarcodeScannerActivity extends AppCompatActivity {
 
             }
         });
-    }
-
-    /**
-     * Starts or restarts the camera source, if it exists.  If the camera source doesn't exist yet
-     * (e.g., because onResume was called before the camera source was created), this will be called
-     * again when the camera source is created.
-     */    private void startCameraSource() throws SecurityException {
-
-        // check that the device has play services available.
-       mSoundPoolPlayer = new SoundPoolPlayer(this);
-        int code = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(
-                getApplicationContext());
-        if (code != ConnectionResult.SUCCESS) {
-            Dialog dialog = GoogleApiAvailability.getInstance().getErrorDialog(this, code, RC_HANDLE_GMS);
-            dialog.show();
-        }
-        mGraphicOverlay = (GraphicOverlay<BarcodeGraphic>)findViewById(R.id.graphicOverlay);
-        BarcodeGraphicTracker.NewDetectionListener listener =  new BarcodeGraphicTracker.NewDetectionListener() {
-            @Override
-            public void onNewDetection(Barcode barcode) {
-                if(!mDetectionConsumed){
-                    mDetectionConsumed = true;
-                    Log.d(TAG, "Barcode detected! - " + barcode.displayValue);
-                    EventBus.getDefault().postSticky(barcode);
-                    updateCenterTrackerForDetectedState();
-                    if(mMaterialBarcodeScannerBuilder.isBleepEnabled()){
-//                        mSoundPoolPlayer.playShortResource(R.raw.bleep);
-                    }
-                    mGraphicOverlay.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            finish();
-                        }
-                    },50);
-                }
-            }
-        };
-        BarcodeTrackerFactory barcodeFactory = new BarcodeTrackerFactory(mGraphicOverlay, listener, mMaterialBarcodeScannerBuilder.getTrackerColor());
-        barcodeDetector.setProcessor(new MultiProcessor.Builder<>(barcodeFactory).build());
-        CameraSource mCameraSource = mMaterialBarcodeScannerBuilder.getCameraSource();
-        if (mCameraSource != null) {
-            try {
-                mCameraSourcePreview = (CameraSourcePreview) findViewById(R.id.preview);
-                mCameraSourcePreview.start(mCameraSource, mGraphicOverlay);
-            } catch (IOException e) {
-                Log.e(TAG, "Unable to start camera source.", e);
-                mCameraSource.release();
-                mCameraSource = null;
-            }
-        }
     }
 
     private void enableTorch() throws SecurityException{
