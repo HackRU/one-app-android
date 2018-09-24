@@ -1,15 +1,12 @@
 package org.hackru.oneapp.hackru.ui.drawer.scanner;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.Intent;
+import android.content.DialogInterface;
 import android.hardware.Camera;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -53,13 +50,37 @@ public class MaterialBarcodeScannerActivity extends AppCompatActivity {
 
     private boolean mFlashOn = false;
 
-    private void sendCode() {
+    private String[] events = null;
+
+    private void setupChangeEventButton() {
+        Button changeEventButton = findViewById(R.id.btn_change_event);
+        changeEventButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                new AlertDialog.Builder(MaterialBarcodeScannerActivity.this)
+                        .setTitle("Pick an event")
+                        .setItems(R.array.scanner_events, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                // TODO: Change event here
+                                TextView currentEvent = findViewById(R.id.current_event);
+                                currentEvent.setText("Scanning for " + events[i]);
+                            }
+                        })
+                        .create()
+                        .show();
+            }
+        });
+    }
+
+    private void sendEmailToServer() {
         AlertDialog alertDialog = new AlertDialog.Builder(MaterialBarcodeScannerActivity.this)
                 .setView(getLayoutInflater().inflate(R.layout.dialog_progress_circle, null))
                 .setTitle("Sending to server...")
                 .setCancelable(false)
                 .create();
         alertDialog.show();
+        // TODO: Do network call here
     }
 
     /**
@@ -98,11 +119,10 @@ public class MaterialBarcodeScannerActivity extends AppCompatActivity {
                 if(!barcode.displayValue.equals(previous)) {
                     Log.d(TAG, "New code!");
                     previous = barcode.displayValue;
-                    // TODO: Make network request
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            sendCode();
+                            sendEmailToServer();
                         }
                     });
                 }
@@ -138,7 +158,12 @@ public class MaterialBarcodeScannerActivity extends AppCompatActivity {
         mEvents = new String[eventsList.size()];
         mEvents = eventsList.oArray(mEvents);*/
 
-        setContentView(R.layout.barcode_capture);
+        setContentView(R.layout.activity_scanner);
+
+        final TextView currentEvent = findViewById(R.id.current_event);
+        events = getResources().getStringArray(R.array.scanner_events);
+        setupChangeEventButton();
+        currentEvent.setText("Scanning for " + events[0]);
     }
 
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
@@ -151,12 +176,11 @@ public class MaterialBarcodeScannerActivity extends AppCompatActivity {
     }
 
     private void setupLayout() {
-        final TextView topTextView = (TextView) findViewById(R.id.topText);
-        String topText = mMaterialBarcodeScannerBuilder.getText();
-        if(!mMaterialBarcodeScannerBuilder.getText().equals("")){
-            topTextView.setText(topText);
-        }
-        setupButtons();
+//        String topText = mMaterialBarcodeScannerBuilder.getText();
+//        if(!mMaterialBarcodeScannerBuilder.getText().equals("")){
+//            currentEvent.setText(topText);
+//        }
+
         setupCenterTracker();
     }
 
@@ -182,31 +206,6 @@ public class MaterialBarcodeScannerActivity extends AppCompatActivity {
                 }
             });
         }
-    }
-
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-            if(resultCode != Activity.RESULT_OK){
-                return;
-            } else {
-                if(requestCode == RC_DIALOG_ACTIVITY){
-                    String chosen = data.getStringExtra(DialogActivitySelector.KEY_EVENTS);
-                }
-            }
-    }
-
-    private void setupButtons() {
-        Button selectActivityButton = findViewById(R.id.btn_select_activity);
-        selectActivityButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                DialogActivitySelector dialog = DialogActivitySelector.newInstance();
-                dialog.show(getFragmentManager(),RQ_DIALOG);
-
-
-            }
-        });
     }
 
     private void enableTorch() throws SecurityException{

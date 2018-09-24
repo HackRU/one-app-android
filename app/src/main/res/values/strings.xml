@@ -9,6 +9,17 @@
     <string name="title_feedback">Feedback</string>
     <string name="title_about">About</string>
 
+    <!-- Events for scanning -->
+    <string-array name="scanner_events">
+        <item>Check-in</item>
+        <item>Lunch 1</item>
+        <item>Dinner</item>
+        <item>Shirts</item>
+        <item>Midnight Surprise</item>
+        <item>Breakfast</item>
+        <item>Lunch 2</item>
+    </string-array>
+
     <!-- Accessibility -->
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>

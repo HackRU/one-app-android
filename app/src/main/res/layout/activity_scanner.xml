@@ -48,11 +48,27 @@
         android:layout_marginRight="16dp"
         android:textColor="@android:color/white"
         android:textStyle="bold"
-        android:id="@+id/topText"
-        android:text="Scanning for Lunch"
+        android:id="@+id/current_event"
         android:layout_gravity="center_horizontal|top" />
 
-    <include layout="@layout/actions_main"/>
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/flashIconButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:padding="16dp">
+
+        <Button
+            android:id="@+id/btn_change_event"
+            android:layout_width="172dp"
+            android:layout_height="60dp"
+            android:background="@drawable/ic_buttonshape"
+            android:text="Change Event"
+            android:textColor="#FFFFFF"
+            android:textSize="12sp" />
+    </LinearLayout>
 
     <ImageView
         android:layout_width="match_parent"
