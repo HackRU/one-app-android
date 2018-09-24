@@ -64,7 +64,7 @@
             android:id="@+id/btn_change_event"
             android:layout_width="172dp"
             android:layout_height="60dp"
-            android:background="@drawable/ic_buttonshape"
+            android:background="@drawable/shape_scanner_button"
             android:text="Change Event"
             android:textColor="#FFFFFF"
             android:textSize="12sp" />

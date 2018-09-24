@@ -17,7 +17,7 @@
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
             android:indeterminate="false"
-            android:progressDrawable="@drawable/timer_progress_circle"
+            android:progressDrawable="@drawable/shape_timer_progress"
             android:visibility="visible" />
 
         <RelativeLayout
