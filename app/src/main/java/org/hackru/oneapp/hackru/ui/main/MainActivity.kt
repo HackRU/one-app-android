@@ -65,10 +65,6 @@ class MainActivity : AppCompatActivity() {
                             .withEnableAutoFocus(true)
                             .withCenterTracker()
                             .withBackfacingCamera()
-                            .withResultListener {
-                                Log.d(TAG,it.displayValue)
-                                Toast.makeText(this,"QR Code Scanner:" + " " + it.displayValue, Toast.LENGTH_LONG).show();
-                            }
                             .build()
                     qrCodeScanning.startScan()
                 }

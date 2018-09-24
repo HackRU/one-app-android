@@ -79,15 +79,21 @@ public class MaterialBarcodeScannerActivity extends AppCompatActivity {
     }
 
     private void sendEmailToServer() {
-        AlertDialog alertDialog = new AlertDialog.Builder(MaterialBarcodeScannerActivity.this)
+        final AlertDialog alertDialog = new AlertDialog.Builder(MaterialBarcodeScannerActivity.this)
                 .setView(getLayoutInflater().inflate(R.layout.dialog_progress_circle, null))
                 .setTitle("Sending to server...")
                 .setCancelable(false)
                 .create();
         alertDialog.show();
         // TODO: Do network call here
-        alertDialog.dismiss();
-        showOnSuccess();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                alertDialog.dismiss();
+                showOnSuccess();
+//                showOnFailure();
+            }
+        }, 1000);
     }
 
     private void showOnSuccess() {
@@ -107,6 +113,25 @@ public class MaterialBarcodeScannerActivity extends AppCompatActivity {
             }
         };
         handler.postDelayed(dismissCheckmark, 1000);
+    }
+
+    private void showOnFailure() {
+        final AlertDialog alertDialog = new AlertDialog.Builder(MaterialBarcodeScannerActivity.this)
+                .setTitle("Network error")
+                .setPositiveButton("Retry", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        sendEmailToServer();
+                    }
+                })
+                .setNegativeButton("Ok", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        // Do nothing. The dialog will dismiss by default.
+                    }
+                })
+                .create();
+        alertDialog.show();
     }
 
     private void onDetect(Barcode barcode) {
