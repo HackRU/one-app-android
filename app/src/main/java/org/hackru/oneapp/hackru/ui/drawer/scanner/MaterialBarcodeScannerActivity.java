@@ -5,6 +5,7 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.hardware.Camera;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -25,6 +26,8 @@ import org.greenrobot.eventbus.ThreadMode;
 import org.hackru.oneapp.hackru.R;
 
 import java.io.IOException;
+
+import cdflynn.android.library.checkview.CheckView;
 
 public class MaterialBarcodeScannerActivity extends AppCompatActivity {
 
@@ -51,6 +54,8 @@ public class MaterialBarcodeScannerActivity extends AppCompatActivity {
     private boolean mFlashOn = false;
 
     private String[] events = null;
+
+    private Handler handler = new Handler();
 
     private void setupChangeEventButton() {
         Button changeEventButton = findViewById(R.id.btn_change_event);
@@ -81,6 +86,40 @@ public class MaterialBarcodeScannerActivity extends AppCompatActivity {
                 .create();
         alertDialog.show();
         // TODO: Do network call here
+        alertDialog.dismiss();
+        showOnSuccess();
+    }
+
+    private void showOnSuccess() {
+        View dialogView = getLayoutInflater().inflate(R.layout.dialog_checkmark, null);
+        final AlertDialog alertDialog = new AlertDialog.Builder(MaterialBarcodeScannerActivity.this)
+                .setView(dialogView)
+                .setTitle("Success!")
+                .setCancelable(false)
+                .create();
+        CheckView checkView = dialogView.findViewById(R.id.check);
+        alertDialog.show();
+        checkView.check();
+        Runnable dismissCheckmark = new Runnable() {
+            @Override
+            public void run() {
+                alertDialog.dismiss();
+            }
+        };
+        handler.postDelayed(dismissCheckmark, 1000);
+    }
+
+    private void onDetect(Barcode barcode) {
+        if(!barcode.displayValue.equals(previous)) {
+            Log.d(TAG, "New code!");
+            previous = barcode.displayValue;
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    sendEmailToServer();
+                }
+            });
+        }
     }
 
     /**
@@ -115,18 +154,7 @@ public class MaterialBarcodeScannerActivity extends AppCompatActivity {
                 //                        }
                 //                    },50);
 
-                // Customization code
-                if(!barcode.displayValue.equals(previous)) {
-                    Log.d(TAG, "New code!");
-                    previous = barcode.displayValue;
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            sendEmailToServer();
-                        }
-                    });
-                }
-
+                onDetect(barcode);
 
             }
         };
