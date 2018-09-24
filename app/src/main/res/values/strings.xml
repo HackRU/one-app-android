@@ -27,4 +27,9 @@
     <!-- Accessibility -->
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
+
+
+    <!-- Navigation Drawer -->
+    <string name="navigation_drawer_name_default">Unknown User</string>
+    <string name="navigation_drawer_email_default">Login to access your ticket</string>
 </resources>
