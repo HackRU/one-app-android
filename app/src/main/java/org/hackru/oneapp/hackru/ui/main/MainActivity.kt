@@ -1,13 +1,18 @@
 package org.hackru.oneapp.hackru.ui.main
 
+import android.graphics.Bitmap
+import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
+import android.support.v4.content.ContextCompat
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
+import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
-import android.widget.Toast
+import android.widget.ImageView
 import kotlinx.android.synthetic.main.activity_main.*
+import net.glxn.qrgen.android.QRCode
 import org.hackru.oneapp.hackru.R
 import org.hackru.oneapp.hackru.Utils
 import org.hackru.oneapp.hackru.ui.main.announcements.AnnouncementsFragment
@@ -59,10 +64,26 @@ class MainActivity : AppCompatActivity() {
 
         // Listen for when the user clicks on the qr code floating action button
         fab_qr.setOnClickListener {
-            if(Utils.SharedPreferences.getAuthToken(this) != null) {
+            val email: String? = Utils.SharedPreferences.getEmail(this)
+            if(email != null) {
                 // Show QR code in an AlertDialog
+                val dialogView = layoutInflater.inflate(R.layout.dialog_qr_code, null)
+                val alertDialog = AlertDialog.Builder(this)
+                        .setView(dialogView)
+                        .setCancelable(true)
+                        .create()
+                alertDialog.show()
+                val codeSize = resources.getDimensionPixelSize(R.dimen.qr_code_size)
+                val dialogSize = resources.getDimensionPixelSize(R.dimen.qr_dialog_size)
+                alertDialog.window?.setLayout(dialogSize, dialogSize)
+                val qrCode: Bitmap = QRCode.from(email)
+                        .withColor(ContextCompat.getColor(this, R.color.colorPrimary), Color.WHITE)
+                        .withSize(codeSize, codeSize)
+                        .bitmap()
+                dialogView.findViewById<ImageView>(R.id.image_qr_code).setImageBitmap(qrCode)
             } else {
                 // Open LoginActivity
+                // TODO: Implement LoginActivity
             }
         }
 

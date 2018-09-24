@@ -2,4 +2,8 @@
     <!-- Default screen margins, per the Android Design guidelines. -->
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
+
+    <!-- Size of the QR code and the QR code dialog box -->
+    <dimen name="qr_code_size">300dp</dimen>
+    <dimen name="qr_dialog_size">330dp</dimen>
 </resources>

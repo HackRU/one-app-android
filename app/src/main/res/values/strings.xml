@@ -27,6 +27,7 @@
     <!-- Accessibility -->
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="qr_image_description">Your QR code ticket</string>
 
 
     <!-- Navigation Drawer -->

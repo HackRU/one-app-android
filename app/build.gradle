@@ -78,10 +78,14 @@ dependencies {
     // Allows us to use Dagger's required annotations
     kapt "com.google.dagger:dagger-compiler:$dagger_version"
 
+
+    /* QR Codes */
+    // Allows us to generate and display QR codes
+    implementation 'com.github.kenglxn.QRGen:android:2.4.0'
     // mobile vision for QR code scanning and eventbus which is a dependency.
     implementation 'com.google.android.gms:play-services-vision:15.0.2'
     implementation 'org.greenrobot:eventbus:3.0.0'
-    // This library allows us to use a cool pre-made animated checkmark
+    // This library allows us to use a cool pre-made animated checkmark for the scanner
     implementation 'com.github.cdflynn:checkview:v1.1'
 
 
