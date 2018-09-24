@@ -10,11 +10,11 @@ object Utils {
 
     // TODO: Make this a singleton injected with Dagger 2
     object SharedPreferences {
-        val KEY_AUTH_TOKEN = "authtoken"
-        val KEY_EMAIL = "email"
-        val KEY_CAN_SCAN = "can_scan"
+        private val KEY_AUTH_TOKEN = "authtoken"
+        private val KEY_EMAIL = "email"
+        private val KEY_CAN_SCAN = "can_scan"
         // TODO: Set up scanner for allowing waitlist
-        val KEY_ALLOW_WAITLIST = "allow_only_accepted"
+        private val KEY_ALLOW_WAITLIST = "allow_only_accepted"
 
         fun setAuthToken(context: Context, authToken: String) {
             PreferenceManager.getDefaultSharedPreferences(context)

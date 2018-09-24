@@ -57,6 +57,15 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        // Listen for when the user clicks on the qr code floating action button
+        fab_qr.setOnClickListener {
+            if(Utils.SharedPreferences.getAuthToken(this) != null) {
+                // Show QR code in an AlertDialog
+            } else {
+                // Open LoginActivity
+            }
+        }
+
         // Listen for when the user clicks on one of the navigation drawer items
         drawer_navigation.setNavigationItemSelectedListener {
             when (it.itemId) {
