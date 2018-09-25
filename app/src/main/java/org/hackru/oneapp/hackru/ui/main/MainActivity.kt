@@ -36,6 +36,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        // TODO: Logout user after authtoken expires
+
         email = Utils.SharedPreferences.getEmail(this)
         canScan = Utils.SharedPreferences.getCanScan(this)
         authToken = Utils.SharedPreferences.getAuthToken(this)
