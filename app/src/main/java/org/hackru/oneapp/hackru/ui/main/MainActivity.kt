@@ -39,8 +39,9 @@ class MainActivity : AppCompatActivity() {
         // TODO: Logout user after authtoken expires
 
         email = Utils.SharedPreferences.getEmail(this)
-        canScan = Utils.SharedPreferences.getCanScan(this)
+//        canScan = Utils.SharedPreferences.getCanScan(this)
         authToken = Utils.SharedPreferences.getAuthToken(this)
+        canScan = (authToken != null)
 
         setUpActionBar()
         setUpNavigationDrawer()
