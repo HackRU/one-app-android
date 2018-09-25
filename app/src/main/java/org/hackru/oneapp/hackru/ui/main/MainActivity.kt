@@ -1,5 +1,6 @@
 package org.hackru.oneapp.hackru.ui.main
 
+import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Color
@@ -69,10 +70,12 @@ class MainActivity : AppCompatActivity() {
 
     fun setUpNavigationDrawer() {
 
-        // If the user doesn't have permission to use the scanner, hide it in the nav drawer
-        if(!canScan) {
-            drawer_navigation.menu.findItem(R.id.drawer_scanner).isVisible = false
-        }
+        // Show/hide the scanner if the user does/doesn't have permission to use it
+        drawer_navigation.menu.findItem(R.id.drawer_scanner).isVisible = canScan
+
+        // Show/hide the login and logout buttons depending if the user is logged in or logged out
+        drawer_navigation.menu.findItem(R.id.drawer_login).isVisible = (authToken == null)
+        drawer_navigation.menu.findItem(R.id.drawer_logout).isVisible = (authToken != null)
 
         // Listen for when the user clicks on one of the navigation drawer items
         drawer_navigation.setNavigationItemSelectedListener {
@@ -90,11 +93,34 @@ class MainActivity : AppCompatActivity() {
                             .build()
                     qrCodeScanning.startScan()
                 }
-                R.id.drawer_settings -> {
-
-                }
                 R.id.drawer_about -> {
 
+                }
+                R.id.drawer_login -> {
+                    startActivity(Intent(this, LoginActivity::class.java))
+                }
+                R.id.drawer_logout -> {
+                    val alertDialog = AlertDialog.Builder(this)
+                            .setCancelable(true)
+                            .setTitle("Are you sure you want to logout?")
+                            .setPositiveButton("Logout") { dialogInterface, i ->
+                                authToken = null
+                                canScan = false
+                                Utils.SharedPreferences.setAuthToken(this, null)
+                                Utils.SharedPreferences.setCanScan(this, false)
+                                Toast.makeText(this, "You've been logged out", Toast.LENGTH_SHORT).show()
+                            }
+                            .setNegativeButton("Cancel") { dialogInterface, i ->
+                                // Do nothing. The dialog will close by default
+                            }
+                            .create()
+                    // Now let's change the color of the buttons from colorAccent to colorPrimary
+                    alertDialog.setOnShowListener { _ ->
+                        val colorPrimary = ContextCompat.getColor(this, R.color.colorPrimary)
+                        alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(colorPrimary)
+                        alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(colorPrimary)
+                    }
+                    alertDialog.show()
                 }
             }
             drawer_layout.closeDrawer(GravityCompat.START)

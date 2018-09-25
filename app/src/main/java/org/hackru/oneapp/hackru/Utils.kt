@@ -16,19 +16,19 @@ object Utils {
         // TODO: Set up scanner for allowing waitlist
         private val KEY_ALLOW_WAITLIST = "allow_only_accepted"
 
-        fun setAuthToken(context: Context, authToken: String) {
+        fun setAuthToken(context: Context, authToken: String?) {
             PreferenceManager.getDefaultSharedPreferences(context)
                     .edit()
                     .putString(KEY_AUTH_TOKEN, authToken)
-                    .commit()
+                    .apply()
         }
 
         fun getAuthToken(context: Context): String? {
             return PreferenceManager.getDefaultSharedPreferences(context)
-                    .getString(KEY_AUTH_TOKEN, "")
+                    .getString(KEY_AUTH_TOKEN, null)
         }
 
-        fun setEmail(context: Context, email: String) {
+        fun setEmail(context: Context, email: String?) {
             PreferenceManager.getDefaultSharedPreferences(context)
                     .edit()
                     .putString(KEY_EMAIL, email)
