@@ -1,5 +1,6 @@
 package org.hackru.oneapp.hackru.ui.main
 
+import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.os.Build
@@ -9,12 +10,12 @@ import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
-import android.util.Log
 import android.widget.ImageView
 import kotlinx.android.synthetic.main.activity_main.*
 import net.glxn.qrgen.android.QRCode
 import org.hackru.oneapp.hackru.R
 import org.hackru.oneapp.hackru.Utils
+import org.hackru.oneapp.hackru.ui.drawer.LoginActivity
 import org.hackru.oneapp.hackru.ui.main.announcements.AnnouncementsFragment
 import org.hackru.oneapp.hackru.ui.main.events.EventsFragment
 import org.hackru.oneapp.hackru.ui.drawer.scanner.MaterialBarcodeScanner
@@ -66,7 +67,7 @@ class MainActivity : AppCompatActivity() {
         fab_qr.setOnClickListener {
             val email: String? = Utils.SharedPreferences.getEmail(this)
             if(email != null) {
-                // Show QR code in an AlertDialog
+                // If they are logged-in, show their QR code in an AlertDialog
                 val dialogView = layoutInflater.inflate(R.layout.dialog_qr_code, null)
                 val alertDialog = AlertDialog.Builder(this)
                         .setView(dialogView)
@@ -82,8 +83,8 @@ class MainActivity : AppCompatActivity() {
                         .bitmap()
                 dialogView.findViewById<ImageView>(R.id.image_qr_code).setImageBitmap(qrCode)
             } else {
-                // Open LoginActivity
-                // TODO: Implement LoginActivity
+                // If they are not logged-in, open LoginActivity
+                startActivity(Intent(this, LoginActivity::class.java))
             }
         }
 

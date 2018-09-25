@@ -24,6 +24,12 @@
     <string name="timer_count_title">Time Left:</string>
     <string name="timer_default_count">00:00:00</string>
 
+    <!-- Login -->
+    <string name="login_email_label">Email</string>
+    <string name="login_password_label">Password</string>
+    <string name="login_login_label">Login</string>
+    <string name="login_create_account_label"><u>Create an account</u></string>
+
     <!-- Accessibility -->
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
