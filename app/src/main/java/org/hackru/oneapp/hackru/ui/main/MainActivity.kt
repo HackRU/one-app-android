@@ -11,6 +11,7 @@ import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.widget.ImageView
+import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_main.*
 import net.glxn.qrgen.android.QRCode
 import org.hackru.oneapp.hackru.R
@@ -26,12 +27,82 @@ class MainActivity : AppCompatActivity() {
     // TAG is used with Android's Log class to organize debugging logs
     val TAG = "MainActivity"
 
+    var email: String? = null
+    var canScan = false
+    var authToken: String? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        setUpActionBar()
+        email = Utils.SharedPreferences.getEmail(this)
+        canScan = Utils.SharedPreferences.getCanScan(this)
+        authToken = Utils.SharedPreferences.getAuthToken(this)
 
+        setUpActionBar()
+        setUpNavigationDrawer()
+        setUpBottomNavigation(savedInstanceState)
+        setUpFloatingActionButton()
+    }
+
+    /**
+     * Sets up our custom toolbar as the app's Action Bar/App Bar (the two terms are completely
+     * interchangeable).
+     *
+     * It is best practice to use a theme without an action bar and then implement
+     * a custom one because when you don't create a custom one, a native action bar is used that
+     * looks different on each API level (for example, on API level 19-20 the native action bar
+     * doesn't follow the Material Design spec).
+     *
+     * We also implement a custom action bar so that we can give it more functionality than is
+     * available in native action bars, like putting a menu button on it that pulls out
+     * the navigation drawer when pressed, or hiding the action bar when the user is scrolling
+     * through a list.
+     */
+    private fun setUpActionBar() {
+        setSupportActionBar(toolbar)
+        val drawerToggle = ActionBarDrawerToggle(
+                this, drawer_layout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
+        drawer_layout.addDrawerListener(drawerToggle)
+        drawerToggle.syncState()
+    }
+
+    fun setUpNavigationDrawer() {
+
+        // If the user doesn't have permission to use the scanner, hide it in the nav drawer
+        if(!canScan) {
+            drawer_navigation.menu.findItem(R.id.drawer_scanner).isVisible = false
+        }
+
+        // Listen for when the user clicks on one of the navigation drawer items
+        drawer_navigation.setNavigationItemSelectedListener {
+            when (it.itemId) {
+                R.id.drawer_map -> {
+
+                }
+                R.id.drawer_scanner -> {
+
+                    val qrCodeScanning:MaterialBarcodeScanner = MaterialBarcodeScannerBuilder()
+                            .withActivity(this)
+                            .withEnableAutoFocus(true)
+                            .withCenterTracker()
+                            .withBackfacingCamera()
+                            .build()
+                    qrCodeScanning.startScan()
+                }
+                R.id.drawer_settings -> {
+
+                }
+                R.id.drawer_about -> {
+
+                }
+            }
+            drawer_layout.closeDrawer(GravityCompat.START)
+            true
+        }
+    }
+
+    fun setUpBottomNavigation(savedInstanceState: Bundle?) {
         // Set Timer as the default tab when the app is opened for the first time or was terminated manually by the user
         if(savedInstanceState == null) {
             bottom_navigation.selectedItemId = R.id.bottom_navigation_timer
@@ -62,10 +133,11 @@ class MainActivity : AppCompatActivity() {
                 else -> false
             }
         }
+    }
 
+    fun setUpFloatingActionButton() {
         // Listen for when the user clicks on the qr code floating action button
         fab_qr.setOnClickListener {
-            val email: String? = Utils.SharedPreferences.getEmail(this)
             if(email != null) {
                 // If they are logged-in, show their QR code in an AlertDialog
                 val dialogView = layoutInflater.inflate(R.layout.dialog_qr_code, null)
@@ -84,37 +156,10 @@ class MainActivity : AppCompatActivity() {
                 dialogView.findViewById<ImageView>(R.id.image_qr_code).setImageBitmap(qrCode)
             } else {
                 // If they are not logged-in, open LoginActivity
+                Toast.makeText(this, "You must be logged in to access your ticket", Toast.LENGTH_SHORT).show()
                 startActivity(Intent(this, LoginActivity::class.java))
             }
         }
-
-        // Listen for when the user clicks on one of the navigation drawer items
-        drawer_navigation.setNavigationItemSelectedListener {
-            when (it.itemId) {
-                R.id.drawer_map -> {
-
-                }
-                R.id.drawer_scanner -> {
-
-                    val qrCodeScanning:MaterialBarcodeScanner = MaterialBarcodeScannerBuilder()
-                            .withActivity(this)
-                            .withEnableAutoFocus(true)
-                            .withCenterTracker()
-                            .withBackfacingCamera()
-                            .build()
-                    qrCodeScanning.startScan()
-                }
-                R.id.drawer_settings -> {
-
-                }
-                R.id.drawer_about -> {
-
-                }
-            }
-            drawer_layout.closeDrawer(GravityCompat.START)
-            true
-        }
-
     }
 
     /**
@@ -128,28 +173,6 @@ class MainActivity : AppCompatActivity() {
         supportFragmentManager.beginTransaction()
                 .replace(R.id.fragment_container, fragment)
                 .commit()
-    }
-
-    /**
-     * Sets up our custom toolbar as the app's Action Bar/App Bar (the two terms are completely
-     * interchangeable).
-     *
-     * It is best practice to use a theme without an action bar and then implement
-     * a custom one because when you don't create a custom one, a native action bar is used that
-     * looks different on each API level (for example, on API level 19-20 the native action bar
-     * doesn't follow the Material Design spec).
-     *
-     * We also implement a custom action bar so that we can give it more functionality than is
-     * available in native action bars, like putting a menu button on it that pulls out
-     * the navigation drawer when pressed, or hiding the action bar when the user is scrolling
-     * through a list.
-     */
-    private fun setUpActionBar() {
-        setSupportActionBar(toolbar)
-        val drawerToggle = ActionBarDrawerToggle(
-                this, drawer_layout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
-        drawer_layout.addDrawerListener(drawerToggle)
-        drawerToggle.syncState()
     }
 
     /**
