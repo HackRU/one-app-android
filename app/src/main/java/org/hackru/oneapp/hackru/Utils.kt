@@ -20,7 +20,7 @@ object Utils {
             PreferenceManager.getDefaultSharedPreferences(context)
                     .edit()
                     .putString(KEY_AUTH_TOKEN, authToken)
-                    .apply()
+                    .commit()
         }
 
         fun getAuthToken(context: Context): String? {
@@ -32,7 +32,7 @@ object Utils {
             PreferenceManager.getDefaultSharedPreferences(context)
                     .edit()
                     .putString(KEY_EMAIL, email)
-                    .apply()
+                    .commit()
         }
 
         fun getEmail(context: Context): String? {
@@ -44,7 +44,7 @@ object Utils {
             PreferenceManager.getDefaultSharedPreferences(context)
                     .edit()
                     .putBoolean(KEY_CAN_SCAN, canScan)
-                    .apply()
+                    .commit()
         }
 
         fun getCanScan(context: Context): Boolean {

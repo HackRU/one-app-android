@@ -11,9 +11,13 @@ import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
+import android.util.Log
+import android.view.View
 import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.header_drawer.*
 import net.glxn.qrgen.android.QRCode
 import org.hackru.oneapp.hackru.R
 import org.hackru.oneapp.hackru.Utils
@@ -38,15 +42,24 @@ class MainActivity : AppCompatActivity() {
 
         // TODO: Logout user after authtoken expires
 
-        email = Utils.SharedPreferences.getEmail(this)
-//        canScan = Utils.SharedPreferences.getCanScan(this)
-        authToken = Utils.SharedPreferences.getAuthToken(this)
-        canScan = (authToken != null)
-
+        getUserInfo()
         setUpActionBar()
         setUpNavigationDrawer()
         setUpBottomNavigation(savedInstanceState)
         setUpFloatingActionButton()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        getUserInfo()
+        setUpNavigationDrawer()
+    }
+
+    fun getUserInfo() {
+        email = Utils.SharedPreferences.getEmail(this)
+//        canScan = Utils.SharedPreferences.getCanScan(this)
+        authToken = Utils.SharedPreferences.getAuthToken(this)
+        canScan = (authToken != null)
     }
 
     /**
@@ -80,6 +93,18 @@ class MainActivity : AppCompatActivity() {
         drawer_navigation.menu.findItem(R.id.drawer_login).isVisible = (authToken == null)
         drawer_navigation.menu.findItem(R.id.drawer_logout).isVisible = (authToken != null)
 
+        // Change the name/email in the header
+        val header: View = drawer_navigation.getHeaderView(0)
+        var headerName = getString(R.string.navigation_drawer_name_default)
+        var headerEmail = getString(R.string.navigation_drawer_email_default)
+        if(authToken != null) {
+            // TODO: Put real name in the header
+            headerName = "Jane Doe"
+            headerEmail = email
+        }
+        header.findViewById<TextView>(R.id.header_drawer_name).text = headerName
+        header.findViewById<TextView>(R.id.header_drawer_email).text = headerEmail
+
         // Listen for when the user clicks on one of the navigation drawer items
         drawer_navigation.setNavigationItemSelectedListener {
             when (it.itemId) {
@@ -111,6 +136,7 @@ class MainActivity : AppCompatActivity() {
                                 canScan = false
                                 Utils.SharedPreferences.setAuthToken(this, null)
                                 Utils.SharedPreferences.setCanScan(this, false)
+                                setUpNavigationDrawer()
                                 Toast.makeText(this, "You've been logged out", Toast.LENGTH_SHORT).show()
                             }
                             .setNegativeButton("Cancel") { dialogInterface, i ->
