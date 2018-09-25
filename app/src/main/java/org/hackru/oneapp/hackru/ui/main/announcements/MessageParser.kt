@@ -1,17 +1,6 @@
 package org.hackru.oneapp.hackru.ui.main.announcements
 
-import android.text.Spannable
-import android.text.SpannableStringBuilder
-import android.text.util.Linkify
 import java.util.*
-import android.graphics.Typeface
-import android.text.style.StyleSpan
-import android.text.SpannableString
-import android.view.View
-import android.widget.TextView
-import kotlinx.android.synthetic.main.rv_item_announcement.view.*
-import org.hackru.oneapp.hackru.R
-
 
 class MessageParser {
     companion object {
@@ -28,12 +17,12 @@ class MessageParser {
                 val strArr = word.split("".toRegex())
 
                 if (word.indexOf('<') != -1 && word.indexOf('>') != -1 && word.indexOf('!') != -1 || word.indexOf('@') != -1
-                            || word.indexOf(':') != -1 && word.lastIndexOf(':',word.length-1) != -1
-                            || word.indexOf('*') != -1 && word.lastIndexOf('*',word.length-1) != -1
-                            || word.indexOf('_') != -1 && word.lastIndexOf('_',word.length-1) != -1
-                            || word.indexOf('~') != -1 && word.lastIndexOf('~',word.length-1) != -1
-                            || word.indexOf('`') != -1 && word.lastIndexOf('`',word.length-1) != -1
-                            || word.indexOf('&') != -1 && word.lastIndexOf(';',word.length-1) != -1){
+                        || word.indexOf(':') != -1 && word.lastIndexOf(':',word.length-1) != -1
+                        || word.indexOf('*') != -1 && word.lastIndexOf('*',word.length-1) != -1
+                        || word.indexOf('_') != -1 && word.lastIndexOf('_',word.length-1) != -1
+                        || word.indexOf('~') != -1 && word.lastIndexOf('~',word.length-1) != -1
+                        || word.indexOf('`') != -1 && word.lastIndexOf('`',word.length-1) != -1
+                        || word.indexOf('&') != -1 && word.lastIndexOf(';',word.length-1) != -1){
                     isEmoji = true
                 }
 
@@ -46,12 +35,12 @@ class MessageParser {
                     }
                 }
                 if(word.indexOf('*') != -1 && word.lastIndexOf('*',word.length-1) != -1){
-                    val str = word.boldTexts()
-                    buffer.append("$str ")
+                    word = word.replace(Regex("""[*]"""), "")
+                    buffer.append("$word ")
                 }
                 if(word.indexOf('_') != -1 && word.lastIndexOf('_',word.length-1) != -1){
-                    val str = word.italicTexts()
-                    buffer.append("$str ")
+                    word = word.replace(Regex("""[_]"""), "")
+                    buffer.append("$word ")
                 }
                 if(word.indexOf('`') != -1 && word.lastIndexOf('`',word.length-1) != -1 ||
                         word.indexOf('~') != -1 && word.lastIndexOf('~',word.length-1) != -1){
@@ -74,44 +63,6 @@ class MessageParser {
                 }
             }
             return buffer.toString()
-        }
-
-        private fun String.boldTexts(): SpannableStringBuilder {
-            var clone = this
-            return SpannableStringBuilder().apply {
-                var setSpan = true
-                var next: String
-                do{
-                    setSpan = !setSpan
-                    next = if (length == 0) clone.substringBefore("*", "")
-                    else clone.substringBefore("*")
-                    val start = length
-                    append(next)
-                    if (setSpan) {
-                        setSpan(StyleSpan(Typeface.BOLD), start, length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-                    }
-                    clone = clone.removePrefix(next).removePrefix("*")
-                }while (clone.isNotEmpty())
-            }
-        }
-
-        private fun String.italicTexts(): SpannableStringBuilder {
-            var clone = this
-            return SpannableStringBuilder().apply {
-                var setSpan = true
-                var next: String
-                do{
-                    setSpan = !setSpan
-                    next = if (length == 0) clone.substringBefore("_", "")
-                    else clone.substringBefore("_")
-                    val start = length
-                    append(next)
-                    if (setSpan) {
-                        setSpan(StyleSpan(Typeface.ITALIC), start, length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-                    }
-                    clone = clone.removePrefix(next).removePrefix("_")
-                }while (clone.isNotEmpty())
-            }
         }
 
     }
