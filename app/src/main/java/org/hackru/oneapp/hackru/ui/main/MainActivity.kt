@@ -164,7 +164,7 @@ class MainActivity : AppCompatActivity() {
     fun setUpFloatingActionButton() {
         // Listen for when the user clicks on the qr code floating action button
         fab_qr.setOnClickListener {
-            if(email != null) {
+            if(authToken != null) {
                 // If they are logged-in, show their QR code in an AlertDialog
                 val dialogView = layoutInflater.inflate(R.layout.dialog_qr_code, null)
                 val alertDialog = AlertDialog.Builder(this)
