@@ -35,6 +35,7 @@ class MainActivity : AppCompatActivity() {
     var email: String? = null
     var canScan = false
     var authToken: String? = null
+    var name: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -57,9 +58,9 @@ class MainActivity : AppCompatActivity() {
 
     fun getUserInfo() {
         email = Utils.SharedPreferences.getEmail(this)
-//        canScan = Utils.SharedPreferences.getCanScan(this)
+        canScan = Utils.SharedPreferences.getCanScan(this)
         authToken = Utils.SharedPreferences.getAuthToken(this)
-        canScan = (authToken != null)
+        name = Utils.SharedPreferences.getName(this) ?: ""
     }
 
     /**
@@ -95,13 +96,17 @@ class MainActivity : AppCompatActivity() {
 
         // Change the name/email in the header
         val header: View = drawer_navigation.getHeaderView(0)
-        var headerName = getString(R.string.navigation_drawer_name_default)
         var headerEmail = getString(R.string.navigation_drawer_email_default)
+        var headerName = name
         if(authToken != null) {
-            // TODO: Put real name in the header
-            headerName = "Jane Doe"
             headerEmail = email
+            if(name.isEmpty()) {
+                headerName = "HackRU Fall 2018"
+            }
+        } else {
+            headerName = getString(R.string.navigation_drawer_name_default)
         }
+
         header.findViewById<TextView>(R.id.header_drawer_name).text = headerName
         header.findViewById<TextView>(R.id.header_drawer_email).text = headerEmail
 
@@ -136,8 +141,9 @@ class MainActivity : AppCompatActivity() {
                                 canScan = false
                                 Utils.SharedPreferences.setAuthToken(this, null)
                                 Utils.SharedPreferences.setCanScan(this, false)
+                                Utils.SharedPreferences.setName(this, null)
                                 setUpNavigationDrawer()
-                                Toast.makeText(this, "You've been logged out", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(this, "You have been logged out", Toast.LENGTH_SHORT).show()
                             }
                             .setNegativeButton("Cancel") { dialogInterface, i ->
                                 // Do nothing. The dialog will close by default

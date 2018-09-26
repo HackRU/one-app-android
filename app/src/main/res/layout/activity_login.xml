@@ -61,14 +61,5 @@
             android:textColor="@android:color/white"
             android:text="@string/login_login_label"/>
 
-        <TextView
-            android:id="@+id/button_create_account"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:gravity="center"
-            android:text="@string/login_create_account_label"
-            android:textSize="16sp" />
-
     </LinearLayout>
 </ScrollView>

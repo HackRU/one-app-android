@@ -13,6 +13,7 @@ object Utils {
         private val KEY_AUTH_TOKEN = "authtoken"
         private val KEY_EMAIL = "email"
         private val KEY_CAN_SCAN = "can_scan"
+        private val KEY_NAME = "name"
         // TODO: Set up scanner for allowing waitlist
         private val KEY_ALLOW_WAITLIST = "allow_only_accepted"
 
@@ -50,6 +51,18 @@ object Utils {
         fun getCanScan(context: Context): Boolean {
             return PreferenceManager.getDefaultSharedPreferences(context)
                     .getBoolean(KEY_CAN_SCAN, false)
+        }
+
+        fun setName(context: Context, name: String?) {
+            PreferenceManager.getDefaultSharedPreferences(context)
+                    .edit()
+                    .putString(KEY_NAME, name)
+                    .commit()
+        }
+
+        fun getName(context: Context): String? {
+            return PreferenceManager.getDefaultSharedPreferences(context)
+                    .getString(KEY_NAME, "")
         }
 
     }
