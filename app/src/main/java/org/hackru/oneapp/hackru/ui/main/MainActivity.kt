@@ -63,7 +63,9 @@ class MainActivity : AppCompatActivity() {
         authToken = Utils.SharedPreferences.getAuthToken(this)
         name = Utils.SharedPreferences.getName(this) ?: ""
         logoutAt = Utils.SharedPreferences.getLogoutAt(this)
-        checkSession()
+        if(logoutAt != 0L) {
+            checkSession()
+        }
     }
 
     /**
@@ -198,7 +200,7 @@ class MainActivity : AppCompatActivity() {
     fun setUpFloatingActionButton() {
         // Listen for when the user clicks on the qr code floating action button
         fab_qr.setOnClickListener {
-            if(!checkSession()) {
+            if(logoutAt != 0L && !checkSession()) {
                 // If they are logged-in, but their session has expired, open the LoginActivity
                 startActivity(Intent(this, LoginActivity::class.java))
             } else if(authToken != null) {
@@ -226,8 +228,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun checkSession(): Boolean {
-        var currentTime: Long = System.currentTimeMillis()
-        if(logoutAt != 0L && currentTime > logoutAt) {
+        val currentTime: Long = System.currentTimeMillis()
+        if(currentTime > logoutAt) {
             logout()
             Toast.makeText(this, "Your session has expired and you have been logged out", Toast.LENGTH_LONG).show()
             return false
