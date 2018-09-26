@@ -14,6 +14,7 @@ object Utils {
         private val KEY_EMAIL = "email"
         private val KEY_CAN_SCAN = "can_scan"
         private val KEY_NAME = "name"
+        private val KEY_LOGOUT_AT = "logout_at"
         // TODO: Set up scanner for allowing waitlist
         private val KEY_ALLOW_WAITLIST = "allow_only_accepted"
 
@@ -63,6 +64,18 @@ object Utils {
         fun getName(context: Context): String? {
             return PreferenceManager.getDefaultSharedPreferences(context)
                     .getString(KEY_NAME, "")
+        }
+
+        fun setLogoutAt(context: Context, time: Long) {
+            PreferenceManager.getDefaultSharedPreferences(context)
+                    .edit()
+                    .putLong(KEY_LOGOUT_AT, time)
+                    .commit()
+        }
+
+        fun getLogoutAt(context: Context): Long {
+            return PreferenceManager.getDefaultSharedPreferences(context)
+                    .getLong(KEY_LOGOUT_AT, 0)
         }
 
     }

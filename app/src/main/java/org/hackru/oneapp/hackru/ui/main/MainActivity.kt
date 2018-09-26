@@ -36,6 +36,7 @@ class MainActivity : AppCompatActivity() {
     var canScan = false
     var authToken: String? = null
     var name: String = ""
+    var logoutAt: Long = 0L
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -61,6 +62,8 @@ class MainActivity : AppCompatActivity() {
         canScan = Utils.SharedPreferences.getCanScan(this)
         authToken = Utils.SharedPreferences.getAuthToken(this)
         name = Utils.SharedPreferences.getName(this) ?: ""
+        logoutAt = Utils.SharedPreferences.getLogoutAt(this)
+        checkSession()
     }
 
     /**
@@ -117,14 +120,15 @@ class MainActivity : AppCompatActivity() {
 
                 }
                 R.id.drawer_scanner -> {
-
-                    val qrCodeScanning:MaterialBarcodeScanner = MaterialBarcodeScannerBuilder()
-                            .withActivity(this)
-                            .withEnableAutoFocus(true)
-                            .withCenterTracker()
-                            .withBackfacingCamera()
-                            .build()
-                    qrCodeScanning.startScan()
+                    if(checkSession()) {
+                        val qrCodeScanning:MaterialBarcodeScanner = MaterialBarcodeScannerBuilder()
+                                .withActivity(this)
+                                .withEnableAutoFocus(true)
+                                .withCenterTracker()
+                                .withBackfacingCamera()
+                                .build()
+                        qrCodeScanning.startScan()
+                    }
                 }
                 R.id.drawer_about -> {
 
@@ -137,12 +141,7 @@ class MainActivity : AppCompatActivity() {
                             .setCancelable(true)
                             .setTitle("Are you sure you want to logout?")
                             .setPositiveButton("Logout") { dialogInterface, i ->
-                                authToken = null
-                                canScan = false
-                                Utils.SharedPreferences.setAuthToken(this, null)
-                                Utils.SharedPreferences.setCanScan(this, false)
-                                Utils.SharedPreferences.setName(this, null)
-                                setUpNavigationDrawer()
+                                logout()
                                 Toast.makeText(this, "You have been logged out", Toast.LENGTH_SHORT).show()
                             }
                             .setNegativeButton("Cancel") { dialogInterface, i ->
@@ -199,7 +198,10 @@ class MainActivity : AppCompatActivity() {
     fun setUpFloatingActionButton() {
         // Listen for when the user clicks on the qr code floating action button
         fab_qr.setOnClickListener {
-            if(authToken != null) {
+            if(!checkSession()) {
+                // If they are logged-in, but their session has expired, open the LoginActivity
+                startActivity(Intent(this, LoginActivity::class.java))
+            } else if(authToken != null) {
                 // If they are logged-in, show their QR code in an AlertDialog
                 val dialogView = layoutInflater.inflate(R.layout.dialog_qr_code, null)
                 val alertDialog = AlertDialog.Builder(this)
@@ -221,6 +223,25 @@ class MainActivity : AppCompatActivity() {
                 startActivity(Intent(this, LoginActivity::class.java))
             }
         }
+    }
+
+    fun checkSession(): Boolean {
+        var currentTime: Long = System.currentTimeMillis()
+        if(logoutAt != 0L && currentTime > logoutAt) {
+            logout()
+            Toast.makeText(this, "Your session has expired and you have been logged out", Toast.LENGTH_LONG).show()
+            return false
+        }
+        return true
+    }
+
+    fun logout() {
+        authToken = null
+        canScan = false
+        Utils.SharedPreferences.setAuthToken(this, null)
+        Utils.SharedPreferences.setCanScan(this, false)
+        Utils.SharedPreferences.setName(this, null)
+        setUpNavigationDrawer()
     }
 
     /**

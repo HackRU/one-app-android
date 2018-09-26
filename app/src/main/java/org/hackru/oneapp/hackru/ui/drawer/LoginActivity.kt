@@ -3,6 +3,7 @@ package org.hackru.oneapp.hackru.ui.drawer
 import android.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.widget.TextView
 import android.widget.Toast
 import com.google.gson.Gson
@@ -17,6 +18,7 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.io.IOException
+import java.text.SimpleDateFormat
 import javax.inject.Inject
 
 class LoginActivity : AppCompatActivity() {
@@ -61,6 +63,10 @@ class LoginActivity : AppCompatActivity() {
                         val auth: AuthorizeModel.Auth = gson.fromJson<AuthorizeModel.Body>(body, AuthorizeModel.Body::class.java).auth
                         Utils.SharedPreferences.setEmail(this@LoginActivity, email)
                         Utils.SharedPreferences.setAuthToken(this@LoginActivity, auth.token)
+                        val logoutAt: Long = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSS")
+                                .parse(auth.validUntil)
+                                .time
+                        Utils.SharedPreferences.setLogoutAt(this@LoginActivity, logoutAt)
                         retrieveNameAndCanScan(email, auth.token)
                     } else {
                         val errorMessage = response.body()?.body ?: "Network error. Please try again"
