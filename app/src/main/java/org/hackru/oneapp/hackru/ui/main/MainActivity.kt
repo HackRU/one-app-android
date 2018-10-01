@@ -232,6 +232,7 @@ class MainActivity : AppCompatActivity() {
         if(currentTime > logoutAt) {
             logout()
             Toast.makeText(this, "Your session has expired and you have been logged out", Toast.LENGTH_LONG).show()
+            Utils.SharedPreferences.setLogoutAt(this, 0L)
             return false
         }
         return true
