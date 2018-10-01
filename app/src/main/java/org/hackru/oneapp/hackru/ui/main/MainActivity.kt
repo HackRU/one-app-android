@@ -1,6 +1,5 @@
 package org.hackru.oneapp.hackru.ui.main
 
-import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Color
@@ -11,13 +10,11 @@ import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
-import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.header_drawer.*
 import net.glxn.qrgen.android.QRCode
 import org.hackru.oneapp.hackru.R
 import org.hackru.oneapp.hackru.Utils
@@ -27,6 +24,11 @@ import org.hackru.oneapp.hackru.ui.main.events.EventsFragment
 import org.hackru.oneapp.hackru.ui.drawer.scanner.MaterialBarcodeScanner
 import org.hackru.oneapp.hackru.ui.drawer.scanner.MaterialBarcodeScannerBuilder
 import org.hackru.oneapp.hackru.ui.main.timer.TimerFragment
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.request.RequestOptions
+import org.hackru.oneapp.hackru.ui.main.GlideModule
+
 
 class MainActivity : AppCompatActivity() {
     // TAG is used with Android's Log class to organize debugging logs
@@ -119,7 +121,16 @@ class MainActivity : AppCompatActivity() {
         drawer_navigation.setNavigationItemSelectedListener {
             when (it.itemId) {
                 R.id.drawer_map -> {
-
+                    toggleActionBarElevation(true)
+                    setContentView(R.layout.map_layout)
+                    val imageView = findViewById<ImageView>(R.id.floorMap)
+                    Glide
+                            .with(this)
+                            .load("http://hackru-misc.s3-website-us-west-2.amazonaws.com/floorplan.jpg")
+                            .thumbnail(0.5f)
+                            .apply(RequestOptions()
+                                    .diskCacheStrategy(DiskCacheStrategy.ALL))
+                            .into(imageView)
                 }
                 R.id.drawer_scanner -> {
                     if(checkSession()) {
