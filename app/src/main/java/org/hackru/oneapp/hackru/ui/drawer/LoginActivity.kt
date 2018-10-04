@@ -3,7 +3,6 @@ package org.hackru.oneapp.hackru.ui.drawer
 import android.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.widget.TextView
 import android.widget.Toast
 import com.google.gson.Gson
@@ -12,7 +11,7 @@ import org.hackru.oneapp.hackru.HackRUApp
 import org.hackru.oneapp.hackru.R
 import org.hackru.oneapp.hackru.Utils
 import org.hackru.oneapp.hackru.api.models.AuthorizeModel
-import org.hackru.oneapp.hackru.api.models.ReadModel
+import org.hackru.oneapp.hackru.api.models.RoleModel
 import org.hackru.oneapp.hackru.api.services.LcsService
 import retrofit2.Call
 import retrofit2.Callback
@@ -92,13 +91,13 @@ class LoginActivity : AppCompatActivity() {
     }
 
     fun retrieveNameAndCanScan(email: String, authToken: String) {
-        val request = ReadModel.Request(email, authToken, ReadModel.Query(email))
-        lcsService.read(request).enqueue(object : Callback<ReadModel.Response> {
-            override fun onResponse(call: Call<ReadModel.Response>, response: Response<ReadModel.Response>) {
+        val request = RoleModel.Request(email, authToken, RoleModel.Query(email))
+        lcsService.getRole(request).enqueue(object : Callback<RoleModel.Response> {
+            override fun onResponse(call: Call<RoleModel.Response>, response: Response<RoleModel.Response>) {
                 if(response.isSuccessful) {
                     val retrofitBody = response.body()
                     if(retrofitBody?.statusCode == 200) {
-                        val role: ReadModel.Role = retrofitBody.body[0].role
+                        val role: RoleModel.Role = retrofitBody.body[0].role
                         Utils.SharedPreferences.setCanScan(this@LoginActivity, role.director || role.organizer)
                         val firstName: String = retrofitBody.body[0].firstName
                         val lastName: String = retrofitBody.body[0].lastName
@@ -119,7 +118,7 @@ class LoginActivity : AppCompatActivity() {
                 }
             }
 
-            override fun onFailure(call: Call<ReadModel.Response>, t: Throwable) {
+            override fun onFailure(call: Call<RoleModel.Response>, t: Throwable) {
                 if(t is IOException) {
                     showToast("Network error. Please try again", Toast.LENGTH_SHORT)
                     loadingDialog.dismiss()

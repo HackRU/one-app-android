@@ -1,9 +1,8 @@
 package org.hackru.oneapp.hackru.api.models
 
-import android.app.DownloadManager
 import com.google.gson.annotations.SerializedName
 
-object ReadModel {
+object RoleModel {
 
     data class Request(val email: String,
                        val token: String,
