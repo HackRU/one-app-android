@@ -9,7 +9,7 @@ class TimerViewModel : ViewModel() {
 
     val deadline: LiveData<Resource<Long>> = kotlin.run {
         val livedata = MutableLiveData<Resource<Long>>()
-        livedata.value = Resource.success(1537406058)
+        livedata.value = Resource.success(1538926200)
         livedata
     }
 
