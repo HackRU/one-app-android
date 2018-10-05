@@ -9,6 +9,7 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.hackru.oneapp.hackru.BuildConfig
 import org.hackru.oneapp.hackru.api.services.LcsService
+import org.hackru.oneapp.hackru.api.services.MiscService
 import org.hackru.oneapp.hackru.db.AnnouncementsDao
 import org.hackru.oneapp.hackru.db.Database
 import org.hackru.oneapp.hackru.repositories.AnnouncementsRepository
@@ -46,6 +47,21 @@ class AppModule(val application: Application) {
                 .client(client)
                 .build()
                 .create(LcsService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideMiscService(): MiscService {
+        val loggingInterceptor = HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)
+        val client = OkHttpClient.Builder()
+                .addInterceptor(loggingInterceptor)
+                .build()
+        return Retrofit.Builder()
+                .baseUrl(BuildConfig.MiscEndpoint)
+                .addConverterFactory(GsonConverterFactory.create())
+                .client(client)
+                .build()
+                .create(MiscService::class.java)
     }
 
     @Provides

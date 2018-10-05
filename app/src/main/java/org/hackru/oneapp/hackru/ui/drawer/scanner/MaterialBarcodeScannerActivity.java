@@ -13,6 +13,7 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
@@ -23,11 +24,18 @@ import com.google.android.gms.vision.barcode.BarcodeDetector;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+import org.hackru.oneapp.hackru.HackRUApp;
 import org.hackru.oneapp.hackru.R;
+import org.hackru.oneapp.hackru.api.services.MiscService;
 
 import java.io.IOException;
 
+import javax.inject.Inject;
+
 import cdflynn.android.library.checkview.CheckView;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class MaterialBarcodeScannerActivity extends AppCompatActivity {
 
@@ -54,22 +62,70 @@ public class MaterialBarcodeScannerActivity extends AppCompatActivity {
     private boolean mFlashOn = false;
 
     private String[] events = null;
+    private int currentEvent = 0;
 
     private Handler handler = new Handler();
 
+    @Inject
+    MiscService miscService;
+
+    private void loadScannerEvents() {
+        final AlertDialog alertDialog = new AlertDialog.Builder(MaterialBarcodeScannerActivity.this)
+                .setView(getLayoutInflater().inflate(R.layout.dialog_progress_circle, null))
+                .setTitle("Retrieving events...")
+                .setCancelable(false)
+                .create();
+        alertDialog.show();
+        miscService.getScannerEvents().enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response) {
+                if(response.isSuccessful()) {
+                    if(response.body() == null) {
+                        loadEventsFailure(alertDialog);
+                    } else {
+                        loadEventsSuccess(alertDialog, response.body());
+                    }
+
+                } else {
+                    loadEventsFailure(alertDialog);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t) {
+                loadEventsFailure(alertDialog);
+            }
+        });
+    }
+
+    private void loadEventsSuccess(AlertDialog alertDialog, String response) {
+        final TextView scanningFor = findViewById(R.id.current_event);
+        events = response.split("\n");
+        alertDialog.dismiss();
+        scanningFor.setText("Scanning for " + events[currentEvent]);
+        setupChangeEventButton();
+    }
+
+
+    private void loadEventsFailure(AlertDialog alertDialog) {
+        alertDialog.dismiss();
+        Toast.makeText(this, "Network error: couldn't retrieve events", Toast.LENGTH_LONG).show();
+        finish();
+    }
+
     private void setupChangeEventButton() {
         Button changeEventButton = findViewById(R.id.btn_change_event);
+        final TextView scanningFor = findViewById(R.id.current_event);
         changeEventButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 new AlertDialog.Builder(MaterialBarcodeScannerActivity.this)
                         .setTitle("Pick an event")
-                        .setItems(R.array.scanner_events, new DialogInterface.OnClickListener() {
+                        .setItems(events, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 // TODO: Change event here
-                                TextView currentEvent = findViewById(R.id.current_event);
-                                currentEvent.setText("Scanning for " + events[i]);
+                                scanningFor.setText("Scanning for " + events[i]);
                             }
                         })
                         .create()
@@ -90,13 +146,13 @@ public class MaterialBarcodeScannerActivity extends AppCompatActivity {
             @Override
             public void run() {
                 alertDialog.dismiss();
-                showOnSuccess();
-//                showOnFailure();
+                showScanSuccess();
+//                showScanFailure();
             }
         }, 1000);
     }
 
-    private void showOnSuccess() {
+    private void showScanSuccess() {
         View dialogView = getLayoutInflater().inflate(R.layout.dialog_checkmark, null);
         final AlertDialog alertDialog = new AlertDialog.Builder(MaterialBarcodeScannerActivity.this)
                 .setView(dialogView)
@@ -115,7 +171,7 @@ public class MaterialBarcodeScannerActivity extends AppCompatActivity {
         handler.postDelayed(dismissCheckmark, 1000);
     }
 
-    private void showOnFailure() {
+    private void showScanFailure() {
         final AlertDialog alertDialog = new AlertDialog.Builder(MaterialBarcodeScannerActivity.this)
                 .setTitle("Network error")
                 .setPositiveButton("Retry", new DialogInterface.OnClickListener() {
@@ -212,11 +268,8 @@ public class MaterialBarcodeScannerActivity extends AppCompatActivity {
         mEvents = eventsList.oArray(mEvents);*/
 
         setContentView(R.layout.activity_scanner);
-
-        final TextView currentEvent = findViewById(R.id.current_event);
-        events = getResources().getStringArray(R.array.scanner_events);
-        setupChangeEventButton();
-        currentEvent.setText("Scanning for " + events[0]);
+        ((HackRUApp) getApplication()).appComponent.inject(this);
+        loadScannerEvents();
     }
 
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
