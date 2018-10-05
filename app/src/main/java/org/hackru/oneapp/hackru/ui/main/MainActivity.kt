@@ -23,6 +23,7 @@ import org.hackru.oneapp.hackru.R
 import org.hackru.oneapp.hackru.Utils
 import org.hackru.oneapp.hackru.ui.drawer.AboutActivity
 import org.hackru.oneapp.hackru.ui.drawer.LoginActivity
+import org.hackru.oneapp.hackru.ui.drawer.MapActivity
 import org.hackru.oneapp.hackru.ui.main.announcements.AnnouncementsFragment
 import org.hackru.oneapp.hackru.ui.main.events.EventsFragment
 import org.hackru.oneapp.hackru.ui.drawer.scanner.MaterialBarcodeScanner
@@ -120,7 +121,7 @@ class MainActivity : AppCompatActivity() {
         drawer_navigation.setNavigationItemSelectedListener {
             when (it.itemId) {
                 R.id.drawer_map -> {
-
+                    startActivity(Intent(this, MapActivity::class.java))
                 }
                 R.id.drawer_scanner -> {
                     if(checkSession()) {
