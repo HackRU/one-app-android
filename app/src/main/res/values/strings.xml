@@ -51,4 +51,9 @@
 
     <!-- Map -->
     <string name="map_failure_message">Failed to load the map, please try again.</string>
+
+    <!-- Network Errors -->
+    <string name="network_error_no_internet">Couldn\'t load data (no internet)</string>
+    <string name="network_error_deserialization">Couldn\'t load data (server error)</string>
+    <string name="network_error_unknown">Couldn\'t load data (unknown error)</string>
 </resources>

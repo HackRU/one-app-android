@@ -50,8 +50,8 @@ class AppModule(val application: Application) {
 
     @Provides
     @Singleton
-    fun provideAnnouncementsRepository(announcementsDao: AnnouncementsDao, lcsService: LcsService): AnnouncementsRepository {
-        return AnnouncementsRepository(announcementsDao, lcsService)
+    fun provideAnnouncementsRepository(announcementsDao: AnnouncementsDao, lcsService: LcsService, context: Context): AnnouncementsRepository {
+        return AnnouncementsRepository(announcementsDao, lcsService, context)
     }
 
     @Provides

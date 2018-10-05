@@ -5,6 +5,7 @@ import android.arch.lifecycle.ViewModelProviders
 import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.support.v4.widget.SwipeRefreshLayout
 import android.support.v7.widget.LinearLayoutManager
 import android.view.LayoutInflater
 import android.view.View
@@ -44,30 +45,50 @@ class AnnouncementsFragment : android.support.v4.app.Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        progressbar_announcements.isIndeterminate = true
+        viewModel = ViewModelProviders.of(mainActivity, viewModelFactory).get(AnnouncementsViewModel::class.java)
+        setUpRecyclerView()
+        setUpSwipeToRefresh()
+        observeAnnouncements()
+    }
+
+    fun setUpRecyclerView() {
         rv_announcements.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = announcementsAdapter
             // TODO: Use a decorator instead here instead of margin in rv_item_announcement.xml
         }
+    }
 
-        viewModel = ViewModelProviders.of(mainActivity, viewModelFactory).get(AnnouncementsViewModel::class.java)
-        viewModel.announcements.observe(this, Observer {
+    fun setUpSwipeToRefresh() {
+        swipe_refresh_layout.setOnRefreshListener { viewModel.announcements }
+    }
+
+    fun observeAnnouncements() {
+        viewModel.announcements?.observe(this, Observer {
             it?.let {
                 when(it.state) {
                     Resource.LOADING -> {
                         // The resource is loading
-                        // TODO: Implement android arch data binding library
                         progressbar_announcements.visibility = View.VISIBLE
+                        error_message.visibility = View.GONE
                     }
                     Resource.SUCCESS -> {
                         // The resource has successfully been fetched
                         progressbar_announcements.visibility = View.GONE
+                        swipe_refresh_layout.isRefreshing = false
+                        error_message.visibility = View.GONE
                         announcementsAdapter.items = it.data
                     }
                     Resource.FAILURE -> {
                         // There was an error fetching the resource
-                        Toast.makeText(context, it.msg, Toast.LENGTH_SHORT).show()
+                        progressbar_announcements.visibility = View.GONE
+                        swipe_refresh_layout.isRefreshing = false
+                        if(announcementsAdapter.items.isEmpty()) {
+                            error_message.visibility = View.VISIBLE
+                            error_message.text = it.msg
+                        } else {
+                            Toast.makeText(context, it.msg, Toast.LENGTH_SHORT).show()
+                        }
                     }
                 }
             }
