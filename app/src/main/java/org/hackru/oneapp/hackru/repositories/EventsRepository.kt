@@ -1,69 +1,65 @@
 package org.hackru.oneapp.hackru.repositories
 
-import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MediatorLiveData
-import android.arch.lifecycle.MutableLiveData
 import android.content.Context
 import android.os.AsyncTask
 import org.hackru.oneapp.hackru.R
 import org.hackru.oneapp.hackru.api.Resource
-import org.hackru.oneapp.hackru.api.models.AnnouncementsModel
+import org.hackru.oneapp.hackru.api.models.EventsModel
 import org.hackru.oneapp.hackru.api.services.LcsService
-import org.hackru.oneapp.hackru.db.AnnouncementsDao
-import org.hackru.oneapp.hackru.ui.main.announcements.MessageParser
+import org.hackru.oneapp.hackru.db.EventsDao
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.io.IOException
+import java.text.SimpleDateFormat
+import java.util.*
 import javax.inject.Inject
 
-class AnnouncementsRepository @Inject constructor(val announcementsDao: AnnouncementsDao, val lcsService: LcsService, val context: Context) {
+class EventsRepository @Inject constructor(val eventsDao: EventsDao, val lcsService: LcsService, val context: Context) {
 
-    fun loadAnnouncementsFromDatabase(): MediatorLiveData<Resource<List<AnnouncementsModel.Announcement>>> {
-        val result = MediatorLiveData<Resource<List<AnnouncementsModel.Announcement>>>()
+    private val TIME_SUNDAY_MIDNIGHT: Long = 1538870400000
+
+    fun loadEventsFromDatabase(): MediatorLiveData<Resource<List<List<EventsModel.Event>>>> {
+        val result = MediatorLiveData<Resource<List<List<EventsModel.Event>>>>()
         result.value = Resource.loading(emptyList())
-        val dbSource = announcementsDao.loadAll()
+        val dbSource = eventsDao.loadAll()
         result.addSource(dbSource) { data ->
             if(data?.isEmpty() == false) {
-                result.value = Resource.success(data)
+                result.value = Resource.success(sortEventsByDay(data))
             }
             result.removeSource(dbSource)
-            fetchAnnouncementsFromNetwork(result)
+            fetchEventsFromNetwork(result)
         }
         return result
     }
 
-    fun refreshAnnouncements(result: MediatorLiveData<Resource<List<AnnouncementsModel.Announcement>>>?) {
-        val dbSource = announcementsDao.loadAll()
-        result?.addSource(dbSource) { data ->
-            if(data?.isEmpty() == false) {
-                result.value = Resource.success(data)
-            }
-            result.removeSource(dbSource)
-            fetchAnnouncementsFromNetwork(result)
-        }
-    }
-
-    fun fetchAnnouncementsFromNetwork(result: MediatorLiveData<Resource<List<AnnouncementsModel.Announcement>>>?) {
-        lcsService.getAnnouncements().enqueue(object : Callback<AnnouncementsModel.Response> {
-            override fun onResponse(call: Call<AnnouncementsModel.Response>?, response: Response<AnnouncementsModel.Response>?) {
-                val data: List<AnnouncementsModel.Response.SlackMessage>? = response?.body()?.body
+    fun fetchEventsFromNetwork(result: MediatorLiveData<Resource<List<List<EventsModel.Event>>>>?) {
+        lcsService.getEvents().enqueue(object : Callback<EventsModel.Response> {
+            override fun onResponse(call: Call<EventsModel.Response>?, response: Response<EventsModel.Response>?) {
+                val data: List<EventsModel.GoogleCalendarEvent>? = response?.body()?.body
                 if (data != null && response.isSuccessful) {
-                    val announcements = mutableListOf<AnnouncementsModel.Announcement>()
+                    val events = mutableListOf<EventsModel.Event>()
+                    val toMillisFormatter = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX")
+                    val toStringFormatter = SimpleDateFormat("h:mm a")
                     data.forEach {
-                        if(it.text != null && it.text.isNotEmpty() && it.ts != null && it.subtype == null) {
-                            val text: String = MessageParser.stringParser(it.text)
-                            announcements.add(AnnouncementsModel.Announcement(it.ts, text))
-                        }
+                        val title: String = it.summary ?: ""
+                        val details: String = it.location ?: ""
+                        val startDate: String? = it.start?.dateTime ?: it.start?.date
+                        val endDate: String? = it.end?.dateTime ?: it.end?.date
+                        val timeStart = toMillisFormatter.parse(startDate).time
+                        val timeEnd = toMillisFormatter.parse(endDate).time
+                        val time: String = toStringFormatter.format(Date(timeStart)).toString()
+                        events.add(EventsModel.Event(title, details, time, timeStart, timeEnd))
                     }
-                    result?.value = Resource.success(announcements.toList())
-                    SaveToDatabaseAsyncTask(announcementsDao).execute(announcements)
+                    result?.value = Resource.success(sortEventsByDay(events))
+                    SaveToDatabaseAsyncTask(eventsDao).execute(events)
                 } else {
                     result?.value = Resource.failure(context.getString(R.string.network_error_unknown), emptyList())
                 }
             }
 
-            override fun onFailure(call: Call<AnnouncementsModel.Response>?, t: Throwable?) {
+            override fun onFailure(call: Call<EventsModel.Response>?, t: Throwable?) {
                 if(t is IOException) {
                     result?.value = Resource.failure(context.getString(R.string.network_error_no_internet), emptyList())
                 } else {
@@ -73,10 +69,25 @@ class AnnouncementsRepository @Inject constructor(val announcementsDao: Announce
         })
     }
 
-    private class SaveToDatabaseAsyncTask(val announcementsDao: AnnouncementsDao) : AsyncTask<List<AnnouncementsModel.Announcement>, Unit, Unit>() {
-        override fun doInBackground(vararg params: List<AnnouncementsModel.Announcement>) {
-            announcementsDao.save(params[0])
+    private class SaveToDatabaseAsyncTask(val eventsDao: EventsDao) : AsyncTask<List<EventsModel.Event>, Unit, Unit>() {
+        override fun doInBackground(vararg params: List<EventsModel.Event>) {
+            eventsDao.save(params[0])
         }
+    }
+
+    private fun sortEventsByDay(events: List<EventsModel.Event>): List<List<EventsModel.Event>> {
+        val saturdayList: MutableList<EventsModel.Event> = mutableListOf()
+        val sundayList: MutableList<EventsModel.Event> = mutableListOf()
+
+        events.forEach {
+            if(it.timeStart < TIME_SUNDAY_MIDNIGHT) {
+                saturdayList.add(it)
+            } else {
+                sundayList.add(it)
+            }
+        }
+
+        return listOf(saturdayList, sundayList)
     }
 
 }

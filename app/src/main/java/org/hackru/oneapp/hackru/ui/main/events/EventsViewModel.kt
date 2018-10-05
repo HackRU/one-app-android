@@ -1,21 +1,22 @@
-package org.hackru.oneapp.hackru.ui.main.announcements
+package org.hackru.oneapp.hackru.ui.main.events
 
 import android.arch.lifecycle.MediatorLiveData
-import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
 import org.hackru.oneapp.hackru.api.Resource
 import org.hackru.oneapp.hackru.api.models.AnnouncementsModel
+import org.hackru.oneapp.hackru.api.models.EventsModel
 import org.hackru.oneapp.hackru.repositories.AnnouncementsRepository
+import org.hackru.oneapp.hackru.repositories.EventsRepository
 import javax.inject.Inject
 
-class AnnouncementsViewModel @Inject constructor(private val announcementsRepository: AnnouncementsRepository) : ViewModel() {
+class EventsViewModel @Inject constructor(private val eventsRepository: EventsRepository) : ViewModel() {
 
-    var announcements: MediatorLiveData<Resource<List<AnnouncementsModel.Announcement>>>? = null
+    var events: MediatorLiveData<Resource<List<List<EventsModel.Event>>>>? = null
         get() {
             if(field == null) {
-                field = announcementsRepository.loadAnnouncementsFromDatabase()
+                field = eventsRepository.loadEventsFromDatabase()
             } else {
-                announcementsRepository.refreshAnnouncements(field)
+                eventsRepository.fetchEventsFromNetwork(field)
             }
             return field
         }

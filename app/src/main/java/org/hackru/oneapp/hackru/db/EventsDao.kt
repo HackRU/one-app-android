@@ -5,13 +5,13 @@ import android.arch.persistence.room.Dao
 import android.arch.persistence.room.Insert
 import android.arch.persistence.room.OnConflictStrategy
 import android.arch.persistence.room.Query
-import org.hackru.oneapp.hackru.api.models.AnnouncementsModel
+import org.hackru.oneapp.hackru.api.models.EventsModel
 
 @Dao
-interface AnnouncementsDao {
+interface EventsDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun save(announcements: List<AnnouncementsModel.Announcement>)
+    fun save(events: List<EventsModel.Event>)
 
-    @Query("SELECT * FROM Announcement")
-    fun loadAll(): LiveData<List<AnnouncementsModel.Announcement>>
+    @Query("SELECT * FROM Event")
+    fun loadAll(): LiveData<List<EventsModel.Event>>
 }
