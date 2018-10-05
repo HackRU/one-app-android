@@ -16,10 +16,15 @@ class EventsViewModel : ViewModel() {
     private val sunTitles = arrayOf("Midnight Surprise", "Midnight Snack", "Breakfast",
             "Hacking Ends", "Lunch", "Demos Begin", "Closing Ceremonies")
 
-    private val details = arrayOf("Welcome to HackRU Fall 2018! Have a good one!",
-            "Welcome to HackRU Fall 2018! Have a good three!", "Welcome to HackRU Fall 2018! Have a good four!",
-            "Welcome to HackRU Fall 2018! Have a good five!", "Welcome to HackRU Fall 2018! Have a good six!",
-            "Welcome to HackRU Fall 2018! Have a good seven!", "Welcome to HackRU Fall 2018! Have a good two!")
+    private val satdetails = arrayOf("Location: Graduate Student Lounge",
+            "Location: Stage Area, Main Hall", "Location: Catering (Food Area)",
+            "Location: Stage Area, Main Hall", "Happy Hacking!",
+            "Location: Red Lion Cafe", "Location: Catering (Food Area)")
+
+    private val sundetails = arrayOf("Location: Stage Area, Main Hall",
+            "Location: Catering (Food Area)", "Location: Catering (Food Area)",
+            "Location: Stage Area, Main Hall", "Location: Catering (Food Area)",
+            "Location: Stage Area, Main Hall", "Location: Stage Area, Main Hall")
 
 
     private val saturdayEventsList = mutableListOf<EventsModel.Event>()
@@ -28,8 +33,8 @@ class EventsViewModel : ViewModel() {
 
     init {
         for(i in 0 until satTitles.size) {
-            saturdayEventsList.add(EventsModel.Event(satTimes[i], satTitles[i], details[i]))
-            sundayEventsList.add(EventsModel.Event(sunTimes[i], sunTitles[i], details[i]))
+            saturdayEventsList.add(EventsModel.Event(satTimes[i], satTitles[i], satdetails[i]))
+            sundayEventsList.add(EventsModel.Event(sunTimes[i], sunTitles[i], sundetails[i]))
         }
     }
 

@@ -29,7 +29,7 @@
         app:tabIndicatorHeight="3dp"
         app:tabIndicatorColor="@color/colorAccent"
         app:tabSelectedTextColor="#FFFFFF"
-        app:tabTextColor="@color/colorPrimaryDark"
+        app:tabTextColor="#c4c3c3"
         app:tabIndicatorAnimationDuration="1">
 
         <android.support.design.widget.TabItem
