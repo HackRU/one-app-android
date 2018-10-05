@@ -76,8 +76,14 @@ class AnnouncementsFragment : android.support.v4.app.Fragment() {
                         // The resource has successfully been fetched
                         progressbar_announcements.visibility = View.GONE
                         swipe_refresh_layout.isRefreshing = false
-                        error_message.visibility = View.GONE
-                        announcementsAdapter.items = it.data
+                        if(it.data.isEmpty()){
+                            error_message.visibility = View.VISIBLE
+                            error_message.text = "No announcements yet!"
+
+                        } else {
+                            error_message.visibility = View.GONE
+                            announcementsAdapter.items = it.data
+                        }
                     }
                     Resource.FAILURE -> {
                         // There was an error fetching the resource
