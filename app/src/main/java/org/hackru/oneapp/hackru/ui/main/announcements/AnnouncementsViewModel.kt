@@ -10,7 +10,6 @@ import javax.inject.Inject
 
 class AnnouncementsViewModel @Inject constructor(private val announcementsRepository: AnnouncementsRepository) : ViewModel() {
 
-    // TODO: Implement time stamp check on when announcements were last cached
     var announcements: MediatorLiveData<Resource<List<AnnouncementsModel.Announcement>>>? = null
         get() {
             if(field == null) {
