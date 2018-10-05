@@ -26,10 +26,11 @@
         </activity>
         <activity
             android:name=".ui.drawer.scanner.MaterialBarcodeScannerActivity"
-            android:theme="@style/AppTheme.NoActionBar.TransparentStatusBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar.TransparentStatusBar" />
         <activity
             android:name=".ui.drawer.LoginActivity"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".ui.drawer.AboutActivity"></activity>
     </application>
 
 </manifest>

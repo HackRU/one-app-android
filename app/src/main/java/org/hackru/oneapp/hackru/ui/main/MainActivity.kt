@@ -21,6 +21,7 @@ import kotlinx.android.synthetic.main.header_drawer.*
 import net.glxn.qrgen.android.QRCode
 import org.hackru.oneapp.hackru.R
 import org.hackru.oneapp.hackru.Utils
+import org.hackru.oneapp.hackru.ui.drawer.AboutActivity
 import org.hackru.oneapp.hackru.ui.drawer.LoginActivity
 import org.hackru.oneapp.hackru.ui.main.announcements.AnnouncementsFragment
 import org.hackru.oneapp.hackru.ui.main.events.EventsFragment
@@ -133,7 +134,7 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
                 R.id.drawer_about -> {
-
+                    startActivity(Intent(this, AboutActivity::class.java))
                 }
                 R.id.drawer_login -> {
                     startActivity(Intent(this, LoginActivity::class.java))

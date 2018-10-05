@@ -77,6 +77,9 @@ dependencies {
     // This library allows us to use a cool pre-made animated checkmark for the scanner
     implementation 'com.github.cdflynn:checkview:v1.1'
 
+    /* About Page */
+    implementation 'com.github.medyo:android-about-page:1.2.4'
+
     /* Testing and Quality Assurance */
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'

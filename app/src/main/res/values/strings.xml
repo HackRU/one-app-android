@@ -41,4 +41,11 @@
     <!-- Navigation Drawer -->
     <string name="navigation_drawer_name_default">Unknown User</string>
     <string name="navigation_drawer_email_default">Login to access your ticket</string>
+
+    <!-- About Page -->
+    <string name="about_page_description">The HackRU Android app is an open source effort made possible by the HackRU Research \&amp; Development team. Check out our GitHub below to view the source code and help contribute!</string>
+    <string name="url_website">https://www.hackru.org/</string>
+    <string name="twitter_handle">thehackru</string>
+    <string name="facebook_handle">theHackRU</string>
+    <string name="github_handle">HackRU/one-app-android/</string>
 </resources>
