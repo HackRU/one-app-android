@@ -54,7 +54,6 @@ class MessageParser {
                 if(word.indexOf('/') != -1 && word.indexOf('.') != -1 &&
                         word.indexOf('<') != -1 && word.indexOf('>') != -1){
                     word = word.replace(Regex("""[<>#]"""), "")
-                    buffer.append("$word ")
                 }
 
                 /** <---to check if the word is (time) */
