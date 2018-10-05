@@ -57,6 +57,12 @@ class MainActivity : AppCompatActivity() {
         super.onResume()
         getUserInfo()
         setUpNavigationDrawer()
+
+        // When the user rotates the phone while they are viewing events, this prevents the
+        // actionbar from reapplying elevation
+        if(bottom_navigation.selectedItemId == R.id.bottom_navigation_events) {
+            toggleActionBarElevation(false)
+        }
     }
 
     fun getUserInfo() {
