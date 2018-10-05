@@ -1,7 +1,6 @@
 package org.hackru.oneapp.hackru.ui.main.announcements
 
 import android.support.v7.widget.RecyclerView
-import android.text.util.Linkify
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -27,8 +26,7 @@ class AnnouncementsAdapter : RecyclerView.Adapter<AnnouncementsAdapter.ViewHolde
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.announcement_text.text = MessageParser.stringParser(items[position].text)
-//        holder.announcement_text.text = items[position].text    //ORIGINAL_ONE
+        holder.announcement_text.text = items[position].text
     }
 
 

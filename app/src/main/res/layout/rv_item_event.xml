@@ -12,7 +12,7 @@
         android:id="@+id/card_event"
         android:layout_margin="5dp"
         card_view:cardCornerRadius="12dp"
-        card_view:cardElevation="3dp"
+        card_view:cardElevation="2dp"
         card_view:contentPadding="4dp">
 
         <RelativeLayout

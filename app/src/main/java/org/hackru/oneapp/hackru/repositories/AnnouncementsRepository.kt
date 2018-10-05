@@ -10,6 +10,7 @@ import org.hackru.oneapp.hackru.api.Resource
 import org.hackru.oneapp.hackru.api.models.AnnouncementsModel
 import org.hackru.oneapp.hackru.api.services.LcsService
 import org.hackru.oneapp.hackru.db.AnnouncementsDao
+import org.hackru.oneapp.hackru.ui.main.announcements.MessageParser
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -51,7 +52,8 @@ class AnnouncementsRepository @Inject constructor(val announcementsDao: Announce
                     val announcements = mutableListOf<AnnouncementsModel.Announcement>()
                     data.forEach {
                         if(it.text != null && it.text.isNotEmpty() && it.ts != null && it.subtype == null) {
-                            announcements.add(AnnouncementsModel.Announcement(it.ts, it.text))
+                            val text: String = MessageParser.stringParser(it.text)
+                            announcements.add(AnnouncementsModel.Announcement(it.ts, text))
                         }
                     }
                     result?.value = Resource.success(announcements.toList())
