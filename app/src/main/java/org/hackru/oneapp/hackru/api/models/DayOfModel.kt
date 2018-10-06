@@ -8,5 +8,6 @@ object DayOfModel {
 
     class Response(val statusCode: Int,
                    val body: List<User>)
-    class User(val day_of: Map<String, Any>)
+    class User(val day_of: Map<String, Any>,
+               val registration_status: String)
 }

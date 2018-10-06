@@ -15,7 +15,6 @@ object Utils {
         private val KEY_CAN_SCAN = "can_scan"
         private val KEY_NAME = "name"
         private val KEY_LOGOUT_AT = "logout_at"
-        // TODO: Set up scanner for allowing waitlist
         private val KEY_ALLOW_WAITLIST = "allow_only_accepted"
 
         fun setAuthToken(context: Context, authToken: String?) {

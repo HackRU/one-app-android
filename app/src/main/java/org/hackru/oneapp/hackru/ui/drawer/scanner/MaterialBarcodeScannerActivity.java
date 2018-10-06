@@ -88,6 +88,8 @@ public class MaterialBarcodeScannerActivity extends AppCompatActivity {
     String PRINTER_BASE_URL = null;
     PrinterService printerService;
 
+    Long ALLOW_WAITLIST_AFTER = 1538838000000L;
+
     private void setupScanner() {
         final AlertDialog alertDialog = new AlertDialog.Builder(MaterialBarcodeScannerActivity.this)
                 .setView(getLayoutInflater().inflate(R.layout.dialog_progress_circle, null))
@@ -212,11 +214,17 @@ public class MaterialBarcodeScannerActivity extends AppCompatActivity {
                         alertDialog.dismiss();
                         Toast.makeText(MaterialBarcodeScannerActivity.this, "Email isn't registered to a user", Toast.LENGTH_LONG).show();
                     } else {
-                        Map<String, Object> dayOf = userList.get(0).getDay_of();
-                        if(!dayOf.containsKey(events[currentEvent])) {
-                            changeUserDayOf(alertDialog, barcode, scannerEmail, token);
+                        if(!userList.get(0).getRegistration_status().equals("waitlist") || ALLOW_WAITLIST_AFTER <= System.currentTimeMillis()) {
+                            Map<String, Object> dayOf = userList.get(0).getDay_of();
+                            if(!dayOf.containsKey(events[currentEvent])) {
+                                changeUserDayOf(alertDialog, barcode, scannerEmail, token);
+                            } else {
+                                showUserScannedBefore(barcode, scannerEmail, token);
+                                alertDialog.dismiss();
+                            }
                         } else {
-                            showUserScannedBefore(barcode, scannerEmail, token);
+                            // The user is on waitlist
+                            reportWaitList(barcode, scannerEmail, token);
                             alertDialog.dismiss();
                         }
                     }
@@ -238,6 +246,31 @@ public class MaterialBarcodeScannerActivity extends AppCompatActivity {
         final AlertDialog alertDialog = new AlertDialog.Builder(MaterialBarcodeScannerActivity.this)
                 .setTitle("This user was already scanned for this event. Continue?")
                 .setPositiveButton("Continue", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        final AlertDialog alertDialog = new AlertDialog.Builder(MaterialBarcodeScannerActivity.this)
+                                .setView(getLayoutInflater().inflate(R.layout.dialog_progress_circle, null))
+                                .setTitle("Sending to server...")
+                                .setCancelable(false)
+                                .create();
+                        alertDialog.show();
+                        changeUserDayOf(alertDialog, barcode, scannerEmail, token);
+                    }
+                })
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        // Do nothing. The dialog will dismiss by default.
+                    }
+                })
+                .create();
+        alertDialog.show();
+    }
+
+    private void reportWaitList(final String barcode, final String scannerEmail, final String token) {
+        final AlertDialog alertDialog = new AlertDialog.Builder(MaterialBarcodeScannerActivity.this)
+                .setTitle("This user is not confirmed and we are not allowing waitlist yet. Allow?")
+                .setPositiveButton("Allow", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         final AlertDialog alertDialog = new AlertDialog.Builder(MaterialBarcodeScannerActivity.this)

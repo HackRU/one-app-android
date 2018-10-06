@@ -64,7 +64,6 @@ public class MaterialBarcodeScanner {
      *
      * This opens a new activity with the parameters provided by the MaterialBarcodeScannerBuilder
      */
-    // TODO: Fix weird bug where the scanner doesn't start on first try on a new install
     public void startScan(){
         EventBus.getDefault().register(this);
         if(mMaterialBarcodeScannerBuilder.getActivity() == null){
