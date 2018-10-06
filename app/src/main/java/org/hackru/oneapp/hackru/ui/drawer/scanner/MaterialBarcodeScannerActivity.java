@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.hardware.Camera;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -170,6 +171,14 @@ public class MaterialBarcodeScannerActivity extends AppCompatActivity {
                     }
                 })
                 .create();
+        alertDialog.setOnShowListener(new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(DialogInterface dialogInterface) {
+                int colorPrimary = ContextCompat.getColor(MaterialBarcodeScannerActivity.this, R.color.colorPrimary);
+                alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(colorPrimary);
+                alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(colorPrimary);
+            }
+        });
         alertDialog.show();
     }
 
@@ -264,6 +273,14 @@ public class MaterialBarcodeScannerActivity extends AppCompatActivity {
                     }
                 })
                 .create();
+        alertDialog.setOnShowListener(new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(DialogInterface dialogInterface) {
+                int colorPrimary = ContextCompat.getColor(MaterialBarcodeScannerActivity.this, R.color.colorPrimary);
+                alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(colorPrimary);
+                alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(colorPrimary);
+            }
+        });
         alertDialog.show();
     }
 
@@ -289,6 +306,14 @@ public class MaterialBarcodeScannerActivity extends AppCompatActivity {
                     }
                 })
                 .create();
+        alertDialog.setOnShowListener(new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(DialogInterface dialogInterface) {
+                int colorPrimary = ContextCompat.getColor(MaterialBarcodeScannerActivity.this, R.color.colorPrimary);
+                alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(colorPrimary);
+                alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(colorPrimary);
+            }
+        });
         alertDialog.show();
     }
 
@@ -359,6 +384,14 @@ public class MaterialBarcodeScannerActivity extends AppCompatActivity {
                     }
                 })
                 .create();
+        alertDialog.setOnShowListener(new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(DialogInterface dialogInterface) {
+                int colorPrimary = ContextCompat.getColor(MaterialBarcodeScannerActivity.this, R.color.colorPrimary);
+                alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(colorPrimary);
+                alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(colorPrimary);
+            }
+        });
         alertDialog.show();
     }
 
@@ -397,6 +430,14 @@ public class MaterialBarcodeScannerActivity extends AppCompatActivity {
                     }
                 })
                 .create();
+        alertDialog.setOnShowListener(new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(DialogInterface dialogInterface) {
+                int colorPrimary = ContextCompat.getColor(MaterialBarcodeScannerActivity.this, R.color.colorPrimary);
+                alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(colorPrimary);
+                alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(colorPrimary);
+            }
+        });
         alertDialog.show();
     }
 
@@ -416,6 +457,14 @@ public class MaterialBarcodeScannerActivity extends AppCompatActivity {
                     }
                 })
                 .create();
+        alertDialog.setOnShowListener(new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(DialogInterface dialogInterface) {
+                int colorPrimary = ContextCompat.getColor(MaterialBarcodeScannerActivity.this, R.color.colorPrimary);
+                alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(colorPrimary);
+                alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(colorPrimary);
+            }
+        });
         alertDialog.show();
     }
 
