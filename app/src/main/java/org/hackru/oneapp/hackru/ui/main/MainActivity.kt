@@ -201,6 +201,13 @@ class MainActivity : AppCompatActivity() {
                 else -> false
             }
         }
+
+        bottom_navigation.setOnNavigationItemReselectedListener {
+            // Do nothing when an item is reselected. If this empty listener was not here, the
+            // onNavigationItemSelectedListener would be called on reselection instead of this
+            // empty listener
+        }
+
     }
 
     fun setUpFloatingActionButton() {

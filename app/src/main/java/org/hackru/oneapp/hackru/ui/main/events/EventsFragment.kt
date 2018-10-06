@@ -16,6 +16,8 @@ import org.hackru.oneapp.hackru.ui.main.MainActivity
 class EventsFragment : Fragment() {
     val TAG = "EventsFragment"
 
+    private val TIME_SUNDAY_MIDNIGHT: Long = 1538870400000
+
     companion object {
         fun newInstance() = EventsFragment()
     }
@@ -34,6 +36,12 @@ class EventsFragment : Fragment() {
         container_events.adapter = ViewPagerAdapter(childFragmentManager)
         container_events.addOnPageChangeListener(TabLayout.TabLayoutOnPageChangeListener(tab_layout))
         tab_layout.addOnTabSelectedListener(TabLayout.ViewPagerOnTabSelectedListener(container_events))
+
+        // If it is Sunday, then show the Sunday tab. Else show the Saturday tab
+        val timeDiff = System.currentTimeMillis() - TIME_SUNDAY_MIDNIGHT
+        if(timeDiff > 1000 * 60 * 60 * 24 ) {
+            container_events.currentItem = 1
+        }
     }
 
     internal inner class ViewPagerAdapter(fm: FragmentManager) : FragmentStatePagerAdapter(fm) {

@@ -11,7 +11,9 @@ import org.hackru.oneapp.hackru.BuildConfig
 import org.hackru.oneapp.hackru.api.services.LcsService
 import org.hackru.oneapp.hackru.db.AnnouncementsDao
 import org.hackru.oneapp.hackru.db.Database
+import org.hackru.oneapp.hackru.db.EventsDao
 import org.hackru.oneapp.hackru.repositories.AnnouncementsRepository
+import org.hackru.oneapp.hackru.repositories.EventsRepository
 import org.hackru.oneapp.hackru.ui.main.announcements.AnnouncementsViewModelFactory
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -35,6 +37,10 @@ class AppModule(val application: Application) {
 
     @Provides
     @Singleton
+    fun provideEventsDao(database: Database) = database.eventsDao()
+
+    @Provides
+    @Singleton
     fun provideLcsService(): LcsService {
         val loggingInterceptor = HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)
         val client = OkHttpClient.Builder()
@@ -52,6 +58,12 @@ class AppModule(val application: Application) {
     @Singleton
     fun provideAnnouncementsRepository(announcementsDao: AnnouncementsDao, lcsService: LcsService, context: Context): AnnouncementsRepository {
         return AnnouncementsRepository(announcementsDao, lcsService, context)
+    }
+
+    @Provides
+    @Singleton
+    fun provideEventsRepository(eventsDao: EventsDao, lcsService: LcsService, context: Context): EventsRepository {
+        return EventsRepository(eventsDao, lcsService, context)
     }
 
     @Provides
