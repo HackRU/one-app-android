@@ -2,7 +2,6 @@ package org.hackru.oneapp.hackru.ui.drawer.scanner;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.arch.persistence.room.Update;
 import android.content.DialogInterface;
 import android.hardware.Camera;
 import android.os.Bundle;
@@ -78,7 +77,9 @@ public class MaterialBarcodeScannerActivity extends AppCompatActivity {
     @Inject
     LcsService lcsService;
 
-    private void fetchEvents() {
+    String PRINTER_BASE_URL = null;
+
+    private void setupScanner() {
         final AlertDialog alertDialog = new AlertDialog.Builder(MaterialBarcodeScannerActivity.this)
                 .setView(getLayoutInflater().inflate(R.layout.dialog_progress_circle, null))
                 .setTitle("Updating events...")
@@ -92,29 +93,50 @@ public class MaterialBarcodeScannerActivity extends AppCompatActivity {
                     events = response.body().split("\n");
                     final TextView currentEvent = findViewById(R.id.current_event);
                     currentEvent.setText("Scanning for " + events[0]);
+                    fetchPrinterURL(alertDialog);
+                } else {
+                    showSetupScannerFailure();
+                    alertDialog.dismiss();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t) {
+                showSetupScannerFailure();
+                alertDialog.dismiss();
+            }
+        });
+    }
+
+    private void fetchPrinterURL(final AlertDialog alertDialog) {
+        miscService.getPrinterURL().enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response) {
+                if(response.isSuccessful() && response.body() != null) {
+                    PRINTER_BASE_URL = response.body().trim();
                     setupChangeEventButton();
                 } else {
-                    showFetchEventsFailure();
+                    showSetupScannerFailure();
                 }
                 alertDialog.dismiss();
             }
 
             @Override
             public void onFailure(Call<String> call, Throwable t) {
-                showFetchEventsFailure();
+                showSetupScannerFailure();
                 alertDialog.dismiss();
             }
         });
     }
 
-    private void showFetchEventsFailure() {
+    private void showSetupScannerFailure() {
         final AlertDialog alertDialog = new AlertDialog.Builder(MaterialBarcodeScannerActivity.this)
                 .setCancelable(false)
-                .setTitle("Couldn't load events from server")
+                .setTitle("Couldn't load scanning data from server")
                 .setPositiveButton("Retry", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        fetchEvents();
+                        setupScanner();
                     }
                 })
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -324,7 +346,7 @@ public class MaterialBarcodeScannerActivity extends AppCompatActivity {
         setContentView(R.layout.activity_scanner);
 
         ((HackRUApp)getApplication()).appComponent.inject(this);
-        fetchEvents();
+        setupScanner();
     }
 
     /**

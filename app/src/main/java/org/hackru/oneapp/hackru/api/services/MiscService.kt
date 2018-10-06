@@ -8,5 +8,5 @@ interface MiscService {
     fun getScannerEvents(): Call<String>
 
     @GET("label-url.txt")
-    fun getLabelURL(): Call<String>
+    fun getPrinterURL(): Call<String>
 }
