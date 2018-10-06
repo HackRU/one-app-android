@@ -1,23 +1,23 @@
 package org.hackru.oneapp.hackru.ui.main
 
-import android.content.DialogInterface
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
+import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
-import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.header_drawer.*
 import net.glxn.qrgen.android.QRCode
 import org.hackru.oneapp.hackru.R
 import org.hackru.oneapp.hackru.Utils
@@ -39,6 +39,7 @@ class MainActivity : AppCompatActivity() {
     var authToken: String? = null
     var name: String = ""
     var logoutAt: Long = 0L
+    val REQUEST_CAMERA = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -129,13 +130,13 @@ class MainActivity : AppCompatActivity() {
                 }
                 R.id.drawer_scanner -> {
                     if(checkSession()) {
-                        val qrCodeScanning:MaterialBarcodeScanner = MaterialBarcodeScannerBuilder()
-                                .withActivity(this)
-                                .withEnableAutoFocus(true)
-                                .withCenterTracker()
-                                .withBackfacingCamera()
-                                .build()
-                        qrCodeScanning.startScan()
+                        if(ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+                            // We have permission to use the camera
+                            launchScanner()
+                        } else {
+                            // We don't have permission to use the camera
+                            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA), REQUEST_CAMERA)
+                        }
                     }
                 }
                 R.id.drawer_about -> {
@@ -301,6 +302,29 @@ class MainActivity : AppCompatActivity() {
                 if(toggle) Utils.convertDpToPx(this, 4f)
                 else 0f
             }
+        }
+    }
+
+    private fun launchScanner() {
+        val qrCodeScanning: MaterialBarcodeScanner = MaterialBarcodeScannerBuilder()
+                .withActivity(this)
+                .withEnableAutoFocus(true)
+                .withCenterTracker()
+                .withBackfacingCamera()
+                .build()
+        qrCodeScanning.startScan()
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        if(requestCode == REQUEST_CAMERA) {
+            if(grantResults.isNotEmpty() && grantResults[0]==PackageManager.PERMISSION_GRANTED) {
+                // The camera permission was granted
+                launchScanner()
+            } else {
+                Toast.makeText(this, "Camera permission is required to use the scanner", Toast.LENGTH_LONG).show()
+            }
+        } else {
+            super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         }
     }
 
