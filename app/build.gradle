@@ -53,6 +53,8 @@ dependencies {
     implementation 'com.squareup.retrofit2:converter-gson:2.4.0'
     // Allows us to monitor Retrofit networking with logcat
     implementation 'com.squareup.okhttp3:logging-interceptor:3.8.0'
+    // Allows us to convert MiscService responses to a plaintext string
+    compile 'com.squareup.retrofit2:converter-scalars:2.3.0'
 
     /* App Architecture */
     def lifecycle_version = "1.1.1"

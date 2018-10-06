@@ -2,6 +2,7 @@ package org.hackru.oneapp.hackru.ui.drawer.scanner;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.arch.persistence.room.Update;
 import android.content.DialogInterface;
 import android.hardware.Camera;
 import android.os.Bundle;
@@ -13,6 +14,7 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
@@ -23,11 +25,24 @@ import com.google.android.gms.vision.barcode.BarcodeDetector;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+import org.hackru.oneapp.hackru.HackRUApp;
 import org.hackru.oneapp.hackru.R;
+import org.hackru.oneapp.hackru.Utils;
+import org.hackru.oneapp.hackru.api.models.DayOfModel;
+import org.hackru.oneapp.hackru.api.models.UpdateModel;
+import org.hackru.oneapp.hackru.api.services.LcsService;
+import org.hackru.oneapp.hackru.api.services.MiscService;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+
+import javax.inject.Inject;
 
 import cdflynn.android.library.checkview.CheckView;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class MaterialBarcodeScannerActivity extends AppCompatActivity {
 
@@ -54,8 +69,63 @@ public class MaterialBarcodeScannerActivity extends AppCompatActivity {
     private boolean mFlashOn = false;
 
     private String[] events = null;
+    private int currentEvent = 0;
 
     private Handler handler = new Handler();
+
+    @Inject
+    MiscService miscService;
+    @Inject
+    LcsService lcsService;
+
+    private void fetchEvents() {
+        final AlertDialog alertDialog = new AlertDialog.Builder(MaterialBarcodeScannerActivity.this)
+                .setView(getLayoutInflater().inflate(R.layout.dialog_progress_circle, null))
+                .setTitle("Updating events...")
+                .setCancelable(false)
+                .create();
+        alertDialog.show();
+        miscService.getScannerEvents().enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response) {
+                if(response.isSuccessful() && response.body() != null) {
+                    events = response.body().split("\n");
+                    final TextView currentEvent = findViewById(R.id.current_event);
+                    currentEvent.setText("Scanning for " + events[0]);
+                    setupChangeEventButton();
+                } else {
+                    showFetchEventsFailure();
+                }
+                alertDialog.dismiss();
+            }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t) {
+                showFetchEventsFailure();
+                alertDialog.dismiss();
+            }
+        });
+    }
+
+    private void showFetchEventsFailure() {
+        final AlertDialog alertDialog = new AlertDialog.Builder(MaterialBarcodeScannerActivity.this)
+                .setCancelable(false)
+                .setTitle("Couldn't load events from server")
+                .setPositiveButton("Retry", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        fetchEvents();
+                    }
+                })
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        finish();
+                    }
+                })
+                .create();
+        alertDialog.show();
+    }
 
     private void setupChangeEventButton() {
         Button changeEventButton = findViewById(R.id.btn_change_event);
@@ -64,12 +134,12 @@ public class MaterialBarcodeScannerActivity extends AppCompatActivity {
             public void onClick(View view) {
                 new AlertDialog.Builder(MaterialBarcodeScannerActivity.this)
                         .setTitle("Pick an event")
-                        .setItems(R.array.scanner_events, new DialogInterface.OnClickListener() {
+                        .setItems(events, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
-                                // TODO: Change event here
-                                TextView currentEvent = findViewById(R.id.current_event);
-                                currentEvent.setText("Scanning for " + events[i]);
+                                TextView currentEventLabel = findViewById(R.id.current_event);
+                                currentEvent = i;
+                                currentEventLabel.setText("Scanning for " + events[currentEvent]);
                             }
                         })
                         .create()
@@ -78,25 +148,96 @@ public class MaterialBarcodeScannerActivity extends AppCompatActivity {
         });
     }
 
-    private void sendEmailToServer() {
+    private void checkScannedBefore(final String barcode) {
         final AlertDialog alertDialog = new AlertDialog.Builder(MaterialBarcodeScannerActivity.this)
                 .setView(getLayoutInflater().inflate(R.layout.dialog_progress_circle, null))
                 .setTitle("Sending to server...")
                 .setCancelable(false)
                 .create();
         alertDialog.show();
-        // TODO: Do network call here
-        handler.postDelayed(new Runnable() {
+        DayOfModel.Query query = new DayOfModel.Query(barcode);
+        final String scannerEmail = Utils.SharedPreferences.INSTANCE.getEmail(this);
+        final String token = Utils.SharedPreferences.INSTANCE.getAuthToken(this);
+        DayOfModel.Request request = new DayOfModel.Request(scannerEmail, token, query);
+        lcsService.getUserDayOf(request).enqueue(new Callback<DayOfModel.Response>() {
             @Override
-            public void run() {
-                alertDialog.dismiss();
-                showOnSuccess();
-//                showOnFailure();
+            public void onResponse(Call<DayOfModel.Response> call, Response<DayOfModel.Response> response) {
+                if(response.isSuccessful() && response.body() != null) {
+                    List<DayOfModel.User> userList = response.body().getBody();
+                    if(userList.isEmpty()) {
+                        alertDialog.dismiss();
+                        Toast.makeText(MaterialBarcodeScannerActivity.this, "Email isn't registered to a user", Toast.LENGTH_LONG).show();
+                    } else {
+                        Map<String, Object> dayOf = userList.get(0).getDay_of();
+                        if(!dayOf.containsKey(events[currentEvent])) {
+                            changeUserDayOf(alertDialog, barcode, scannerEmail, token);
+                        } else {
+                            showUserScannedBefore(barcode, scannerEmail, token);
+                            alertDialog.dismiss();
+                        }
+                    }
+                } else {
+                    showScanFailure(barcode);
+                }
             }
-        }, 1000);
+
+            @Override
+            public void onFailure(Call<DayOfModel.Response> call, Throwable t) {
+                showScanFailure(barcode);
+            }
+        });
     }
 
-    private void showOnSuccess() {
+    private void showUserScannedBefore(final String barcode, final String scannerEmail, final String token) {
+        final AlertDialog alertDialog = new AlertDialog.Builder(MaterialBarcodeScannerActivity.this)
+                .setTitle("This user was already scanned for this event. Continue?")
+                .setPositiveButton("Continue", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        final AlertDialog alertDialog = new AlertDialog.Builder(MaterialBarcodeScannerActivity.this)
+                                .setView(getLayoutInflater().inflate(R.layout.dialog_progress_circle, null))
+                                .setTitle("Sending to server...")
+                                .setCancelable(false)
+                                .create();
+                        alertDialog.show();
+                        changeUserDayOf(alertDialog, barcode, scannerEmail, token);
+                    }
+                })
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        // Do nothing. The dialog will dismiss by default.
+                    }
+                })
+                .create();
+        alertDialog.show();
+    }
+
+    private void changeUserDayOf(final AlertDialog alertDialog, final String barcode, String scannerEmail, String token) {
+        UpdateModel.Request request = new UpdateModel.Request(scannerEmail, token, barcode, events[currentEvent]);
+        lcsService.updateUserDayOf(request).enqueue(new Callback<UpdateModel.Response>() {
+            @Override
+            public void onResponse(Call<UpdateModel.Response> call, Response<UpdateModel.Response> response) {
+                if(response.isSuccessful() && response.body() != null) {
+                    int statusCode = response.body().getStatusCode();
+                    if(statusCode >= 200 && statusCode < 300) {
+                        showScanSuccess();
+                    } else {
+                        showScanFailure(barcode, response.body().getBody());
+                    }
+                    alertDialog.dismiss();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<UpdateModel.Response> call, Throwable t) {
+                showScanFailure(barcode);
+                alertDialog.dismiss();
+            }
+        });
+    }
+
+    private void showScanSuccess() {
         View dialogView = getLayoutInflater().inflate(R.layout.dialog_checkmark, null);
         final AlertDialog alertDialog = new AlertDialog.Builder(MaterialBarcodeScannerActivity.this)
                 .setView(dialogView)
@@ -115,16 +256,16 @@ public class MaterialBarcodeScannerActivity extends AppCompatActivity {
         handler.postDelayed(dismissCheckmark, 1000);
     }
 
-    private void showOnFailure() {
+    private void showScanFailure(final String barcode) {
         final AlertDialog alertDialog = new AlertDialog.Builder(MaterialBarcodeScannerActivity.this)
                 .setTitle("Network error")
                 .setPositiveButton("Retry", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        sendEmailToServer();
+                        checkScannedBefore(barcode);
                     }
                 })
-                .setNegativeButton("Ok", new DialogInterface.OnClickListener() {
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         // Do nothing. The dialog will dismiss by default.
@@ -134,17 +275,56 @@ public class MaterialBarcodeScannerActivity extends AppCompatActivity {
         alertDialog.show();
     }
 
-    private void onDetect(Barcode barcode) {
+    private void showScanFailure(final String barcode, String errorMessage) {
+        final AlertDialog alertDialog = new AlertDialog.Builder(MaterialBarcodeScannerActivity.this)
+                .setTitle(errorMessage)
+                .setPositiveButton("Retry", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        checkScannedBefore(barcode);
+                    }
+                })
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        // Do nothing. The dialog will dismiss by default.
+                    }
+                })
+                .create();
+        alertDialog.show();
+    }
+
+    private void onDetect(final Barcode barcode) {
+        if(events == null) return;
         if(!barcode.displayValue.equals(previous)) {
             Log.d(TAG, "New code!");
             previous = barcode.displayValue;
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    sendEmailToServer();
+                    checkScannedBefore(barcode.displayValue);
                 }
             });
         }
+    }
+
+    @Override
+    public void onCreate(Bundle bundle) {
+        super.onCreate(bundle);
+        if(getWindow() != null){
+            getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        }else{
+            Log.e(TAG, "Barcode scanner could not go into fullscreen mode!");
+        }
+
+       /* ArrayList<String> eventsList = getIntent().getStringArrayListExtra(EVENTS);
+        mEvents = new String[eventsList.size()];
+        mEvents = eventsList.oArray(mEvents);*/
+
+        setContentView(R.layout.activity_scanner);
+
+        ((HackRUApp)getApplication()).appComponent.inject(this);
+        fetchEvents();
     }
 
     /**
@@ -196,27 +376,6 @@ public class MaterialBarcodeScannerActivity extends AppCompatActivity {
                 mCameraSource = null;
             }
         }
-    }
-
-    @Override
-    public void onCreate(Bundle bundle) {
-        super.onCreate(bundle);
-        if(getWindow() != null){
-            getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        }else{
-            Log.e(TAG, "Barcode scanner could not go into fullscreen mode!");
-        }
-
-       /* ArrayList<String> eventsList = getIntent().getStringArrayListExtra(EVENTS);
-        mEvents = new String[eventsList.size()];
-        mEvents = eventsList.oArray(mEvents);*/
-
-        setContentView(R.layout.activity_scanner);
-
-        final TextView currentEvent = findViewById(R.id.current_event);
-        events = getResources().getStringArray(R.array.scanner_events);
-        setupChangeEventButton();
-        currentEvent.setText("Scanning for " + events[0]);
     }
 
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
