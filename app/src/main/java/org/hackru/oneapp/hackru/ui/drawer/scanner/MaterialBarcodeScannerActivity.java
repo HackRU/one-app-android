@@ -28,9 +28,11 @@ import org.hackru.oneapp.hackru.HackRUApp;
 import org.hackru.oneapp.hackru.R;
 import org.hackru.oneapp.hackru.Utils;
 import org.hackru.oneapp.hackru.api.models.DayOfModel;
+import org.hackru.oneapp.hackru.api.models.PrinterModel;
 import org.hackru.oneapp.hackru.api.models.UpdateModel;
 import org.hackru.oneapp.hackru.api.services.LcsService;
 import org.hackru.oneapp.hackru.api.services.MiscService;
+import org.hackru.oneapp.hackru.api.services.PrinterService;
 
 import java.io.IOException;
 import java.util.List;
@@ -39,9 +41,15 @@ import java.util.Map;
 import javax.inject.Inject;
 
 import cdflynn.android.library.checkview.CheckView;
+import kotlin.Unit;
+import okhttp3.OkHttpClient;
+import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+import retrofit2.converter.scalars.ScalarsConverterFactory;
 
 public class MaterialBarcodeScannerActivity extends AppCompatActivity {
 
@@ -78,6 +86,7 @@ public class MaterialBarcodeScannerActivity extends AppCompatActivity {
     LcsService lcsService;
 
     String PRINTER_BASE_URL = null;
+    PrinterService printerService;
 
     private void setupScanner() {
         final AlertDialog alertDialog = new AlertDialog.Builder(MaterialBarcodeScannerActivity.this)
@@ -114,6 +123,19 @@ public class MaterialBarcodeScannerActivity extends AppCompatActivity {
             public void onResponse(Call<String> call, Response<String> response) {
                 if(response.isSuccessful() && response.body() != null) {
                     PRINTER_BASE_URL = response.body().trim();
+                    if(PRINTER_BASE_URL.charAt(PRINTER_BASE_URL.length()-1) != '/') {
+                        PRINTER_BASE_URL += '/';
+                    }
+                    HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY);
+                    OkHttpClient client = new OkHttpClient.Builder()
+                            .addInterceptor(loggingInterceptor)
+                            .build();
+                    printerService = new  Retrofit.Builder()
+                            .baseUrl(PRINTER_BASE_URL)
+                            .addConverterFactory(GsonConverterFactory.create())
+                            .client(client)
+                            .build()
+                            .create(PrinterService.class);
                     setupChangeEventButton();
                 } else {
                     showSetupScannerFailure();
@@ -200,12 +222,14 @@ public class MaterialBarcodeScannerActivity extends AppCompatActivity {
                     }
                 } else {
                     showScanFailure(barcode);
+                    alertDialog.dismiss();
                 }
             }
 
             @Override
             public void onFailure(Call<DayOfModel.Response> call, Throwable t) {
                 showScanFailure(barcode);
+                alertDialog.dismiss();
             }
         });
     }
@@ -243,7 +267,11 @@ public class MaterialBarcodeScannerActivity extends AppCompatActivity {
                 if(response.isSuccessful() && response.body() != null) {
                     int statusCode = response.body().getStatusCode();
                     if(statusCode >= 200 && statusCode < 300) {
-                        showScanSuccess();
+                        if(events[currentEvent].equals("check-in")) {
+                            printLabel(barcode);
+                        } else {
+                            showScanSuccess();
+                        }
                     } else {
                         showScanFailure(barcode, response.body().getBody());
                     }
@@ -257,6 +285,48 @@ public class MaterialBarcodeScannerActivity extends AppCompatActivity {
                 alertDialog.dismiss();
             }
         });
+    }
+
+    private void printLabel(final String barcode) {
+        final AlertDialog alertDialog = new AlertDialog.Builder(MaterialBarcodeScannerActivity.this)
+                .setView(getLayoutInflater().inflate(R.layout.dialog_progress_circle, null))
+                .setTitle("Printing label...")
+                .setCancelable(false)
+                .create();
+        alertDialog.show();
+        printerService.print(new PrinterModel.Request(barcode)).enqueue(new Callback<Unit>() {
+            @Override
+            public void onResponse(Call<Unit> call, Response<Unit> response) {
+                showScanSuccess();
+                alertDialog.dismiss();
+            }
+
+            @Override
+            public void onFailure(Call<Unit> call, Throwable t) {
+                alertDialog.dismiss();
+                showPrintLabelFailure(barcode);
+            }
+        });
+    }
+
+    private void showPrintLabelFailure(final String barcode) {
+        final AlertDialog alertDialog = new AlertDialog.Builder(MaterialBarcodeScannerActivity.this)
+                .setCancelable(false)
+                .setTitle("Couldn't print label. Try printing again?")
+                .setPositiveButton("Print", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        printLabel(barcode);
+                    }
+                })
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        // Do nothing
+                    }
+                })
+                .create();
+        alertDialog.show();
     }
 
     private void showScanSuccess() {
