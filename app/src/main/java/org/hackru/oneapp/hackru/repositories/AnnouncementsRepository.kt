@@ -5,6 +5,7 @@ import android.arch.lifecycle.MediatorLiveData
 import android.arch.lifecycle.MutableLiveData
 import android.content.Context
 import android.os.AsyncTask
+import android.util.Log
 import org.hackru.oneapp.hackru.R
 import org.hackru.oneapp.hackru.api.Resource
 import org.hackru.oneapp.hackru.api.models.AnnouncementsModel
@@ -52,8 +53,10 @@ class AnnouncementsRepository @Inject constructor(val announcementsDao: Announce
                     val announcements = mutableListOf<AnnouncementsModel.Announcement>()
                     data.forEach {
                         if(it.text != null && it.text.isNotEmpty() && it.ts != null && it.subtype == null) {
+                            val ts: Long = it.ts.toDouble().toLong()
+                            Log.e("YEET", ts.toString())
                             val text: String = MessageParser.stringParser(it.text)
-                            announcements.add(AnnouncementsModel.Announcement(it.ts, text))
+                            announcements.add(AnnouncementsModel.Announcement(ts, text, ""))
                         }
                     }
                     result?.value = Resource.success(announcements.toList())

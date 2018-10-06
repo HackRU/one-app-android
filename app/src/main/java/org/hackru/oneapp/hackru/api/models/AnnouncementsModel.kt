@@ -19,11 +19,13 @@ object AnnouncementsModel {
      * with a non-empty body are created into {@code Announcement} objects. So, {@code text} will
      * never be an empty string (and neither will {@code ts}).
      *
-     * @param ts The timestamp in Unix (epoch) time of when the announcement was announced on slack
+     * @param ts A Long that represents when the message was sent on slack in epoch time (milliseconds)
      * @param text The text of the announcement
+     * @param time A string that represents the time of the event (for example: "10:30 AM")
      */
     @Entity
-    data class Announcement(@PrimaryKey val ts: String,
-                            val text: String)
+    data class Announcement(@PrimaryKey val ts: Long,
+                            val text: String,
+                            val time: String)
 
 }
