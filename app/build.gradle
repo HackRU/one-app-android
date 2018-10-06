@@ -12,9 +12,8 @@ android {
         applicationId "org.hackru.oneapp.hackru"
         minSdkVersion 19
         targetSdkVersion 28
-        versionCode 10
+        versionCode 11
         versionName '2.0.0'
-        versionNameSuffix 'prealpha'
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
