@@ -16,7 +16,7 @@ class EventsViewModel @Inject constructor(private val eventsRepository: EventsRe
             if(field == null) {
                 field = eventsRepository.loadEventsFromDatabase()
             } else {
-                eventsRepository.fetchEventsFromNetwork(field)
+                eventsRepository.refreshEvents(field)
             }
             return field
         }

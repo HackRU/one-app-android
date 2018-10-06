@@ -11,7 +11,8 @@ object EventsModel {
     data class GoogleCalendarEvent(val summary: String?,
                                    val location: String?,
                                    val start: Start?,
-                                   val end: End?) {
+                                   val end: End?,
+                                   val id: String) {
         data class Start(val date: String?,
                          val dateTime: String?)
         data class End(val date: String?,
@@ -29,7 +30,8 @@ object EventsModel {
      * @param timeEnd A Long that represents ending time in epoch time (in milliseconds)
      */
     @Entity
-    data class Event(@PrimaryKey val title: String,
+    data class Event(@PrimaryKey val id: String,
+                     val title: String,
                      val details: String,
                      val time: String,
                      val timeStart: Long,

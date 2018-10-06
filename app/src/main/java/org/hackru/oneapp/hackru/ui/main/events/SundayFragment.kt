@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import kotlinx.android.synthetic.main.fragment_saturday_sunday.*
@@ -54,14 +55,24 @@ class SundayFragment : Fragment() {
                 when(it.state) {
                     Resource.LOADING -> {
                         // The resource is loading
+                        progressbar_events.visibility = View.VISIBLE
+                        error_message.visibility = View.GONE
                     }
                     Resource.SUCCESS -> {
                         // The resource has successfully been fetched
+                        progressbar_events.visibility = View.GONE
+                        error_message.visibility = View.GONE
                         eventsAdapter.items = it.data[1]
                     }
                     Resource.FAILURE -> {
                         // There was an error fetching the resource
-                        Toast.makeText(context, it.msg, Toast.LENGTH_SHORT).show()
+                        progressbar_events.visibility = View.GONE
+                        if(eventsAdapter.items.isEmpty()) {
+                            error_message.visibility = View.VISIBLE
+                            error_message.text = it.msg
+                        } else {
+                            Toast.makeText(context, it.msg, Toast.LENGTH_SHORT).show()
+                        }
                     }
                 }
             }

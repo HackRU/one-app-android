@@ -34,6 +34,17 @@ class EventsRepository @Inject constructor(val eventsDao: EventsDao, val lcsServ
         return result
     }
 
+    fun refreshEvents(result: MediatorLiveData<Resource<List<List<EventsModel.Event>>>>?) {
+        val dbSource = eventsDao.loadAll()
+        result?.addSource(dbSource) { data ->
+            if(data?.isEmpty() == false) {
+                result.value = Resource.success(sortEventsByDay(data))
+            }
+            result.removeSource(dbSource)
+            fetchEventsFromNetwork(result)
+        }
+    }
+
     fun fetchEventsFromNetwork(result: MediatorLiveData<Resource<List<List<EventsModel.Event>>>>?) {
         lcsService.getEvents().enqueue(object : Callback<EventsModel.Response> {
             override fun onResponse(call: Call<EventsModel.Response>?, response: Response<EventsModel.Response>?) {
@@ -50,7 +61,7 @@ class EventsRepository @Inject constructor(val eventsDao: EventsDao, val lcsServ
                         val timeStart = toMillisFormatter.parse(startDate).time
                         val timeEnd = toMillisFormatter.parse(endDate).time
                         val time: String = toStringFormatter.format(Date(timeStart)).toString()
-                        events.add(EventsModel.Event(title, details, time, timeStart, timeEnd))
+                        events.add(EventsModel.Event(it.id, title, details, time, timeStart, timeEnd))
                     }
                     result?.value = Resource.success(sortEventsByDay(events))
                     SaveToDatabaseAsyncTask(eventsDao).execute(events)
