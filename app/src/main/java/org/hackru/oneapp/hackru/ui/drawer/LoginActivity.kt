@@ -60,13 +60,13 @@ class LoginActivity : AppCompatActivity() {
                     if(retrofitBody?.statusCode == 200) {
                         val body: String = retrofitBody.body
                         val auth: AuthorizeModel.Auth = gson.fromJson<AuthorizeModel.Body>(body, AuthorizeModel.Body::class.java).auth
-                        Utils.SharedPreferences.setEmail(this@LoginActivity, email)
+                        Utils.SharedPreferences.setEmail(this@LoginActivity, auth.email)
                         Utils.SharedPreferences.setAuthToken(this@LoginActivity, auth.token)
                         val logoutAt: Long = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSS")
                                 .parse(auth.validUntil)
                                 .time
                         Utils.SharedPreferences.setLogoutAt(this@LoginActivity, logoutAt)
-                        retrieveNameAndCanScan(email, auth.token)
+                        retrieveNameAndCanScan(auth.email, auth.token)
                     } else {
                         val errorMessage = response.body()?.body ?: "Network error. Please try again"
                         showToast(errorMessage, Toast.LENGTH_SHORT)
