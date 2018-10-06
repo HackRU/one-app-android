@@ -18,7 +18,7 @@ import javax.inject.Inject
 
 class EventsRepository @Inject constructor(val eventsDao: EventsDao, val lcsService: LcsService, val context: Context) {
 
-    private val TIME_SUNDAY_MIDNIGHT: Long = 1538870400000
+    private val TIME_SUNDAY_MIDNIGHT: Long = 1538884800000
 
     fun loadEventsFromDatabase(): MediatorLiveData<Resource<List<List<EventsModel.Event>>>> {
         val result = MediatorLiveData<Resource<List<List<EventsModel.Event>>>>()

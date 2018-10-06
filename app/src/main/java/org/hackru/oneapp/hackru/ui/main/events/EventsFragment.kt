@@ -16,7 +16,7 @@ import org.hackru.oneapp.hackru.ui.main.MainActivity
 class EventsFragment : Fragment() {
     val TAG = "EventsFragment"
 
-    private val TIME_SUNDAY_MIDNIGHT: Long = 1538870400000
+    private val TIME_SUNDAY_MIDNIGHT: Long = 1538884800000
 
     companion object {
         fun newInstance() = EventsFragment()
